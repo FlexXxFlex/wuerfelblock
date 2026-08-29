@@ -423,7 +423,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v33 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v34 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS = [
@@ -1361,7 +1361,7 @@ const ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const makeCode = () => Array.from({length:4},()=>ALPHA[Math.floor(Math.random()*ALPHA.length)]).join('');
 let room = null, client = null, connected = false, retryT = null;
 /* Wer einer Runde beitritt, bringt sein leeres Blatt nicht mit hinein */
-let joining = false, joinT = null;
+let joining = false, joinT = null, askJoin = null;   // offene Rückfrage beim Beitreten
 /* Bei wackligem Netz stirbt die Verbindung oft lautlos. Deshalb:
    jede eigene Nachricht kommt als Echo zurück – bleibt es aus, wird neu verbunden. */
 let lastRx=0, lastPub=0, echoWait=0, tries=0, stale=false;
@@ -1676,11 +1676,18 @@ function onRemote(raw){
   if (!doc.sheets.length) return;
   if (joining){                       // erste Nachricht der Runde
     joining=false; clearTimeout(joinT);
+    const fremdVoll = doc.sheets.some(s=>!s.del.v &&
+      Object.values(s.cells||{}).some(c=>c&&c.v!==null&&c.v!==undefined));
     if (nothingOwnYet()){             // eigenes Blatt ist unbenutzt: übernehmen statt dazulegen
       state.sheets = doc.sheets;
       state.activeId = (liveSheets()[0]||{}).id;
       lastSig=''; render(); saveLocal();
       return;
+    }
+    if (fremdVoll){                   // beide Seiten haben Inhalt: nachfragen, nichts vermischen
+      askJoin = doc.sheets;
+      askJoinDialog();
+      return;                         // bis zur Entscheidung wird nichts gesendet
     }
   }
   /* Die Uhren der Handys gehen unterschiedlich. Deshalb zählt nicht die Uhrzeit,
@@ -1753,6 +1760,43 @@ function startDiag(){
       : 'Verbindung wird aufgebaut…';
   },1000);
 }
+/* In der Runde liegt schon ein Block und wir haben auch einen – erst fragen */
+const BKEY='kniffel-backup';
+function askJoinDialog(){
+  const meine = liveSheets().length, fremde = askJoin.filter(s=>!s.del.v).length;
+  mode='join'; sbFoot.style.display='none';
+  document.getElementById('sbTitle').textContent = 'Runde hat schon einen Block';
+  document.getElementById('sbSub').textContent =
+    'Dort läuft '+fremde+' Blatt'+(fremde>1?'ätter':'')+', bei dir '+meine+'.';
+  sbBody.innerHTML = `<div class="row2" style="margin-top:0">
+      <button class="primary" id="joinTake">Block der Runde übernehmen</button></div>
+    <div class="row2"><button id="joinBring">Meine Blätter mitbringen</button></div>
+    <div class="note">Beim Übernehmen werden deine bisherigen Blätter gesichert –
+      du holst sie über den Coop-Knopf jederzeit zurück.<br>
+      Beim Mitbringen sehen alle in der Runde deine Blätter zusätzlich zu ihren.</div>
+    <div class="row2"><button id="doneBtn">Später entscheiden</button></div>`;
+  openBox();
+}
+function joinTake(){
+  try{ localStorage.setItem(BKEY, JSON.stringify(state.sheets)); }catch(e){}
+  state.sheets = askJoin;
+  state.activeId = (liveSheets()[0]||{}).id;
+  askJoin=null; lastSig=''; render(); saveLocal(); closeBox();
+}
+function joinBring(){
+  state.sheets = mergeAll(state.sheets, askJoin);
+  askJoin=null; lastSig=''; render(); saveLocal(); push(); closeBox();
+}
+function hasBackup(){ try{ return !!localStorage.getItem(BKEY); }catch(e){ return false; } }
+function restoreBackup(){
+  try{
+    const alt=JSON.parse(localStorage.getItem(BKEY)||'[]');
+    if(!alt.length) return;
+    state.sheets = mergeAll(state.sheets, alt);
+    localStorage.removeItem(BKEY);
+    lastSig=''; touched(); closeBox();
+  }catch(e){}
+}
 /* Coop-Dialog */
 function openCoop(){
   mode='coop'; sbFoot.style.display='none';
@@ -1766,6 +1810,7 @@ function openCoop(){
       <button id="syncBtn">Jetzt abgleichen</button></div>
       <div class="row2"><button id="leaveBtn">Runde verlassen</button></div>
       <div class="row2"><button class="primary" id="doneBtn">Fertig</button></div>
+      ${hasBackup()?'<div class="row2"><button id="restoreBtn">Gesicherte Blätter zurückholen</button></div>':''}
       <div class="diag" id="diag"></div>
       <div class="note">Version ${VERSION} – muss auf allen Handys gleich sein.<br>
       Wer den Code kennt, sieht und ändert den Block. Es läuft über einen
@@ -1776,6 +1821,7 @@ function openCoop(){
       <div class="note" style="text-align:center;margin:14px 0 8px">oder Code eines Freundes eingeben</div>
       <input class="codein" id="joinIn" maxlength="4" placeholder="CODE" autocapitalize="characters" autocomplete="off">
       <div class="row2"><button id="joinBtn">Beitreten</button><button id="doneBtn">Abbrechen</button></div>
+      ${hasBackup()?'<div class="row2"><button id="restoreBtn">Gesicherte Blätter zurückholen</button></div>':''}
       <div class="note">Version ${VERSION} – muss auf allen Handys gleich sein.<br>
       Danach darf jedes Gerät jede Spalte pflegen – du kannst also zwei Spieler
       führen, während zwei Freunde sich selbst eintragen.</div>`;
@@ -1851,6 +1897,9 @@ sbBody.addEventListener('click', e=>{
   if (b.dataset.enter)   return enterFromBoard(b.dataset.enter, +b.dataset.raw);
   if (b.id==='startBtn') return enterRoom(makeCode(), false);
   if (b.id==='joinBtn')  { const v=document.getElementById('joinIn').value.trim(); if(v.length>=4) enterRoom(v, true); return; }
+  if (b.id==='joinTake')  return joinTake();
+  if (b.id==='joinBring') return joinBring();
+  if (b.id==='restoreBtn') return restoreBackup();
   if (b.id==='syncBtn') { closeBox(); refresh(); return; }
   if (b.id==='leaveBtn') { leave(); closeBox(); return; }
   if (b.id==='shareBtn'){
