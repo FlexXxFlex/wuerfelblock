@@ -1,0 +1,2045 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#3f4372">
+<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Kniffel X">
+<meta name="description" content="Digitaler Kniffel-Extreme-Block mit automatischer Punkteberechnung und Coop-Modus">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAEPklEQVR4nO3cMXITQRRF0TbFvhw4JmEpDlkAyyFhgRC4pihUljVjj9yv77sndaI//2qQ5aEfHp+e/wwJ4svsFyCdyaCFYtBCMWihGLRQDFooBi0UgxaKQQvFoIVi0EIxaKEYtFAMWigGLRSDFopBC8WghWLQQjFooRi0UAxaKAYtFIMWikELxaCFYtBCMWihGLRQvs5+AWf6/evH7JewrG/ff85+Cad4WPk4XQO+n1UDXzJoQ/48q4W9VNCGPM8qYS8RtCHnSA87/lsOY86Svo/ooNMvXqvkvcQGnXzRlLufyKBTL5b+l7inuKATL5KuS9tXVNBpF0f7JO0tJuiki6LjUvYXE7R0hoigU97d+piEPUYELZ1letAJ72qdZ/Y+pwctnWnqw0mf+W5+7aGa2XeTe0mYddZDTKj/sfKaty7s9jNK2E2zXoMN+sgdYvVlN816C/Iz9Hv/uUt/1vc1TbPuMS1o6h1CL2btF3eH/uidZ6U7V9Ose+GCVjdU0GfdcVa4czXNegQqaMmghWLQQjFooaCCPuu7zxW+I2+a9QhU0BIu6I/ecVa6YzXNuhcuaHVDBv3eO8+Kd6ymWffAPj66LWzPX8JWX27TrLdgg968tWzacptmvQYf9KZloWN0zXoJ+RlavQxaKAYtFIMWikELxaCFYtBCMWihGLRQDFooBi0UgxaKQQvFoIVS8/ho0zPCTbNewgfddKp906zXYINuOtW+adZbkJ+hm061b5p1D2TQ6oULuulU+6ZZ98IFrW6ooJtOtW+a9QhU0JJBC8WghWLQQkEF3XSqfdOsR6CClnBBN51q3zTrXrig1Q0ZdNOp9k2z7oF9fLTpVPumWW/BBr1pOtW+adZr8EFvWhY6Rtesl5CfodXLoIVi0EIxaKEYtFAMWigGLRSDFopBC8WghWLQQjFooRi0UGqetmt6pLJp1kv4oJsOAW+a9Rps0E2HgDfNegvyM3TTIeBNs+6BDFq9cEE3HQLeNOteuKDVDRV00yHgTbMegQpaMmihGLRQDFooqKCbDgFvmvUIVNASLuimQ8CbZt0LF7S6TQv6nl/oNx0CnjrrrD/YYB8fbToEvGnWW7BBb5oOAW+a9Rp80JuWhY7RNeulqb8U0h6M0YuZe/VbDqFMD9q7NMvsfU4PWjpTRNCz39U6R8IeI4KWzhITdMK7W++Xsr+YoMfIuSg6JmlvUUGPkXVxdFvavuKCHiPvIul1iXuKDHqMzIulf1L3Exv0GLkXrV3yXqKDHiP74jVK38fD49Pzn9kvYq/mp8hmSw95s1TQG8P+PKuEvFky6I1h389qIW+WDvqSgb/fqgFfQgUtxX/LIR1h0EIxaKEYtFAMWigGLRSDFopBC8WghWLQQjFooRi0UAxaKAYtFIMWikELxaCFYtBCMWihGLRQDFooBi0UgxaKQQvFoIVi0EIxaKEYtFD+AhGbaG50k1dVAAAAAElFTkSuQmCC">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAEPklEQVR4nO3cMXITQRRF0TbFvhw4JmEpDlkAyyFhgRC4pihUljVjj9yv77sndaI//2qQ5aEfHp+e/wwJ4svsFyCdyaCFYtBCMWihGLRQDFooBi0UgxaKQQvFoIVi0EIxaKEYtFAMWigGLRSDFopBC8WghWLQQjFooRi0UAxaKAYtFIMWikELxaCFYtBCMWihGLRQvs5+AWf6/evH7JewrG/ff85+Cad4WPk4XQO+n1UDXzJoQ/48q4W9VNCGPM8qYS8RtCHnSA87/lsOY86Svo/ooNMvXqvkvcQGnXzRlLufyKBTL5b+l7inuKATL5KuS9tXVNBpF0f7JO0tJuiki6LjUvYXE7R0hoigU97d+piEPUYELZ1letAJ72qdZ/Y+pwctnWnqw0mf+W5+7aGa2XeTe0mYddZDTKj/sfKaty7s9jNK2E2zXoMN+sgdYvVlN816C/Iz9Hv/uUt/1vc1TbPuMS1o6h1CL2btF3eH/uidZ6U7V9Ose+GCVjdU0GfdcVa4czXNegQqaMmghWLQQjFooaCCPuu7zxW+I2+a9QhU0BIu6I/ecVa6YzXNuhcuaHVDBv3eO8+Kd6ymWffAPj66LWzPX8JWX27TrLdgg968tWzacptmvQYf9KZloWN0zXoJ+RlavQxaKAYtFIMWikELxaCFYtBCMWihGLRQDFooBi0UgxaKQQvFoIVS8/ho0zPCTbNewgfddKp906zXYINuOtW+adZbkJ+hm061b5p1D2TQ6oULuulU+6ZZ98IFrW6ooJtOtW+a9QhU0JJBC8WghWLQQkEF3XSqfdOsR6CClnBBN51q3zTrXrig1Q0ZdNOp9k2z7oF9fLTpVPumWW/BBr1pOtW+adZr8EFvWhY6Rtesl5CfodXLoIVi0EIxaKEYtFAMWigGLRSDFopBC8WghWLQQjFooRi0UGqetmt6pLJp1kv4oJsOAW+a9Rps0E2HgDfNegvyM3TTIeBNs+6BDFq9cEE3HQLeNOteuKDVDRV00yHgTbMegQpaMmihGLRQDFooqKCbDgFvmvUIVNASLuimQ8CbZt0LF7S6TQv6nl/oNx0CnjrrrD/YYB8fbToEvGnWW7BBb5oOAW+a9Rp80JuWhY7RNeulqb8U0h6M0YuZe/VbDqFMD9q7NMvsfU4PWjpTRNCz39U6R8IeI4KWzhITdMK7W++Xsr+YoMfIuSg6JmlvUUGPkXVxdFvavuKCHiPvIul1iXuKDHqMzIulf1L3Exv0GLkXrV3yXqKDHiP74jVK38fD49Pzn9kvYq/mp8hmSw95s1TQG8P+PKuEvFky6I1h389qIW+WDvqSgb/fqgFfQgUtxX/LIR1h0EIxaKEYtFAMWigGLRSDFopBC8WghWLQQjFooRi0UAxaKAYtFIMWikELxaCFYtBCMWihGLRQDFooBi0UgxaKQQvFoIVi0EIxaKEYtFD+AhGbaG50k1dVAAAAAElFTkSuQmCC">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%20%22Kniffel%20Extreme%20%E2%80%93%20Block%22%2C%20%22short_name%22%3A%20%22Kniffel%20X%22%2C%20%22start_url%22%3A%20%22.%22%2C%20%22scope%22%3A%20%22.%22%2C%20%22display%22%3A%20%22standalone%22%2C%20%22orientation%22%3A%20%22portrait%22%2C%20%22background_color%22%3A%20%22%23f2f1ec%22%2C%20%22theme_color%22%3A%20%22%233f4372%22%2C%20%22icons%22%3A%20%5B%7B%22src%22%3A%20%22data%3Aimage/png%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAEPklEQVR4nO3cMXITQRRF0TbFvhw4JmEpDlkAyyFhgRC4pihUljVjj9yv77sndaI//2qQ5aEfHp%2Be/wwJ4svsFyCdyaCFYtBCMWihGLRQDFooBi0UgxaKQQvFoIVi0EIxaKEYtFAMWigGLRSDFopBC8WghWLQQjFooRi0UAxaKAYtFIMWikELxaCFYtBCMWihGLRQvs5%2BAWf6/evH7JewrG/ff85%2BCad4WPk4XQO%2Bn1UDXzJoQ/48q4W9VNCGPM8qYS8RtCHnSA87/lsOY86Svo/ooNMvXqvkvcQGnXzRlLufyKBTL5b%2Bl7inuKATL5KuS9tXVNBpF0f7JO0tJuiki6LjUvYXE7R0hoigU97d%2BpiEPUYELZ1letAJ72qdZ/Y%2BpwctnWnqw0mf%2BW5%2B7aGa2XeTe0mYddZDTKj/sfKaty7s9jNK2E2zXoMN%2BsgdYvVlN816C/Iz9Hv/uUt/1vc1TbPuMS1o6h1CL2btF3eH/uidZ6U7V9Ose%2BGCVjdU0GfdcVa4czXNegQqaMmghWLQQjFooaCCPuu7zxW%2BI2%2Ba9QhU0BIu6I/ecVa6YzXNuhcuaHVDBv3eO8%2BKd6ymWffAPj66LWzPX8JWX27TrLdgg968tWzacptmvQYf9KZloWN0zXoJ%2BRlavQxaKAYtFIMWikELxaCFYtBCMWihGLRQDFooBi0UgxaKQQvFoIVS8/ho0zPCTbNewgfddKp906zXYINuOtW%2BadZbkJ%2Bhm061b5p1D2TQ6oULuulU%2B6ZZ98IFrW6ooJtOtW%2Ba9QhU0JJBC8WghWLQQkEF3XSqfdOsR6CClnBBN51q3zTrXrig1Q0ZdNOp9k2z7oF9fLTpVPumWW/BBr1pOtW%2BadZr8EFvWhY6Rtesl5CfodXLoIVi0EIxaKEYtFAMWigGLRSDFopBC8WghWLQQjFooRi0UGqetmt6pLJp1kv4oJsOAW%2Ba9Rps0E2HgDfNegvyM3TTIeBNs%2B6BDFq9cEE3HQLeNOteuKDVDRV00yHgTbMegQpaMmihGLRQDFooqKCbDgFvmvUIVNASLuimQ8CbZt0LF7S6TQv6nl/oNx0CnjrrrD/YYB8fbToEvGnWW7BBb5oOAW%2Ba9Rp80JuWhY7RNeulqb8U0h6M0YuZe/VbDqFMD9q7NMvsfU4PWjpTRNCz39U6R8IeI4KWzhITdMK7W%2B%2BXsr%2BYoMfIuSg6JmlvUUGPkXVxdFvavuKCHiPvIul1iXuKDHqMzIulf1L3Exv0GLkXrV3yXqKDHiP74jVK38fD49Pzn9kvYq/mp8hmSw95s1TQG8P%2BPKuEvFky6I1h389qIW%2BWDvqSgb/fqgFfQgUtxX/LIR1h0EIxaKEYtFAMWigGLRSDFopBC8WghWLQQjFooRi0UAxaKAYtFIMWikELxaCFYtBCMWihGLRQDFooBi0UgxaKQQvFoIVi0EIxaKEYtFD%2BAhGbaG50k1dVAAAAAElFTkSuQmCC%22%2C%20%22sizes%22%3A%20%22180x180%22%2C%20%22type%22%3A%20%22image/png%22%7D%2C%20%7B%22src%22%3A%20%22data%3Aimage/png%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAAPtElEQVR4nO3dMXYbxxKGUeod7kuBYiVcikIugMthwgXqBT6yaYk0CWCmu6r%2Be2Pb6HH3FL4ZWMdfvn778fMOAIjyv90LAADWEwAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEOh%2B9wKY6eX5cfcSYJTvD0%2B7l8AwX75%2B%2B/Fz9yLoyxc97CUMuJYA4CK%2B8KE2QcBnCQD%2Bky986E0Q8B4BwJt88cMsQoDfCQD%2B5ksfMogB7u4EAHe%2B%2BCGVEMgmAIL54gfu7oRAKgEQyBc/8BYhkEUABPHFD3yGEMggAAL44geuIQRm8/8CGM6XP3At82M2bwCGcuMCR/I2YB5vAAby5Q8czVyZRwAM4yYFzmK%2BzOIngCHcmMBKfhLozxuAAXz5A6uZO/0JgObchMAu5k9vAqAxNx%2BwmznUlwBoyk0HVGEe9SQAGnKzAdWYS/0IgGbcZEBV5lMvAqARNxdQnTnVhwBowk0FdGFe9SAAGnAzAd2YW/UJgOLcREBX5ldtAqAwNw/QnTlWlwAoyk0DTGGe1SQAACCQAChILQPTmGv1CIBi3CTAVOZbLQKgEDcHMJ05V4cAAIBAAqAIVQykMO9qEAAFuBmANObefgIAAAIJgM1UMJDK/NtLAABAIAGwkfoF0pmD%2BwgAAAgkADZRvQB/MQ/3EAAAEEgAbKB2Af7NXFxPAABAIAGwmMoFeJv5uJYAAIBA97sXAG/5/vD06b/WUwM7OKN09%2BXrtx8/dy8ihSHwvkuG6Uf8e%2BYMzug6R/675n3eALDVGTf6r3%2BmIcsRnFGm8gZgETf6v60sfP/uuYYzupe3AOfzBoCldtzUnra4hDNKCn8KgGV2F/3uz6e%2B3Wdk9%2BeTRQCwRJXBVmUd1FPlbFRZB/P5bwAWSH6tV3mYJe8L/3BG66q8NxN4A8Bpqt%2B81dfH%2BaqfgerrozcBwCm6DK4u6%2BR4Xfa%2ByzrpRwAAQCABcLLE3/C6PbF0Wy%2B367bn3dZ7lMT5uZIA4FBdB1XXdXO5rnvddd3UJQA4TPcB1X39fKz7HndfP7UIAAAIJAA4xJQnkynXwZ%2Bm7O2U62A/AQAAgQTAiVL%2BC9ZpTyTTrod5ezrtev5LyhzdQQAAQCABwE2mPolMva5EU/dy6nWxjgAAgEACAAACCQAACCQAuNr03yCnX1%2BC6Xs4/fo4lwAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkArvby/Lh7Caeafn0Jpu/h9OvjXAIAAAIJAAAIJAAAIJAA4CZTf4Ocel2Jpu7l1OtiHQEAAIEEADeb9iQy7XqYt6fTroc9BAAABBIAHGLKE8mU6%2BBPU/Z2ynWwnwAAgEACgMN0fzLpvn4%2B1n2Pu6%2BfWgQAh%2Bo6oLqum8t13euu66YuAcDhug2qbuvldt32vNt66UEAAEAgAcApujyxdFknx%2Buy913WST8CgNNUH1zV18f5qp%2BB6uujt/vdC2C2XwPs%2B8PT5pX8w1DlNWeUVN4AsESVgVZlHdRT5WxUWQfzCQCW2T3Ydn8%2B9e0%2BI7s/nyx%2BAmCpHa9bDVUu4YySQgCwxYoha6hyC2eU6QQAW50xZA1VjuSMMpUAoITfB%2BIlw9YwZQVnlGkEACUZmFTnjNKdPwUAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIHudy8A3vL94enTf%2B3L8%2BOJK4G3OaN0JwAo4ZJh%2BtHfa9hyBmeUaQQAW90yVD/6ZxqyHMEZZSoBwBZnDNX3PsOQ5RrOKNMJAJZaMVTf%2B0xDls9wRknhTwGwzI7BWunzqW/3Gdn9%2BWQRACxRZbBVWQf1VDkbVdbBfH4C4FQVh5nXrbzmjJLKGwBOU3GwvlZ9fZyv%2Bhmovj56EwCcosvg6rJOjtdl77usk34EAAAEEgAcrtsTS7f1crtue95tvfQgADhU10HVdd1cruted103dQkADtN9QHVfPx/rvsfd108tAgAAAgkADjHlyWTKdfCnKXs75TrYTwAAQCABwM2mPZFMux7m7em062EPAQAAgQQAN5n6JDL1uhJN3cup18U6AgAAAgkAAAgkAAAgkADgatN/g5x%2BfQmm7%2BH06%2BNcAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAC42svz4%2B4lnGr69SWYvofTr49zCQAACCQAACCQAACAQAKAm0z9DXLqdSWaupdTr4t1BAAABBIA3Gzak8i062Henk67HvYQAAAQSABwiClPJFOugz9N2dsp18F%2BAgAAAgkADtP9yaT7%2BvlY9z3uvn5qEQAcquuA6rpuLtd1r7uum7oEAIfrNqi6rZfbddvzbuulBwEAAIEEAKfo8sTSZZ0cr8ved1kn/QgATlN9cFVfH%2Berfgaqr4/e7ncvgNl%2BDbDvD0%2BbV/IPQ5XXnFFSeQPAElUGWpV1UE%2BVs1FlHcwnAFhm92Db/fnUt/uM7P58svgJgKV2vG41VLmEM0oKAcAWK4asocotnFGmEwBsdcaQNVQ5kjPKVAKAEn4fiJcMW8OUFZxRphEAlGRgUp0zSnf%2BFAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACB7ncvAN7y/eHp03/ty/PjiSuBtzmjdCcAKOGSYfrR32vYcgZnlGkEAFvdMlQ/%2BmcashzBGWUqAcAWZwzV9z7DkOUazijTCQCWWjFU3/tMQ5bPcEZJ4U8BsMyOwVrp86lv9xnZ/flkEQAsUWWwVVkH9VQ5G1XWwXx%2BAuBUFYeZ16285oySyhsATlNxsL5WfX2cr/oZqL4%2BehMAnKLL4OqyTo7XZe%2B7rJN%2BBAAABBIAHK7bE0u39XK7bnvebb30IAA4VNdB1XXdXK7rXnddN3UJAA7TfUB1Xz8f677H3ddPLQIAAAIJAA4x5clkynXwpyl7O%2BU62E8AAEAgAcDNpj2RTLse5u3ptOthDwEAAIEEADeZ%2BiQy9boSTd3LqdfFOgIAAAIJAAAIJAAAIJAA4GrTf4Ocfn0Jpu/h9OvjXAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAuNrL8%2BPuJZxq%2BvUlmL6H06%2BPcwkAAAgkAAAgkAAAgEACgJtM/Q1y6nUlmrqXU6%2BLdQQAAAQSANxs2pPItOth3p5Oux72EAAn%2Bv7wtHsJAK2Zo%2BcRABxiyhPJlOvgT1P2dsp1sJ8AAIBAAoDDdH8y6b5%2BPtZ9j7uvn1oEAIfqOqC6rpvLdd3rruumLgHA4boNqm7r5Xbd9rzbeulBAJzMf8EKcB3z81wCgFN0eWLpsk6O12Xvu6yTfgQAp6k%2BuKqvj/NVPwPV10dv97sXwGy/BlilV3mGKq85o6TyBmCBSoNllyoDrco6qKfK2aiyjt3MzfMJAJbZPdh2fz717T4juz%2BfLH4CYKkdr1sNVS7hjJJCALDFiiFrqHILZ5Tpvnz99uPn7kWkcLO/78gh698zZ3BG1/H7/xreAFDC7wPxkgFgmLKCM8o03gAsZhAAvM/T/zr%2BFAAABBIAABBIACzm9RbA28zHtQQAAAQSABuoXIB/MxfXEwAAEEgAbKJ2Af5iHu4hAAAgkADYSPUC6czBfQQAAAQSAJupXyCV%2BbeXAACAQAKgABUMpDH39hMARbgZgBTmXQ0CAAACCYBCVDEwnTlXhwAoxs0BTGW%2B1SIACnKTANOYa/UIAAAIJACKUsvAFOZZTQKgMDcN0J05VpcAKM7NA3RlftUmABpwEwHdmFv1CYAm3ExAF%2BZVDwKgETcVUJ051YcAaMbNBVRlPvUiABpykwHVmEv9CICm3GxAFeZRTwKgMTcdsJs51JcAaM7NB%2Bxi/vQmAAZwEwKrmTv9ffn67cfP3YvgOC/Pj7uXAAzmi38ObwCGcXMCZzFfZhEAA7lJgaOZK/P4CWA4PwkAt/DFP5c3AMO5eYFrmR%2BzeQMQxNsA4DN88WcQAIGEAPAWX/xZBEAwIQDc3fniTyUAEAIQyhd/NgHA34QAZPDFz92dAOAdYgBm8aXP7wQA/0kIQG%2B%2B%2BHmPAOAiggBq84XPZwkAbiIIYC9f%2BFxLAHAKYQDH8kXP0QQAAATy/wIAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgED/B2kH596rBeobAAAAAElFTkSuQmCC%22%2C%20%22sizes%22%3A%20%22512x512%22%2C%20%22type%22%3A%20%22image/png%22%2C%20%22purpose%22%3A%20%22any%20maskable%22%7D%5D%7D">
+<title>Kniffel Extreme – Block</title>
+<style>
+:root{
+  --paper:#f2f1ec; --card:#ffffff; --ink:#3f4372; --ink-soft:#7e82a8;
+  --rule:#b9bcd4; --rule-soft:#dcdeea; --shade:#e6e7f0; --pencil:#2b2f52;
+  --ok:#2f7d5e; --live:#2f9e6e; --warn:#c8442f;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%;overflow:hidden}
+body{background:var(--paper);color:var(--ink);
+  font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;font-size:15px;padding-bottom:92px}
+.wrap{max-width:900px;margin:0 auto;height:100vh;height:100dvh;
+  display:flex;flex-direction:column;
+  padding:calc(4px + env(safe-area-inset-top)) calc(8px + env(safe-area-inset-right)) 0
+          calc(8px + env(safe-area-inset-left))}
+
+/* Schmale Leiste unter der Statusleiste – bleibt beim Scrollen stehen */
+.mini{display:flex;align-items:center;gap:8px;padding:2px 2px 6px;flex:0 0 auto}
+.mini .now{border:1.5px solid var(--rule);background:var(--card);color:var(--ink);
+  border-radius:999px;padding:5px 12px;font:800 12px inherit;cursor:pointer;white-space:nowrap}
+/* Kopfbereich klappt beim Scrollen weg */
+.bighead{flex:0 0 auto;overflow:hidden;max-height:260px;
+  transition:max-height .24s ease, opacity .18s ease}
+.bighead.hide{max-height:0;opacity:0}
+
+header.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:2px 4px 6px;flex:0 0 auto}
+.logo{font-size:24px;line-height:.95;font-weight:800;letter-spacing:-1px;font-style:italic}
+.logo b{font-style:normal}
+.logo small{display:block;font-size:9.5px;font-weight:600;letter-spacing:2px;font-style:normal;color:var(--ink-soft);margin-top:2px}
+.stamp{border:1.5px solid var(--ink);border-radius:5px;padding:3px 6px;text-align:center;font-size:8px;letter-spacing:1px;font-weight:700;flex:0 0 auto}
+.stamp span{display:block;font-size:15px;font-style:italic;line-height:1}
+.byfoot{display:inline-block;margin-top:4px;font-size:10.5px;letter-spacing:1px;
+  color:var(--ink-soft);opacity:.8}
+.byfoot b{font-weight:800;color:var(--ink);letter-spacing:0}
+
+.coopbar{display:flex;align-items:center;gap:8px;padding:0 4px 8px;flex:0 0 auto}
+#coopChip{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--rule);background:var(--card);
+  border-radius:999px;padding:7px 13px;font:700 12.5px inherit;color:var(--ink-soft);cursor:pointer}
+#coopChip .dot{width:8px;height:8px;border-radius:50%;background:#c3c6d8;flex:0 0 auto}
+#coopChip.live{color:var(--ink);border-color:var(--live)}
+#coopChip.live .dot{background:var(--live);animation:pulse 2s infinite}
+#coopChip.wait .dot{background:#e0a83c}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:0 4px 8px;scrollbar-width:none;flex:0 0 auto}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:1.5px solid var(--rule);background:var(--card);color:var(--ink-soft);
+  border-radius:999px;padding:7px 14px;font:700 13px inherit;cursor:pointer;white-space:nowrap}
+.tab.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.tab.add{border-style:dashed;font-weight:800}
+
+/* Dieser Bereich scrollt – dadurch bleibt die Namenszeile oben kleben */
+.scroller{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;
+  padding-bottom:104px;overscroll-behavior:none}
+table{border-collapse:separate;border-spacing:0;width:100%;background:var(--card)}
+th,td{border-right:1px solid var(--rule-soft);border-bottom:1px solid var(--rule-soft)}
+thead th{background:var(--shade);padding:5px 3px;text-align:center;position:sticky;top:0;z-index:3;
+  vertical-align:top;box-shadow:0 2px 0 var(--rule)}
+th.lbl{position:sticky;left:0;top:0;z-index:5;text-align:left;padding:10px 6px 10px 8px;
+  width:126px;min-width:126px;max-width:126px;font:800 10px/1.3 inherit;letter-spacing:1.5px;color:var(--ink)}
+th.pcol{width:78px;min-width:78px;position:sticky;top:0;z-index:3}
+th.pcol input{width:100%;border:none;border-bottom:1.5px solid var(--rule);background:transparent;
+  font:800 12px inherit;color:var(--pencil);text-align:center;padding:14px 2px 4px;min-width:0}
+th.pcol input:focus{outline:none;border-bottom-color:var(--ink)}
+th.pcol .kill{position:absolute;top:2px;right:3px;border:none;background:none;color:#adb0c8;font-size:12px;line-height:1;cursor:pointer;padding:2px 4px}
+th.addcol{width:44px;min-width:44px}
+th.addcol button{border:1.5px dashed var(--rule);background:var(--card);color:var(--ink-soft);
+  border-radius:8px;width:32px;height:32px;font:800 16px inherit;cursor:pointer;margin-top:6px}
+
+td.lbl{position:sticky;left:0;z-index:2;background:var(--card);width:126px;min-width:126px;max-width:126px;
+  padding:5px 6px 5px 8px;border-right:2px solid var(--rule)}
+td.lbl .n{display:block;font-size:12.5px;font-weight:700;line-height:1.15}
+td.lbl .h{display:block;font-size:9.5px;color:var(--ink-soft);font-weight:600;margin-top:1px}
+td.lbl .h.d{display:flex;align-items:center;gap:5px;margin-top:2px}
+td.cell{width:78px;min-width:78px;height:38px;text-align:center;cursor:pointer;
+  font:700 16px/1 "Avenir Next",system-ui,sans-serif;color:var(--pencil);position:relative}
+td.cell:active{background:#eef0fa}
+@keyframes hlMine{from{background:#e3e7fb}to{background:transparent}}
+@keyframes hlTheirs{from{background:#c9edda}to{background:transparent}}
+td.cell.hl-mine{animation:hlMine 1.1s ease-out}
+td.cell.hl-theirs{animation:hlTheirs 4.5s ease-out}
+td.cell.hl-theirs::before{content:'';position:absolute;top:3px;left:4px;width:5px;height:5px;
+  border-radius:50%;background:var(--live);animation:hlDot 4.5s ease-out forwards}
+@keyframes hlDot{0%,60%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){
+  td.cell.hl-mine,td.cell.hl-theirs{animation-duration:.01s}
+  td.cell.hl-theirs{background:#eaf7f0}
+}
+/* Gestrichenes Feld: gezeichneter Strich, so kräftig wie die Ziffern */
+td.cell .zero{display:inline-block;width:16px;height:2.6px;border-radius:2px;
+  background:#a9adc6;font-size:0;line-height:0;vertical-align:middle}
+td.cell .dbl{display:block;font-size:8.5px;color:var(--ink-soft);font-weight:700;margin-top:1px}
+td.pad{background:var(--paper);border:none}
+tr.sum td{background:var(--shade);font-weight:800;cursor:default}
+tr.sum td.lbl{background:var(--shade)}
+tr.sum td.cell{color:var(--ink)}
+tr.total td{background:var(--ink);color:#fff;border-color:#5a5e8c}
+tr.total td.lbl{background:var(--ink)}
+tr.total td.lbl .n{color:#fff}
+tr.total td.cell{color:#fff;font-size:17px}
+tr.total td.cell.lead{color:#ffd873}
+tr.total td.cell.lead::after{content:'★';position:absolute;top:2px;right:5px;font-size:9px;color:#ffd873}
+tr.bonus td.cell.hit{color:var(--ok)}
+tr.gap td{height:12px;border:none;background:var(--paper)}
+.dice{display:inline-flex;gap:2px;vertical-align:middle;flex:0 0 auto}
+.die{width:9px;height:9px;border:1px solid var(--ink-soft);border-radius:2px;display:grid;place-items:center}
+.die i{width:2px;height:2px;background:var(--ink-soft);border-radius:50%;display:block}
+
+footer{position:fixed;left:0;right:0;bottom:0;background:rgba(242,241,236,.95);backdrop-filter:blur(8px);
+  border-top:1.5px solid var(--rule);padding:8px 12px calc(8px + env(safe-area-inset-bottom));
+  display:flex;align-items:center;justify-content:space-between;gap:10px}
+footer .lead-l{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--ink-soft)}
+footer .val{font-size:20px;font-weight:800;line-height:1.15}
+footer .btns{display:flex;gap:6px}
+footer button{border:1.5px solid var(--rule);background:var(--card);color:var(--ink);
+  border-radius:9px;padding:9px 11px;font:700 13px inherit;cursor:pointer}
+footer button.primary{background:var(--ink);border-color:var(--ink);color:#fff}
+
+.veil{position:fixed;inset:0;background:rgba(30,32,58,.45);display:none;z-index:20}
+.veil.on{display:block}
+.sheetbox{position:fixed;left:0;right:0;bottom:0;z-index:21;background:var(--card);
+  border-radius:18px 18px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom));
+  transform:translateY(110%);transition:transform .22s ease;box-shadow:0 -8px 30px rgba(40,42,70,.25);
+  max-width:760px;margin:0 auto}
+.sheetbox.on{transform:translateY(0)}
+.sheetbox h3{margin:0;font-size:17px;font-weight:800}
+.sheetbox .sub{font-size:12px;color:var(--ink-soft);font-weight:700;margin:2px 0 14px}
+.opts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.opts button{border:1.5px solid var(--rule);background:var(--paper);border-radius:10px;
+  padding:13px 4px;font:800 17px inherit;color:var(--pencil);cursor:pointer}
+.opts button.big{grid-column:span 2}
+.opts button.strike{color:#a9adc6;font-weight:600}
+.opts button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.numrow{display:flex;gap:8px;margin-bottom:10px}
+.numrow input{flex:1;border:1.5px solid var(--rule);border-radius:10px;padding:12px;
+  font:800 22px inherit;text-align:center;color:var(--pencil);background:var(--paper)}
+.numrow input:focus{outline:none;border-color:var(--ink)}
+.row2{display:flex;gap:8px;margin-top:12px}
+.row2 button{flex:1;border-radius:10px;padding:12px;font:800 14px inherit;cursor:pointer;
+  border:1.5px solid var(--rule);background:var(--paper);color:var(--ink)}
+.row2 .primary{background:var(--ink);border-color:var(--ink);color:#fff}
+.hint{font-size:11px;color:var(--ink-soft);text-align:center;padding:14px 4px 0;font-weight:600;line-height:1.6}
+
+/* Coop-Dialog */
+.code{font:800 34px/1 "Avenir Next",system-ui,sans-serif;letter-spacing:6px;text-align:center;
+  color:var(--ink);background:var(--paper);border:2px dashed var(--rule);border-radius:12px;padding:16px 8px;margin-bottom:12px}
+.codein{width:100%;border:1.5px solid var(--rule);border-radius:10px;padding:13px;text-align:center;
+  font:800 22px inherit;letter-spacing:5px;text-transform:uppercase;color:var(--pencil);background:var(--paper)}
+.codein:focus{outline:none;border-color:var(--ink)}
+.note{font-size:11.5px;color:var(--ink-soft);font-weight:600;line-height:1.55;margin-top:12px}
+.status{font-size:12px;font-weight:700;text-align:center;margin-top:10px;color:var(--ink-soft);min-height:16px}
+@media (prefers-reduced-motion:reduce){.sheetbox{transition:none}}
+td.cell.need{color:#c8442f}
+td.cell.dead{color:#b7bad0}
+tr.bonus td.cell,tr.sum td.cell{cursor:pointer}
+.bonusbig{font:800 32px/1.1 "Avenir Next",system-ui,sans-serif;text-align:center;color:var(--warn);margin-bottom:4px}
+.bonusbig.ok{color:var(--ok)}
+.bonusbig.dead{color:var(--ink-soft)}
+.bsub{text-align:center;font:700 12.5px inherit;color:var(--ink-soft);margin-bottom:14px}
+.blist div{background:var(--paper);border:1.5px solid var(--rule);border-radius:10px;
+  padding:11px 12px;margin-bottom:7px;font:700 13.5px inherit;color:var(--pencil)}
+.blist div span{float:right;color:var(--ink-soft);font-weight:800}
+
+/* ---------- Endstand mit Podest ---------- */
+.finalwrap{margin:2px 0 4px}
+.finalwrap svg{width:100%;height:auto;display:block}
+.franks{margin-top:10px}
+.frank{display:flex;align-items:center;gap:10px;border:1.2px solid var(--rule);border-radius:9px;
+  padding:8px 12px;margin-bottom:6px;background:var(--card)}
+.frank .pl{font:800 12px inherit;color:var(--ink-soft);min-width:16px}
+.frank .nm{flex:1;min-width:0;font:700 13.5px inherit;color:var(--pencil);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.frank .pt{font:800 14px inherit;color:var(--ink)}
+
+/* ---------- Farben für die Spalten ---------- */
+body.tint tr:not(.sum):not(.total) td.cell.p0{background:#eaf1fb}
+body.tint tr:not(.sum):not(.total) td.cell.p1{background:#f7eef6}
+body.tint tr:not(.sum):not(.total) td.cell.p2{background:#eaf6ee}
+body.tint tr:not(.sum):not(.total) td.cell.p3{background:#fdf3e6}
+body.tint tr:not(.sum):not(.total) td.cell.p4{background:#efedfa}
+body.tint tr:not(.sum):not(.total) td.cell.p5{background:#fdedef}
+body.tint th.pcol.p0{background:#dfe9f7}
+body.tint th.pcol.p1{background:#f1e4ef}
+body.tint th.pcol.p2{background:#dff0e5}
+body.tint th.pcol.p3{background:#f9e9d5}
+body.tint th.pcol.p4{background:#e6e2f5}
+body.tint th.pcol.p5{background:#f9e0e4}
+.mini .now.off{color:var(--ink-soft);opacity:.7}
+
+/* ---------- Hinweis auf eine neue Version ---------- */
+#upbar{display:none;align-items:center;gap:10px;margin:0 2px 8px;padding:9px 12px;
+  background:var(--ink);color:#fff;border-radius:10px;flex:0 0 auto}
+#upbar.on{display:flex}
+#upbar .t{flex:1;min-width:0;font:700 11.5px inherit;line-height:1.4}
+#upbar .t b{display:block;font-size:12.5px;font-weight:800}
+#upbar .t i{font-style:normal;opacity:.75}
+#upbar button{border:none;background:#fff;color:var(--ink);border-radius:8px;
+  padding:9px 13px;font:800 12.5px inherit;cursor:pointer;flex:0 0 auto}
+
+/* ---------- Zum Aktualisieren ziehen ---------- */
+#pullbar{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top) + 6px);z-index:15;
+  display:flex;justify-content:center;pointer-events:none;opacity:0;
+  transform:translateY(-14px);transition:opacity .15s ease}
+#pullbar span{display:inline-flex;align-items:center;gap:7px;background:var(--ink);color:#fff;
+  border-radius:999px;padding:7px 14px;font:700 12px inherit;
+  box-shadow:0 4px 14px rgba(40,42,70,.28)}
+#pullbar i{width:9px;height:9px;border-radius:50%;border:2px solid rgba(255,255,255,.45);
+  border-top-color:#fff;display:none}
+#pullbar.busy i{display:block;animation:spin .7s linear infinite}
+#pullbar.snap{transition:transform .25s ease, opacity .2s ease}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- Würfelbrett ---------- */
+.sheetbox{max-height:94vh;overflow-y:auto}
+.board{position:relative;width:100%;max-width:330px;margin:0 auto 6px;touch-action:none;
+  perspective:760px;perspective-origin:50% 34%}
+.board svg.hex{position:absolute;left:0;top:0;filter:drop-shadow(0 6px 14px rgba(30,32,60,.28))}
+.cup{position:absolute;border-radius:16px;border:2px dashed transparent;transition:border-color .15s}
+.cup.over{border-color:#c9a24a}
+.cup svg{position:absolute;inset:0;width:100%;height:100%}
+.cupg{transform-box:fill-box;transform-origin:50% 16%}
+.cupg.pour{animation:pour .52s cubic-bezier(.3,.6,.4,1)}
+@keyframes pour{0%{transform:rotate(0)}18%{transform:rotate(11deg)}
+  52%{transform:rotate(-54deg)}78%{transform:rotate(-41deg)}100%{transform:rotate(0)}}
+.caption{position:absolute;font:700 10.5px inherit;color:var(--ink-soft);text-align:center;width:100%}
+
+.wd{position:absolute;left:0;top:0;width:42px;height:42px;transform-style:preserve-3d;cursor:grab}
+.wd.grab{z-index:9;cursor:grabbing}
+.sh{position:absolute;left:5px;top:31px;width:32px;height:10px;border-radius:50%;
+  background:radial-gradient(ellipse at center,rgba(12,14,30,.5) 0%,rgba(12,14,30,0) 72%)}
+.body{position:absolute;inset:0;transform-style:preserve-3d}
+.f{position:absolute;backface-visibility:hidden}
+
+.f6{width:42px;height:42px;background-size:100% 100%}
+.f10{backface-visibility:hidden;box-shadow:inset 0 0 0 .9px rgba(120,8,20,.9)}
+.f10 b{position:absolute;left:0;right:0;font:800 13.5px "Avenir Next",system-ui,sans-serif;
+  color:#fff;text-align:center;letter-spacing:.5px;text-shadow:0 1px 2px rgba(80,0,8,.8)}
+
+.ring{position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.7);opacity:0;pointer-events:none}
+.ring.go{animation:ripple .42s ease-out}
+@keyframes ripple{0%{opacity:.85;transform:scale(.3)}100%{opacity:0;transform:scale(2.6)}}
+
+.dicehint{text-align:center;font-size:11px;color:var(--ink-soft);font-weight:600;margin:8px 0 10px}
+.plrow{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none}
+.plrow::-webkit-scrollbar{display:none}
+.plrow button{flex:0 0 auto;border:1.5px solid var(--rule);background:var(--card);color:var(--ink-soft);
+  border-radius:999px;padding:6px 12px;font:700 12px inherit;cursor:pointer}
+.plrow button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.sugg{max-height:34vh;overflow-y:auto;margin-top:4px}
+.sugg button{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;
+  background:var(--paper);border:1.5px solid var(--rule);border-radius:10px;padding:10px 12px;
+  margin-bottom:6px;font:inherit;cursor:pointer;text-align:left}
+.sugg button.top{border-color:var(--ink);background:#eef0fa}
+.sugg .nm{font:700 13.5px inherit;color:var(--pencil)}
+.sugg .ex{display:block;font:600 10.5px inherit;color:var(--ink-soft);margin-top:1px}
+.sugg .pt{font:800 16px inherit;color:var(--ink);flex:0 0 auto}
+.sugg .pt.nil{color:#b7bad0;font-size:13px}
+#diceStrip{display:flex;align-items:center;gap:8px;margin:0 4px 8px;padding:7px 10px;
+  border:1.5px solid var(--live);border-radius:10px;background:#eefaf4}
+#diceStrip .who{font:700 11.5px inherit;color:var(--ok);flex:0 0 auto}
+#diceStrip .mini{display:flex;gap:3px;flex-wrap:wrap;flex:1}
+#diceStrip .x{border:none;background:none;color:var(--ok);font:800 15px inherit;
+  line-height:1;padding:2px 4px;cursor:pointer;flex:0 0 auto;opacity:.7}
+#diceStrip .mini span{min-width:17px;height:19px;border-radius:4px;border:1px solid var(--rule);
+  background:var(--card);font:800 11px/17px inherit;text-align:center;color:var(--pencil)}
+#diceStrip .mini span.x{border-radius:50%;background:var(--paper)}
+footer .val{font-size:16px}
+footer button{padding:9px 9px;font-size:12.5px}
+#diag{margin-top:12px;padding:10px 12px;border:1.5px solid var(--rule);border-radius:10px;
+  background:var(--paper);font:600 11.5px/1.7 ui-monospace,Menlo,monospace;color:var(--ink-soft)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="mini">
+    <button class="now" id="sheetNow">Blatt 1</button>
+    <button class="now off" id="tintBtn">Farben</button>
+    <button class="now" id="standBtn">Stand</button>
+  </div>
+
+  <div id="upbar">
+    <span class="t"><b>Neue Version verfügbar</b>
+      <i>Punkte und Blätter bleiben erhalten</i></span>
+    <button id="upBtn">Neu laden</button>
+  </div>
+
+  <div class="bighead" id="bighead">
+    <header class="sheet-head">
+      <div class="logo"><b>Kniffel</b><span style="font-size:16px">Extreme</span>
+        <small>6 WÜRFEL · BIS 6 SPIELER</small></div>
+      <div class="stamp"><span>S</span>Schmidt</div>
+    </header>
+    <div class="coopbar">
+      <button id="coopChip"><span class="dot"></span><span id="coopText">Nur dieses Handy</span></button>
+    </div>
+    <div class="tabs" id="tabs"></div>
+  </div>
+
+  <div id="diceStrip" style="display:none"></div>
+  <div class="scroller">
+    <table id="grid"></table>
+    <p class="hint">Feld antippen zum Eintragen · Summen rechnen sich selbst<br>
+       Jedes Gerät darf jede Spalte pflegen<br>
+       <span id="ver" style="opacity:.65"></span><br>
+       <span class="byfoot">App by <b>Felix</b></span></p>
+  </div>
+</div>
+
+<footer>
+  <div>
+    <div class="lead-l" id="footLabel">FÜHRT</div>
+    <div class="val" id="footVal">—</div>
+  </div>
+  <div class="btns">
+    <button class="primary" id="diceBtn">Würfeln</button>
+    <button id="newSheet">+ Blatt</button>
+    <button id="clearSheet">Leeren</button>
+  </div>
+</footer>
+
+<div id="pullbar"><span><i></i><b id="pulltext">Aktualisieren</b></span></div>
+<div class="veil" id="veil"></div>
+<div class="sheetbox" id="sheetbox">
+  <h3 id="sbTitle">—</h3>
+  <div class="sub" id="sbSub">—</div>
+  <div id="sbBody"></div>
+  <div class="row2" id="sbFoot">
+    <button id="sbClear">Feld leeren</button>
+    <button class="primary" id="sbClose">Fertig</button>
+  </div>
+</div>
+
+<script>/*******************************************************************************
+ * Copyright (c) 2013, 2016 IBM Corp.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Eclipse Distribution License v1.0 which accompany this distribution.
+ *
+ * The Eclipse Public License is available at
+ *    http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ *   http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ *******************************************************************************/
+(function(t,q){"object"===typeof exports&&"object"===typeof module?module.exports=q():"function"===typeof define&&define.amd?define(q):"object"===typeof exports?exports=q():t.Paho=q()})(this,function(){return function(t){function q(a,b,c){b[c++]=a>>8;b[c++]=a%256;return c}function r(a,b,c,k){k=q(b,c,k);E(a,c,k);return k+b}function n(a){for(var b=0,c=0;c<a.length;c++){var k=a.charCodeAt(c);2047<k?(55296<=k&&56319>=k&&(c++,b++),b+=3):127<k?b+=2:b++}return b}function E(a,b,c){for(var k=0;k<a.length;k++){var e=
+    a.charCodeAt(k);if(55296<=e&&56319>=e){var g=a.charCodeAt(++k);if(isNaN(g))throw Error(f(h.MALFORMED_UNICODE,[e,g]));e=(e-55296<<10)+(g-56320)+65536}127>=e?b[c++]=e:(2047>=e?b[c++]=e>>6&31|192:(65535>=e?b[c++]=e>>12&15|224:(b[c++]=e>>18&7|240,b[c++]=e>>12&63|128),b[c++]=e>>6&63|128),b[c++]=e&63|128)}return b}function F(a,b,c){for(var k="",e,g=b;g<b+c;){e=a[g++];if(!(128>e)){var m=a[g++]-128;if(0>m)throw Error(f(h.MALFORMED_UTF,[e.toString(16),m.toString(16),""]));if(224>e)e=64*(e-192)+m;else{var d=
+    a[g++]-128;if(0>d)throw Error(f(h.MALFORMED_UTF,[e.toString(16),m.toString(16),d.toString(16)]));if(240>e)e=4096*(e-224)+64*m+d;else{var l=a[g++]-128;if(0>l)throw Error(f(h.MALFORMED_UTF,[e.toString(16),m.toString(16),d.toString(16),l.toString(16)]));if(248>e)e=262144*(e-240)+4096*m+64*d+l;else throw Error(f(h.MALFORMED_UTF,[e.toString(16),m.toString(16),d.toString(16),l.toString(16)]));}}}65535<e&&(e-=65536,k+=String.fromCharCode(55296+(e>>10)),e=56320+(e&1023));k+=String.fromCharCode(e)}return k}
+    var s=t.localStorage||function(){var a={};return{setItem:function(b,c){a[b]=c},getItem:function(b){return a[b]},removeItem:function(b){delete a[b]}}}(),A=function(a,b){for(var c in a)if(a.hasOwnProperty(c))if(b.hasOwnProperty(c)){if(typeof a[c]!==b[c])throw Error(f(h.INVALID_TYPE,[typeof a[c],c]));}else{c="Unknown property, "+c+". Valid properties are:";for(var k in b)b.hasOwnProperty(k)&&(c=c+" "+k);throw Error(c);}},u=function(a,b){return function(){return a.apply(b,arguments)}},h={OK:{code:0,text:"AMQJSC0000I OK."},
+    CONNECT_TIMEOUT:{code:1,text:"AMQJSC0001E Connect timed out."},SUBSCRIBE_TIMEOUT:{code:2,text:"AMQJS0002E Subscribe timed out."},UNSUBSCRIBE_TIMEOUT:{code:3,text:"AMQJS0003E Unsubscribe timed out."},PING_TIMEOUT:{code:4,text:"AMQJS0004E Ping timed out."},INTERNAL_ERROR:{code:5,text:"AMQJS0005E Internal error. Error Message: {0}, Stack trace: {1}"},CONNACK_RETURNCODE:{code:6,text:"AMQJS0006E Bad Connack return code:{0} {1}."},SOCKET_ERROR:{code:7,text:"AMQJS0007E Socket error:{0}."},SOCKET_CLOSE:{code:8,
+    text:"AMQJS0008I Socket closed."},MALFORMED_UTF:{code:9,text:"AMQJS0009E Malformed UTF data:{0} {1} {2}."},UNSUPPORTED:{code:10,text:"AMQJS0010E {0} is not supported by this browser."},INVALID_STATE:{code:11,text:"AMQJS0011E Invalid state {0}."},INVALID_TYPE:{code:12,text:"AMQJS0012E Invalid type {0} for {1}."},INVALID_ARGUMENT:{code:13,text:"AMQJS0013E Invalid argument {0} for {1}."},UNSUPPORTED_OPERATION:{code:14,text:"AMQJS0014E Unsupported operation."},INVALID_STORED_DATA:{code:15,text:"AMQJS0015E Invalid data in local storage key\x3d{0} value\x3d{1}."},
+    INVALID_MQTT_MESSAGE_TYPE:{code:16,text:"AMQJS0016E Invalid MQTT message type {0}."},MALFORMED_UNICODE:{code:17,text:"AMQJS0017E Malformed Unicode string:{0} {1}."},BUFFER_FULL:{code:18,text:"AMQJS0018E Message buffer is full, maximum buffer size: {0}."}},H={0:"Connection Accepted",1:"Connection Refused: unacceptable protocol version",2:"Connection Refused: identifier rejected",3:"Connection Refused: server unavailable",4:"Connection Refused: bad user name or password",5:"Connection Refused: not authorized"},
+    f=function(a,b){var c=a.text;if(b)for(var k,e,g=0;g<b.length;g++)if(k="{"+g+"}",e=c.indexOf(k),0<e)var h=c.substring(0,e),c=c.substring(e+k.length),c=h+b[g]+c;return c},B=[0,6,77,81,73,115,100,112,3],C=[0,4,77,81,84,84,4],p=function(a,b){this.type=a;for(var c in b)b.hasOwnProperty(c)&&(this[c]=b[c])};p.prototype.encode=function(){var a=(this.type&15)<<4,b=0,c=[],k=0,e;void 0!==this.messageIdentifier&&(b+=2);switch(this.type){case 1:switch(this.mqttVersion){case 3:b+=B.length+3;break;case 4:b+=C.length+
+    3}b+=n(this.clientId)+2;void 0!==this.willMessage&&(b+=n(this.willMessage.destinationName)+2,e=this.willMessage.payloadBytes,e instanceof Uint8Array||(e=new Uint8Array(h)),b+=e.byteLength+2);void 0!==this.userName&&(b+=n(this.userName)+2);void 0!==this.password&&(b+=n(this.password)+2);break;case 8:for(var a=a|2,g=0;g<this.topics.length;g++)c[g]=n(this.topics[g]),b+=c[g]+2;b+=this.requestedQos.length;break;case 10:a|=2;for(g=0;g<this.topics.length;g++)c[g]=n(this.topics[g]),b+=c[g]+2;break;case 6:a|=
+    2;break;case 3:this.payloadMessage.duplicate&&(a|=8);a=a|=this.payloadMessage.qos<<1;this.payloadMessage.retained&&(a|=1);var k=n(this.payloadMessage.destinationName),h=this.payloadMessage.payloadBytes,b=b+(k+2)+h.byteLength;h instanceof ArrayBuffer?h=new Uint8Array(h):h instanceof Uint8Array||(h=new Uint8Array(h.buffer))}var f=b,g=Array(1),d=0;do{var z=f%128,f=f>>7;0<f&&(z|=128);g[d++]=z}while(0<f&&4>d);f=g.length+1;b=new ArrayBuffer(b+f);d=new Uint8Array(b);d[0]=a;d.set(g,1);if(3==this.type)f=r(this.payloadMessage.destinationName,
+    k,d,f);else if(1==this.type){switch(this.mqttVersion){case 3:d.set(B,f);f+=B.length;break;case 4:d.set(C,f),f+=C.length}a=0;this.cleanSession&&(a=2);void 0!==this.willMessage&&(a=a|4|this.willMessage.qos<<3,this.willMessage.retained&&(a|=32));void 0!==this.userName&&(a|=128);void 0!==this.password&&(a|=64);d[f++]=a;f=q(this.keepAliveInterval,d,f)}void 0!==this.messageIdentifier&&(f=q(this.messageIdentifier,d,f));switch(this.type){case 1:f=r(this.clientId,n(this.clientId),d,f);void 0!==this.willMessage&&
+    (f=r(this.willMessage.destinationName,n(this.willMessage.destinationName),d,f),f=q(e.byteLength,d,f),d.set(e,f),f+=e.byteLength);void 0!==this.userName&&(f=r(this.userName,n(this.userName),d,f));void 0!==this.password&&r(this.password,n(this.password),d,f);break;case 3:d.set(h,f);break;case 8:for(g=0;g<this.topics.length;g++)f=r(this.topics[g],c[g],d,f),d[f++]=this.requestedQos[g];break;case 10:for(g=0;g<this.topics.length;g++)f=r(this.topics[g],c[g],d,f)}return b};var G=function(a,b){this._client=
+    a;this._keepAliveInterval=1E3*b;this.isReset=!1;var c=(new p(12)).encode(),k=function(a){return function(){return e.apply(a)}},e=function(){this.isReset?(this.isReset=!1,this._client._trace("Pinger.doPing","send PINGREQ"),this._client.socket.send(c),this.timeout=setTimeout(k(this),this._keepAliveInterval)):(this._client._trace("Pinger.doPing","Timed out"),this._client._disconnected(h.PING_TIMEOUT.code,f(h.PING_TIMEOUT)))};this.reset=function(){this.isReset=!0;clearTimeout(this.timeout);0<this._keepAliveInterval&&
+    (this.timeout=setTimeout(k(this),this._keepAliveInterval))};this.cancel=function(){clearTimeout(this.timeout)}},v=function(a,b,c,f){b||(b=30);this.timeout=setTimeout(function(a,b,c){return function(){return a.apply(b,c)}}(c,a,f),1E3*b);this.cancel=function(){clearTimeout(this.timeout)}},d=function(a,b,c,d,e){if(!("WebSocket"in t&&null!==t.WebSocket))throw Error(f(h.UNSUPPORTED,["WebSocket"]));if(!("ArrayBuffer"in t&&null!==t.ArrayBuffer))throw Error(f(h.UNSUPPORTED,["ArrayBuffer"]));this._trace("Paho.Client",
+    a,b,c,d,e);this.host=b;this.port=c;this.path=d;this.uri=a;this.clientId=e;this._wsuri=null;this._localKey=b+":"+c+("/mqtt"!=d?":"+d:"")+":"+e+":";this._msg_queue=[];this._buffered_msg_queue=[];this._sentMessages={};this._receivedMessages={};this._notify_msg_sent={};this._message_identifier=1;this._sequence=0;for(var g in s)0!==g.indexOf("Sent:"+this._localKey)&&0!==g.indexOf("Received:"+this._localKey)||this.restore(g)};d.prototype.host=null;d.prototype.port=null;d.prototype.path=null;d.prototype.uri=
+    null;d.prototype.clientId=null;d.prototype.socket=null;d.prototype.connected=!1;d.prototype.maxMessageIdentifier=65536;d.prototype.connectOptions=null;d.prototype.hostIndex=null;d.prototype.onConnected=null;d.prototype.onConnectionLost=null;d.prototype.onMessageDelivered=null;d.prototype.onMessageArrived=null;d.prototype.traceFunction=null;d.prototype._msg_queue=null;d.prototype._buffered_msg_queue=null;d.prototype._connectTimeout=null;d.prototype.sendPinger=null;d.prototype.receivePinger=null;d.prototype._reconnectInterval=
+    1;d.prototype._reconnecting=!1;d.prototype._reconnectTimeout=null;d.prototype.disconnectedPublishing=!1;d.prototype.disconnectedBufferSize=5E3;d.prototype.receiveBuffer=null;d.prototype._traceBuffer=null;d.prototype._MAX_TRACE_ENTRIES=100;d.prototype.connect=function(a){var b=this._traceMask(a,"password");this._trace("Client.connect",b,this.socket,this.connected);if(this.connected)throw Error(f(h.INVALID_STATE,["already connected"]));if(this.socket)throw Error(f(h.INVALID_STATE,["already connected"]));
+    this._reconnecting&&(this._reconnectTimeout.cancel(),this._reconnectTimeout=null,this._reconnecting=!1);this.connectOptions=a;this._reconnectInterval=1;this._reconnecting=!1;a.uris?(this.hostIndex=0,this._doConnect(a.uris[0])):this._doConnect(this.uri)};d.prototype.subscribe=function(a,b){this._trace("Client.subscribe",a,b);if(!this.connected)throw Error(f(h.INVALID_STATE,["not connected"]));var c=new p(8);c.topics=a.constructor===Array?a:[a];void 0===b.qos&&(b.qos=0);c.requestedQos=[];for(var d=
+    0;d<c.topics.length;d++)c.requestedQos[d]=b.qos;b.onSuccess&&(c.onSuccess=function(a){b.onSuccess({invocationContext:b.invocationContext,grantedQos:a})});b.onFailure&&(c.onFailure=function(a){b.onFailure({invocationContext:b.invocationContext,errorCode:a,errorMessage:f(a)})});b.timeout&&(c.timeOut=new v(this,b.timeout,b.onFailure,[{invocationContext:b.invocationContext,errorCode:h.SUBSCRIBE_TIMEOUT.code,errorMessage:f(h.SUBSCRIBE_TIMEOUT)}]));this._requires_ack(c);this._schedule_message(c)};d.prototype.unsubscribe=
+    function(a,b){this._trace("Client.unsubscribe",a,b);if(!this.connected)throw Error(f(h.INVALID_STATE,["not connected"]));var c=new p(10);c.topics=a.constructor===Array?a:[a];b.onSuccess&&(c.callback=function(){b.onSuccess({invocationContext:b.invocationContext})});b.timeout&&(c.timeOut=new v(this,b.timeout,b.onFailure,[{invocationContext:b.invocationContext,errorCode:h.UNSUBSCRIBE_TIMEOUT.code,errorMessage:f(h.UNSUBSCRIBE_TIMEOUT)}]));this._requires_ack(c);this._schedule_message(c)};d.prototype.send=
+    function(a){this._trace("Client.send",a);var b=new p(3);b.payloadMessage=a;if(this.connected)0<a.qos?this._requires_ack(b):this.onMessageDelivered&&(this._notify_msg_sent[b]=this.onMessageDelivered(b.payloadMessage)),this._schedule_message(b);else if(this._reconnecting&&this.disconnectedPublishing){if(Object.keys(this._sentMessages).length+this._buffered_msg_queue.length>this.disconnectedBufferSize)throw Error(f(h.BUFFER_FULL,[this.disconnectedBufferSize]));0<a.qos?this._requires_ack(b):(b.sequence=
+    ++this._sequence,this._buffered_msg_queue.unshift(b))}else throw Error(f(h.INVALID_STATE,["not connected"]));};d.prototype.disconnect=function(){this._trace("Client.disconnect");this._reconnecting&&(this._reconnectTimeout.cancel(),this._reconnectTimeout=null,this._reconnecting=!1);if(!this.socket)throw Error(f(h.INVALID_STATE,["not connecting or connected"]));var a=new p(14);this._notify_msg_sent[a]=u(this._disconnected,this);this._schedule_message(a)};d.prototype.getTraceLog=function(){if(null!==
+    this._traceBuffer){this._trace("Client.getTraceLog",new Date);this._trace("Client.getTraceLog in flight messages",this._sentMessages.length);for(var a in this._sentMessages)this._trace("_sentMessages ",a,this._sentMessages[a]);for(a in this._receivedMessages)this._trace("_receivedMessages ",a,this._receivedMessages[a]);return this._traceBuffer}};d.prototype.startTrace=function(){null===this._traceBuffer&&(this._traceBuffer=[]);this._trace("Client.startTrace",new Date,"1.1.0-2018-11-22T11:35:36Z")};d.prototype.stopTrace=
+    function(){delete this._traceBuffer};d.prototype._doConnect=function(a){this.connectOptions.useSSL&&(a=a.split(":"),a[0]="wss",a=a.join(":"));this._wsuri=a;this.connected=!1;this.socket=4>this.connectOptions.mqttVersion?new WebSocket(a,["mqttv3.1"]):new WebSocket(a,["mqtt"]);this.socket.binaryType="arraybuffer";this.socket.onopen=u(this._on_socket_open,this);this.socket.onmessage=u(this._on_socket_message,this);this.socket.onerror=u(this._on_socket_error,this);this.socket.onclose=u(this._on_socket_close,
+    this);this.sendPinger=new G(this,this.connectOptions.keepAliveInterval);this.receivePinger=new G(this,this.connectOptions.keepAliveInterval);this._connectTimeout&&(this._connectTimeout.cancel(),this._connectTimeout=null);this._connectTimeout=new v(this,this.connectOptions.timeout,this._disconnected,[h.CONNECT_TIMEOUT.code,f(h.CONNECT_TIMEOUT)])};d.prototype._schedule_message=function(a){this._msg_queue.unshift(a);this.connected&&this._process_queue()};d.prototype.store=function(a,b){var c={type:b.type,
+    messageIdentifier:b.messageIdentifier,version:1};switch(b.type){case 3:b.pubRecReceived&&(c.pubRecReceived=!0);c.payloadMessage={};for(var d="",e=b.payloadMessage.payloadBytes,g=0;g<e.length;g++)d=15>=e[g]?d+"0"+e[g].toString(16):d+e[g].toString(16);c.payloadMessage.payloadHex=d;c.payloadMessage.qos=b.payloadMessage.qos;c.payloadMessage.destinationName=b.payloadMessage.destinationName;b.payloadMessage.duplicate&&(c.payloadMessage.duplicate=!0);b.payloadMessage.retained&&(c.payloadMessage.retained=
+    !0);0===a.indexOf("Sent:")&&(void 0===b.sequence&&(b.sequence=++this._sequence),c.sequence=b.sequence);break;default:throw Error(f(h.INVALID_STORED_DATA,[a+this._localKey+b.messageIdentifier,c]));}s.setItem(a+this._localKey+b.messageIdentifier,JSON.stringify(c))};d.prototype.restore=function(a){var b=s.getItem(a),c=JSON.parse(b),d=new p(c.type,c);switch(c.type){case 3:for(var b=c.payloadMessage.payloadHex,e=new ArrayBuffer(b.length/2),e=new Uint8Array(e),g=0;2<=b.length;){var m=parseInt(b.substring(0,
+    2),16),b=b.substring(2,b.length);e[g++]=m}b=new w(e);b.qos=c.payloadMessage.qos;b.destinationName=c.payloadMessage.destinationName;c.payloadMessage.duplicate&&(b.duplicate=!0);c.payloadMessage.retained&&(b.retained=!0);d.payloadMessage=b;break;default:throw Error(f(h.INVALID_STORED_DATA,[a,b]));}0===a.indexOf("Sent:"+this._localKey)?(d.payloadMessage.duplicate=!0,this._sentMessages[d.messageIdentifier]=d):0===a.indexOf("Received:"+this._localKey)&&(this._receivedMessages[d.messageIdentifier]=d)};
+    d.prototype._process_queue=function(){for(var a=null;a=this._msg_queue.pop();)this._socket_send(a),this._notify_msg_sent[a]&&(this._notify_msg_sent[a](),delete this._notify_msg_sent[a])};d.prototype._requires_ack=function(a){var b=Object.keys(this._sentMessages).length;if(b>this.maxMessageIdentifier)throw Error("Too many messages:"+b);for(;void 0!==this._sentMessages[this._message_identifier];)this._message_identifier++;a.messageIdentifier=this._message_identifier;this._sentMessages[a.messageIdentifier]=
+    a;3===a.type&&this.store("Sent:",a);this._message_identifier===this.maxMessageIdentifier&&(this._message_identifier=1)};d.prototype._on_socket_open=function(){var a=new p(1,this.connectOptions);a.clientId=this.clientId;this._socket_send(a)};d.prototype._on_socket_message=function(a){this._trace("Client._on_socket_message",a.data);a=this._deframeMessages(a.data);for(var b=0;b<a.length;b+=1)this._handleMessage(a[b])};d.prototype._deframeMessages=function(a){a=new Uint8Array(a);var b=[];if(this.receiveBuffer){var c=
+    new Uint8Array(this.receiveBuffer.length+a.length);c.set(this.receiveBuffer);c.set(a,this.receiveBuffer.length);a=c;delete this.receiveBuffer}try{for(c=0;c<a.length;){var d;a:{var e=a,g=c,m=g,n=e[g],l=n>>4,z=n&15,g=g+1,x=void 0,D=0,q=1;do{if(g==e.length){d=[null,m];break a}x=e[g++];D+=(x&127)*q;q*=128}while(0!==(x&128));x=g+D;if(x>e.length)d=[null,m];else{var y=new p(l);switch(l){case 2:e[g++]&1&&(y.sessionPresent=!0);y.returnCode=e[g++];break;case 3:var m=z>>1&3,s=256*e[g]+e[g+1],g=g+2,t=F(e,g,s),
+    g=g+s;0<m&&(y.messageIdentifier=256*e[g]+e[g+1],g+=2);var r=new w(e.subarray(g,x));1==(z&1)&&(r.retained=!0);8==(z&8)&&(r.duplicate=!0);r.qos=m;r.destinationName=t;y.payloadMessage=r;break;case 4:case 5:case 6:case 7:case 11:y.messageIdentifier=256*e[g]+e[g+1];break;case 9:y.messageIdentifier=256*e[g]+e[g+1],g+=2,y.returnCode=e.subarray(g,x)}d=[y,x]}}var u=d[0],c=d[1];if(null!==u)b.push(u);else break}c<a.length&&(this.receiveBuffer=a.subarray(c))}catch(v){d="undefined"==v.hasOwnProperty("stack")?
+    v.stack.toString():"No Error Stack Available";this._disconnected(h.INTERNAL_ERROR.code,f(h.INTERNAL_ERROR,[v.message,d]));return}return b};d.prototype._handleMessage=function(a){this._trace("Client._handleMessage",a);try{switch(a.type){case 2:this._connectTimeout.cancel();this._reconnectTimeout&&this._reconnectTimeout.cancel();if(this.connectOptions.cleanSession){for(var b in this._sentMessages){var c=this._sentMessages[b];s.removeItem("Sent:"+this._localKey+c.messageIdentifier)}this._sentMessages=
+    {};for(b in this._receivedMessages){var d=this._receivedMessages[b];s.removeItem("Received:"+this._localKey+d.messageIdentifier)}this._receivedMessages={}}if(0===a.returnCode)this.connected=!0,this.connectOptions.uris&&(this.hostIndex=this.connectOptions.uris.length);else{this._disconnected(h.CONNACK_RETURNCODE.code,f(h.CONNACK_RETURNCODE,[a.returnCode,H[a.returnCode]]));break}a=[];for(var e in this._sentMessages)this._sentMessages.hasOwnProperty(e)&&a.push(this._sentMessages[e]);if(0<this._buffered_msg_queue.length)for(e=
+    null;e=this._buffered_msg_queue.pop();)a.push(e),this.onMessageDelivered&&(this._notify_msg_sent[e]=this.onMessageDelivered(e.payloadMessage));a=a.sort(function(a,b){return a.sequence-b.sequence});e=0;for(var g=a.length;e<g;e++)if(c=a[e],3==c.type&&c.pubRecReceived){var m=new p(6,{messageIdentifier:c.messageIdentifier});this._schedule_message(m)}else this._schedule_message(c);if(this.connectOptions.onSuccess)this.connectOptions.onSuccess({invocationContext:this.connectOptions.invocationContext});
+    c=!1;this._reconnecting&&(c=!0,this._reconnectInterval=1,this._reconnecting=!1);this._connected(c,this._wsuri);this._process_queue();break;case 3:this._receivePublish(a);break;case 4:if(c=this._sentMessages[a.messageIdentifier])if(delete this._sentMessages[a.messageIdentifier],s.removeItem("Sent:"+this._localKey+a.messageIdentifier),this.onMessageDelivered)this.onMessageDelivered(c.payloadMessage);break;case 5:if(c=this._sentMessages[a.messageIdentifier])c.pubRecReceived=!0,m=new p(6,{messageIdentifier:a.messageIdentifier}),
+    this.store("Sent:",c),this._schedule_message(m);break;case 6:d=this._receivedMessages[a.messageIdentifier];s.removeItem("Received:"+this._localKey+a.messageIdentifier);d&&(this._receiveMessage(d),delete this._receivedMessages[a.messageIdentifier]);var n=new p(7,{messageIdentifier:a.messageIdentifier});this._schedule_message(n);break;case 7:c=this._sentMessages[a.messageIdentifier];delete this._sentMessages[a.messageIdentifier];s.removeItem("Sent:"+this._localKey+a.messageIdentifier);if(this.onMessageDelivered)this.onMessageDelivered(c.payloadMessage);
+    break;case 9:if(c=this._sentMessages[a.messageIdentifier]){c.timeOut&&c.timeOut.cancel();if(128===a.returnCode[0]){if(c.onFailure)c.onFailure(a.returnCode)}else if(c.onSuccess)c.onSuccess(a.returnCode);delete this._sentMessages[a.messageIdentifier]}break;case 11:if(c=this._sentMessages[a.messageIdentifier])c.timeOut&&c.timeOut.cancel(),c.callback&&c.callback(),delete this._sentMessages[a.messageIdentifier];break;case 13:this.sendPinger.reset();break;case 14:this._disconnected(h.INVALID_MQTT_MESSAGE_TYPE.code,
+    f(h.INVALID_MQTT_MESSAGE_TYPE,[a.type]));break;default:this._disconnected(h.INVALID_MQTT_MESSAGE_TYPE.code,f(h.INVALID_MQTT_MESSAGE_TYPE,[a.type]))}}catch(l){c="undefined"==l.hasOwnProperty("stack")?l.stack.toString():"No Error Stack Available",this._disconnected(h.INTERNAL_ERROR.code,f(h.INTERNAL_ERROR,[l.message,c]))}};d.prototype._on_socket_error=function(a){this._reconnecting||this._disconnected(h.SOCKET_ERROR.code,f(h.SOCKET_ERROR,[a.data]))};d.prototype._on_socket_close=function(){this._reconnecting||
+    this._disconnected(h.SOCKET_CLOSE.code,f(h.SOCKET_CLOSE))};d.prototype._socket_send=function(a){if(1==a.type){var b=this._traceMask(a,"password");this._trace("Client._socket_send",b)}else this._trace("Client._socket_send",a);this.socket.send(a.encode());this.sendPinger.reset()};d.prototype._receivePublish=function(a){switch(a.payloadMessage.qos){case "undefined":case 0:this._receiveMessage(a);break;case 1:var b=new p(4,{messageIdentifier:a.messageIdentifier});this._schedule_message(b);this._receiveMessage(a);
+    break;case 2:this._receivedMessages[a.messageIdentifier]=a;this.store("Received:",a);a=new p(5,{messageIdentifier:a.messageIdentifier});this._schedule_message(a);break;default:throw Error("Invaild qos\x3d"+a.payloadMessage.qos);}};d.prototype._receiveMessage=function(a){if(this.onMessageArrived)this.onMessageArrived(a.payloadMessage)};d.prototype._connected=function(a,b){if(this.onConnected)this.onConnected(a,b)};d.prototype._reconnect=function(){this._trace("Client._reconnect");this.connected||(this._reconnecting=
+    !0,this.sendPinger.cancel(),this.receivePinger.cancel(),128>this._reconnectInterval&&(this._reconnectInterval*=2),this.connectOptions.uris?(this.hostIndex=0,this._doConnect(this.connectOptions.uris[0])):this._doConnect(this.uri))};d.prototype._disconnected=function(a,b){this._trace("Client._disconnected",a,b);if(void 0!==a&&this._reconnecting)this._reconnectTimeout=new v(this,this._reconnectInterval,this._reconnect);else if(this.sendPinger.cancel(),this.receivePinger.cancel(),this._connectTimeout&&
+    (this._connectTimeout.cancel(),this._connectTimeout=null),this._msg_queue=[],this._buffered_msg_queue=[],this._notify_msg_sent={},this.socket&&(this.socket.onopen=null,this.socket.onmessage=null,this.socket.onerror=null,this.socket.onclose=null,1===this.socket.readyState&&this.socket.close(),delete this.socket),this.connectOptions.uris&&this.hostIndex<this.connectOptions.uris.length-1)this.hostIndex++,this._doConnect(this.connectOptions.uris[this.hostIndex]);else if(void 0===a&&(a=h.OK.code,b=f(h.OK)),
+    this.connected){this.connected=!1;if(this.onConnectionLost)this.onConnectionLost({errorCode:a,errorMessage:b,reconnect:this.connectOptions.reconnect,uri:this._wsuri});a!==h.OK.code&&this.connectOptions.reconnect&&(this._reconnectInterval=1,this._reconnect())}else if(4===this.connectOptions.mqttVersion&&!1===this.connectOptions.mqttVersionExplicit)this._trace("Failed to connect V4, dropping back to V3"),this.connectOptions.mqttVersion=3,this.connectOptions.uris?(this.hostIndex=0,this._doConnect(this.connectOptions.uris[0])):
+    this._doConnect(this.uri);else if(this.connectOptions.onFailure)this.connectOptions.onFailure({invocationContext:this.connectOptions.invocationContext,errorCode:a,errorMessage:b})};d.prototype._trace=function(){if(this.traceFunction){var a=Array.prototype.slice.call(arguments),b;for(b in a)"undefined"!==typeof a[b]&&a.splice(b,1,JSON.stringify(a[b]));b=a.join("");this.traceFunction({severity:"Debug",message:b})}if(null!==this._traceBuffer)for(b=0,a=arguments.length;b<a;b++)this._traceBuffer.length==
+    this._MAX_TRACE_ENTRIES&&this._traceBuffer.shift(),0===b?this._traceBuffer.push(arguments[b]):"undefined"===typeof arguments[b]?this._traceBuffer.push(arguments[b]):this._traceBuffer.push("  "+JSON.stringify(arguments[b]))};d.prototype._traceMask=function(a,b){var c={},d;for(d in a)a.hasOwnProperty(d)&&(c[d]=d==b?"******":a[d]);return c};var w=function(a){var b;if("string"===typeof a||a instanceof ArrayBuffer||ArrayBuffer.isView(a)&&!(a instanceof DataView))b=a;else throw f(h.INVALID_ARGUMENT,[a,
+    "newPayload"]);var c,d=0,e=!1,g=!1;Object.defineProperties(this,{payloadString:{enumerable:!0,get:function(){return"string"===typeof b?b:F(b,0,b.length)}},payloadBytes:{enumerable:!0,get:function(){if("string"===typeof b){var a=new ArrayBuffer(n(b)),a=new Uint8Array(a);E(b,a,0);return a}return b}},destinationName:{enumerable:!0,get:function(){return c},set:function(a){if("string"===typeof a)c=a;else throw Error(f(h.INVALID_ARGUMENT,[a,"newDestinationName"]));}},qos:{enumerable:!0,get:function(){return d},
+    set:function(a){if(0===a||1===a||2===a)d=a;else throw Error("Invalid argument:"+a);}},retained:{enumerable:!0,get:function(){return e},set:function(a){if("boolean"===typeof a)e=a;else throw Error(f(h.INVALID_ARGUMENT,[a,"newRetained"]));}},topic:{enumerable:!0,get:function(){return c},set:function(a){c=a}},duplicate:{enumerable:!0,get:function(){return g},set:function(a){g=a}}})};return{Client:function(a,b,c,k){var e;if("string"!==typeof a)throw Error(f(h.INVALID_TYPE,[typeof a,"host"]));if(2==arguments.length){k=
+    b;e=a;var g=e.match(/^(wss?):\/\/((\[(.+)\])|([^\/]+?))(:(\d+))?(\/.*)$/);if(g)a=g[4]||g[2],b=parseInt(g[7]),c=g[8];else throw Error(f(h.INVALID_ARGUMENT,[a,"host"]));}else{3==arguments.length&&(k=c,c="/mqtt");if("number"!==typeof b||0>b)throw Error(f(h.INVALID_TYPE,[typeof b,"port"]));if("string"!==typeof c)throw Error(f(h.INVALID_TYPE,[typeof c,"path"]));e="ws://"+(-1!==a.indexOf(":")&&"["!==a.slice(0,1)&&"]"!==a.slice(-1)?"["+a+"]":a)+":"+b+c}for(var m=g=0;m<k.length;m++){var n=k.charCodeAt(m);
+    55296<=n&&56319>=n&&m++;g++}if("string"!==typeof k||65535<g)throw Error(f(h.INVALID_ARGUMENT,[k,"clientId"]));var l=new d(e,a,b,c,k);Object.defineProperties(this,{host:{get:function(){return a},set:function(){throw Error(f(h.UNSUPPORTED_OPERATION));}},port:{get:function(){return b},set:function(){throw Error(f(h.UNSUPPORTED_OPERATION));}},path:{get:function(){return c},set:function(){throw Error(f(h.UNSUPPORTED_OPERATION));}},uri:{get:function(){return e},set:function(){throw Error(f(h.UNSUPPORTED_OPERATION));
+    }},clientId:{get:function(){return l.clientId},set:function(){throw Error(f(h.UNSUPPORTED_OPERATION));}},onConnected:{get:function(){return l.onConnected},set:function(a){if("function"===typeof a)l.onConnected=a;else throw Error(f(h.INVALID_TYPE,[typeof a,"onConnected"]));}},disconnectedPublishing:{get:function(){return l.disconnectedPublishing},set:function(a){l.disconnectedPublishing=a}},disconnectedBufferSize:{get:function(){return l.disconnectedBufferSize},set:function(a){l.disconnectedBufferSize=
+    a}},onConnectionLost:{get:function(){return l.onConnectionLost},set:function(a){if("function"===typeof a)l.onConnectionLost=a;else throw Error(f(h.INVALID_TYPE,[typeof a,"onConnectionLost"]));}},onMessageDelivered:{get:function(){return l.onMessageDelivered},set:function(a){if("function"===typeof a)l.onMessageDelivered=a;else throw Error(f(h.INVALID_TYPE,[typeof a,"onMessageDelivered"]));}},onMessageArrived:{get:function(){return l.onMessageArrived},set:function(a){if("function"===typeof a)l.onMessageArrived=
+    a;else throw Error(f(h.INVALID_TYPE,[typeof a,"onMessageArrived"]));}},trace:{get:function(){return l.traceFunction},set:function(a){if("function"===typeof a)l.traceFunction=a;else throw Error(f(h.INVALID_TYPE,[typeof a,"onTrace"]));}}});this.connect=function(a){a=a||{};A(a,{timeout:"number",userName:"string",password:"string",willMessage:"object",keepAliveInterval:"number",cleanSession:"boolean",useSSL:"boolean",invocationContext:"object",onSuccess:"function",onFailure:"function",hosts:"object",
+    ports:"object",reconnect:"boolean",mqttVersion:"number",mqttVersionExplicit:"boolean",uris:"object"});void 0===a.keepAliveInterval&&(a.keepAliveInterval=60);if(4<a.mqttVersion||3>a.mqttVersion)throw Error(f(h.INVALID_ARGUMENT,[a.mqttVersion,"connectOptions.mqttVersion"]));void 0===a.mqttVersion?(a.mqttVersionExplicit=!1,a.mqttVersion=4):a.mqttVersionExplicit=!0;if(void 0!==a.password&&void 0===a.userName)throw Error(f(h.INVALID_ARGUMENT,[a.password,"connectOptions.password"]));if(a.willMessage){if(!(a.willMessage instanceof
+    w))throw Error(f(h.INVALID_TYPE,[a.willMessage,"connectOptions.willMessage"]));a.willMessage.stringPayload=null;if("undefined"===typeof a.willMessage.destinationName)throw Error(f(h.INVALID_TYPE,[typeof a.willMessage.destinationName,"connectOptions.willMessage.destinationName"]));}"undefined"===typeof a.cleanSession&&(a.cleanSession=!0);if(a.hosts){if(!(a.hosts instanceof Array))throw Error(f(h.INVALID_ARGUMENT,[a.hosts,"connectOptions.hosts"]));if(1>a.hosts.length)throw Error(f(h.INVALID_ARGUMENT,
+    [a.hosts,"connectOptions.hosts"]));for(var b=!1,d=0;d<a.hosts.length;d++){if("string"!==typeof a.hosts[d])throw Error(f(h.INVALID_TYPE,[typeof a.hosts[d],"connectOptions.hosts["+d+"]"]));if(/^(wss?):\/\/((\[(.+)\])|([^\/]+?))(:(\d+))?(\/.*)$/.test(a.hosts[d]))if(0===d)b=!0;else{if(!b)throw Error(f(h.INVALID_ARGUMENT,[a.hosts[d],"connectOptions.hosts["+d+"]"]));}else if(b)throw Error(f(h.INVALID_ARGUMENT,[a.hosts[d],"connectOptions.hosts["+d+"]"]));}if(b)a.uris=a.hosts;else{if(!a.ports)throw Error(f(h.INVALID_ARGUMENT,
+    [a.ports,"connectOptions.ports"]));if(!(a.ports instanceof Array))throw Error(f(h.INVALID_ARGUMENT,[a.ports,"connectOptions.ports"]));if(a.hosts.length!==a.ports.length)throw Error(f(h.INVALID_ARGUMENT,[a.ports,"connectOptions.ports"]));a.uris=[];for(d=0;d<a.hosts.length;d++){if("number"!==typeof a.ports[d]||0>a.ports[d])throw Error(f(h.INVALID_TYPE,[typeof a.ports[d],"connectOptions.ports["+d+"]"]));var b=a.hosts[d],g=a.ports[d];e="ws://"+(-1!==b.indexOf(":")?"["+b+"]":b)+":"+g+c;a.uris.push(e)}}}l.connect(a)};
+    this.subscribe=function(a,b){if("string"!==typeof a&&a.constructor!==Array)throw Error("Invalid argument:"+a);b=b||{};A(b,{qos:"number",invocationContext:"object",onSuccess:"function",onFailure:"function",timeout:"number"});if(b.timeout&&!b.onFailure)throw Error("subscribeOptions.timeout specified with no onFailure callback.");if("undefined"!==typeof b.qos&&0!==b.qos&&1!==b.qos&&2!==b.qos)throw Error(f(h.INVALID_ARGUMENT,[b.qos,"subscribeOptions.qos"]));l.subscribe(a,b)};this.unsubscribe=function(a,
+    b){if("string"!==typeof a&&a.constructor!==Array)throw Error("Invalid argument:"+a);b=b||{};A(b,{invocationContext:"object",onSuccess:"function",onFailure:"function",timeout:"number"});if(b.timeout&&!b.onFailure)throw Error("unsubscribeOptions.timeout specified with no onFailure callback.");l.unsubscribe(a,b)};this.send=function(a,b,c,d){var e;if(0===arguments.length)throw Error("Invalid argument.length");if(1==arguments.length){if(!(a instanceof w)&&"string"!==typeof a)throw Error("Invalid argument:"+
+    typeof a);e=a;if("undefined"===typeof e.destinationName)throw Error(f(h.INVALID_ARGUMENT,[e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.publish=function(a,b,c,d){var e;if(0===arguments.length)throw Error("Invalid argument.length");if(1==arguments.length){if(!(a instanceof w)&&"string"!==typeof a)throw Error("Invalid argument:"+typeof a);e=a;if("undefined"===typeof e.destinationName)throw Error(f(h.INVALID_ARGUMENT,
+    [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
+    {})});</script>
+<script>
+const VERSION = 'v31 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+/* ======================= Zeilen des Blocks ======================= */
+const MAXP = 6;
+const ROWS = [
+  {id:'e1', kind:'count', die:1, name:'nur Einser',  hint:'zählen'},
+  {id:'e2', kind:'count', die:2, name:'nur Zweier',  hint:'zählen'},
+  {id:'e3', kind:'count', die:3, name:'nur Dreier',  hint:'zählen'},
+  {id:'e4', kind:'count', die:4, name:'nur Vierer',  hint:'zählen'},
+  {id:'e5', kind:'count', die:5, name:'nur Fünfer',  hint:'zählen'},
+  {id:'e6', kind:'count', die:6, name:'nur Sechser', hint:'zählen'},
+  {id:'upperSum', kind:'calc', name:'gesamt', hint:'→'},
+  {id:'bonus',    kind:'calc', name:'noch bis 73', hint:'Bonus plus 45'},
+  {id:'upperTot', kind:'calc', name:'gesamt oberer Teil', hint:'→'},
+  {id:'__gap',    kind:'gap'},
+  {id:'l1',  kind:'sum',   max:39, name:'Dreierpasch',       hint:'alle Augen zählen'},
+  {id:'l2',  kind:'sum',   max:39, name:'Viererpasch',       hint:'alle Augen zählen'},
+  {id:'l3',  kind:'sum',   max:39, name:'Zwei Paare',        hint:'alle Augen zählen'},
+  {id:'l4',  kind:'fixed', pts:35, name:'Drei Paare',        hint:'35 Punkte'},
+  {id:'l5',  kind:'fixed', pts:45, name:'Zwei Dreier',       hint:'45 Punkte'},
+  {id:'l6',  kind:'fixed', pts:25, name:'Full-House',        hint:'25 Punkte'},
+  {id:'l7',  kind:'fixed', pts:45, name:'Großes Full-House', hint:'45 Punkte'},
+  {id:'l8',  kind:'fixed', pts:30, name:'Kleine Straße',     hint:'30 Punkte'},
+  {id:'l9',  kind:'fixed', pts:40, name:'Große Straße',      hint:'40 Punkte'},
+  {id:'l10', kind:'fixed', pts:50, name:'Highway',           hint:'50 Punkte'},
+  {id:'l11', kind:'fixed', pts:50, name:'Kniffel',           hint:'50 Punkte'},
+  {id:'l12', kind:'fixed', pts:75, name:'Kniffel Extreme',   hint:'75 Punkte'},
+  {id:'l13', kind:'fixed', pts:40, name:'10 oder weniger',   hint:'40 Punkte'},
+  {id:'l14', kind:'fixed', pts:40, name:'33 oder mehr',      hint:'40 Punkte'},
+  {id:'l15', kind:'sum',   max:39, name:'Chance',            hint:'alle Augen zählen'},
+  {id:'l16', kind:'sum2',  max:39, name:'Super Chance',      hint:'alle Augen zählen ×2'},
+  {id:'lowerTot', kind:'calc', name:'gesamt unterer Teil', hint:'→'},
+  {id:'upperTot2',kind:'calc', name:'gesamt oberer Teil',  hint:'→'},
+  {id:'endTotal', kind:'calc', name:'Endsumme', hint:'→', total:true}
+];
+const UPPER  = ['e1','e2','e3','e4','e5','e6'];
+const LOWERR = ROWS.filter(r=>['sum','sum2','fixed'].includes(r.kind));
+
+/* ======================= Zustand ======================= */
+let lastT = 0;
+const now = () => { const t = Math.max(Date.now(), lastT+1); lastT = t; return t; };
+const rid = () => Math.random().toString(36).slice(2,9);
+/* Gerätekennung bleibt erhalten – sie entscheidet bei gleichem Zeitstempel */
+const DEV = (()=>{ try{ let v=localStorage.getItem('kniffel-dev');
+  if(!v){ v=rid()+rid().slice(0,3); localStorage.setItem('kniffel-dev',v); } return v; }
+  catch(e){ return rid(); } })();
+const stamp = v => ({v, t:now(), d:DEV});
+
+const newPlayer = (name='') => ({id:rid(), created:now(), name:stamp(name), del:{v:0,t:0}});
+const newSheet  = (names=['','']) => ({id:rid(), created:now(), del:{v:0,t:0},
+                                       players:names.map(n=>newPlayer(n)), cells:{}});
+
+let state = {activeId:null, sheets:[newSheet()]};
+state.activeId = state.sheets[0].id;
+
+const liveSheets  = () => state.sheets.filter(s=>!s.del.v);
+const sheet = () => liveSheets().find(s=>s.id===state.activeId) || liveSheets()[0];
+const livePlayers = s => s.players.filter(p=>!p.del.v);
+const ck = (pid,row) => pid+'~'+row;
+const cellV = (s,pid,row) => { const c = s.cells[ck(pid,row)]; return c ? c.v : null; };
+const setCell = (s,pid,row,v) => { s.cells[ck(pid,row)] = stamp(v); };
+
+/* ======================= Rechnen ======================= */
+function calc(pid){
+  const s = sheet(); if(!s) return {};
+  let upper=0, upperAny=false;
+  UPPER.forEach(id=>{ const v=cellV(s,pid,id); if(v!==null&&v!==undefined){upper+=v;upperAny=true;} });
+  const bonus = upper>=73 ? 45 : 0;
+  let lower=0, lowerAny=false;
+  LOWERR.forEach(r=>{ const v=cellV(s,pid,r.id); if(v!==null&&v!==undefined){lower += r.kind==='sum2'?v*2:v; lowerAny=true;} });
+  return {upperSum:upperAny?upper:null, bonus:upperAny?bonus:null, upperTot:upperAny?upper+bonus:null,
+          lowerTot:lowerAny?lower:null, endTotal:(upperAny||lowerAny)?(upper+bonus+lower):null};
+}
+
+/* =============== Bonus bei 73: was fehlt, und wie man hinkommt =============== */
+const ZAHL = ['','Einser','Zweier','Dreier','Vierer','Fünfer','Sechser'];
+function bonusInfo(pid){
+  const s = sheet(); let sum=0, any=false; const open=[];
+  UPPER.forEach((id,i)=>{
+    const v = cellV(s,pid,id);
+    if (v===null||v===undefined) open.push(i+1); else { sum+=v; any=true; }
+  });
+  const need = Math.max(0, 73-sum);
+  const max  = open.reduce((a,v)=>a+6*v, 0);
+  const state = need===0 ? 'ok' : !any ? 'idle' : max<need ? 'dead' : 'open';
+  return {sum, need, open, max, state};
+}
+/* Alle Kombinationen aus den offenen Zahlen durchgehen und die
+   sparsamsten bzw. gleichmäßigsten Wege heraussuchen. */
+function bonusWays(open, need){
+  const all = [];
+  (function rec(i, counts, sum, dice){
+    if (i === open.length){
+      if (sum>=need) all.push({counts:[...counts], sum, dice, spread:Math.max(...counts)});
+      return;
+    }
+    for (let n=0; n<=6; n++){ counts.push(n); rec(i+1, counts, sum+n*open[i], dice+n); counts.pop(); }
+  })(0, [], 0, 0);
+  if (!all.length) return [];
+  const fmt = w => open.map((v,i)=>w.counts[i]?`${w.counts[i]}× ${ZAHL[v]}`:null).filter(Boolean).join(' · ');
+  const byDice   = [...all].sort((a,b)=>a.dice-b.dice || a.spread-b.spread || a.sum-b.sum)[0];
+  const bySpread = [...all].sort((a,b)=>a.spread-b.spread || a.dice-b.dice || a.sum-b.sum)[0];
+  const out = [];
+  const add = w => { const t=fmt(w); if(t && !out.some(o=>o.t===t)) out.push({t, sum:w.sum}); };
+  add(byDice); add(bySpread);
+  return out;
+}
+function openBonus(pid){
+  const p = livePlayers(sheet()).find(x=>x.id===pid); if(!p) return;
+  const b = bonusInfo(pid);
+  mode='bonus'; sbFoot.style.display='none';
+  document.getElementById('sbTitle').textContent = 'Bonus bei 73';
+  document.getElementById('sbSub').textContent = (p.name.v || 'Spieler') + ' · oberer Teil';
+  let body;
+  if (b.state==='ok'){
+    body = `<div class="bonusbig ok">geschafft</div>
+      <div class="bsub">${b.sum} Punkte oben · die 45 sind sicher</div>`;
+  } else if (b.state==='dead'){
+    body = `<div class="bonusbig dead">nicht mehr</div>
+      <div class="bsub">Du stehst bei ${b.sum}. Offen sind höchstens ${b.max} Punkte,
+        nötig wären noch ${b.need}.</div>`;
+  } else if (b.state==='idle'){
+    body = `<div class="bonusbig">73</div>
+      <div class="bsub">Noch nichts eingetragen. Drei Gleiche von jeder Zahl bringen 63 –
+        für den Bonus brauchst du bei einigen Zahlen den vierten Würfel.</div>`;
+  } else {
+    const ways = bonusWays(b.open, b.need);
+    const offen = b.open.map(v=>ZAHL[v]).join(', ');
+    body = `<div class="bonusbig">noch ${b.need}</div>
+      <div class="bsub">${b.sum} von 73 · offen: ${offen}</div>
+      <div class="blist">${ways.map(w=>`<div>${w.t}<span>${w.sum}</span></div>`).join('')}</div>
+      <div class="note">Drei Gleiche von jeder Zahl bringen nur 63 – für den Bonus
+        brauchst du bei einigen Zahlen den vierten Würfel.</div>`;
+  }
+  sbBody.innerHTML = body + `<div class="row2"><button class="primary" id="doneBtn">Fertig</button></div>`;
+  openBox();
+}
+
+/* ======================= Tabelle ======================= */
+const grid = document.getElementById('grid');
+/* Drei kleine Würfel, die wirklich die Augenzahl der Zeile zeigen */
+const DPOS = [3.2, 6, 8.8];
+const pips = v => {
+  const dots = (PIPS[v]||[])
+    .map(k=>`<circle cx="${DPOS[k%3]}" cy="${DPOS[(k/3)|0]}" r="1.05" fill="#5a5e8c"/>`).join('');
+  const die = `<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">`
+    + `<rect x=".6" y=".6" width="10.8" height="10.8" rx="2.4" fill="#fff" `
+    + `stroke="#8589b0" stroke-width="1"/>${dots}</svg>`;
+  return `<span class="dice">${die.repeat(3)}</span>`;
+};
+const esc  = s => (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+
+function buildTable(){
+  const s = sheet(); if(!s) return;
+  const ps = livePlayers(s);
+  let h = '<thead><tr><th class="lbl">NAME</th>';
+  ps.forEach((p,i)=>{
+    h += `<th class="pcol p${i}">${ps.length>1?`<button class="kill" data-kill="${p.id}">✕</button>`:''}
+      <input type="text" data-name="${p.id}" value="${esc(p.name.v)}" placeholder="Spieler ${i+1}" autocomplete="off"></th>`;
+  });
+  if (ps.length < MAXP) h += '<th class="addcol"><button id="addP">+</button></th>';
+  h += '</tr></thead><tbody>';
+  ROWS.forEach(r=>{
+    if (r.kind==='gap'){ h += `<tr class="gap"><td colspan="${ps.length+2}"></td></tr>`; return; }
+    h += `<tr class="${r.total?'total':(r.kind==='calc'?'sum':'')}${r.id==='bonus'?' bonus':''}">`;
+    h += `<td class="lbl"><span class="n">${r.name}</span>`;
+    h += r.kind==='count'
+       ? `<span class="h d">${pips(r.die)}${r.hint}</span>`
+       : (r.hint?`<span class="h">${r.hint}</span>`:'');
+    h += '</td>';
+    ps.forEach((p,i) => h += `<td class="cell p${i}" data-row="${r.id}" data-p="${p.id}"></td>`);
+    if (ps.length < MAXP) h += '<td class="pad"></td>';
+    h += '</tr>';
+  });
+  grid.innerHTML = h + '</tbody>';
+}
+
+let lastSig = '', src = 'mine';
+/* Kurz aufleuchten lassen: eigene Eintraege dezent, fremde deutlich */
+function highlight(td){
+  const cls = src==='theirs' ? 'hl-theirs' : 'hl-mine';
+  td.classList.remove('hl-mine','hl-theirs');
+  void td.offsetWidth;                 // Animation neu starten
+  td.classList.add(cls);
+  setTimeout(()=>td.classList.remove(cls), cls==='hl-theirs'?4600:1200);
+}
+function render(){
+  const s = sheet(); if(!s) return;
+  const ps = livePlayers(s);
+  const sig = ps.map(p=>p.id).join(',')+'|'+s.id;
+  const fresh = sig !== lastSig;
+  if (fresh){ buildTable(); lastSig = sig; }
+
+  let best=-1, bestVal=null;
+  ps.forEach(p=>{ const e=calc(p.id).endTotal; if(e!==null&&(bestVal===null||e>bestVal)){bestVal=e;best=p.id;} });
+  const tie = ps.filter(p=>calc(p.id).endTotal===bestVal).length>1;
+
+  ROWS.forEach(r=>{
+    ps.forEach(p=>{
+      const td = grid.querySelector(`td.cell[data-row="${r.id}"][data-p="${p.id}"]`);
+      if (!td) return;
+      let html;
+      if (r.id==='bonus'){
+        const b = bonusInfo(p.id);
+        html = b.state==='ok' ? '+45' : b.state==='dead' ? '<span class="zero">—</span>'
+             : b.state==='open' ? String(b.need) : '';
+        td.classList.toggle('hit',  b.state==='ok');
+        td.classList.toggle('need', b.state==='open');
+        td.classList.toggle('dead', b.state==='dead');
+      } else if (r.kind==='calc'){
+        const c = calc(p.id);
+        const v = c[r.id==='upperTot2'?'upperTot':r.id];
+        html = v===null?'':String(v);
+        if (r.total) td.classList.toggle('lead', !tie && p.id===best && bestVal!==null);
+      } else {
+        const v = cellV(s,p.id,r.id);
+        const n = (v===null||v===undefined) ? null : Number(v);
+        html = (n===null||!isFinite(n)) ? '' :
+               n===0 ? '<span class="zero">—</span>' :
+               r.kind==='sum2' ? `${n*2}<span class="dbl">${n}×2</span>` : String(n);
+      }
+      if (td.innerHTML !== html){
+        td.innerHTML = html;
+        if (!fresh && r.kind!=='calc' && html!=='') highlight(td);
+      }
+    });
+  });
+
+  const nm = id => { const p = ps.find(x=>x.id===id); return p ? (p.name.v || 'Spieler') : ''; };
+  const fl = document.getElementById('footLabel'), fv = document.getElementById('footVal');
+  if (bestVal===null){ fl.textContent='FÜHRT'; fv.textContent='—'; }
+  else if (tie){ fl.textContent='GLEICHSTAND'; fv.textContent=bestVal; }
+  else { fl.textContent='FÜHRT'; fv.textContent = nm(best)+' · '+bestVal; }
+  const offen = missingCount(s);
+  if (!offen) fl.textContent='ENDSTAND ANSEHEN';
+  else if (bestVal!==null) fl.textContent='FÜHRT · NOCH '+offen;
+  const sb=document.getElementById('standBtn');
+  if (sb) sb.textContent = offen ? 'Stand · '+offen : 'Endstand';
+
+  renderTabs();
+}
+
+function renderTabs(){
+  const ls = liveSheets();
+  document.getElementById('tabs').innerHTML =
+    ls.map((s,i)=>`<button class="tab ${s.id===sheet().id?'on':''}" data-i="${s.id}">Blatt ${i+1}</button>`).join('')
+    + '<button class="tab add" data-add="1">+ Blatt</button>'
+    + (ls.length>1?'<button class="tab" data-del="1">Blatt löschen</button>':'');
+  const now = document.getElementById('sheetNow');
+  if (now){
+    const i = ls.findIndex(s=>s.id===sheet().id);
+    now.textContent = 'Blatt '+(i+1)+(ls.length>1?' / '+ls.length:'');
+  }
+}
+
+/* Änderung durch den Nutzer: speichern + senden */
+function touched(){ activity(); render(); saveLocal(); pushSoon(); maybeFinal(); }
+
+/* ======================= Eingabe-Dialog ======================= */
+let cur = null;
+const veil = document.getElementById('veil'), box = document.getElementById('sheetbox');
+const sbBody = document.getElementById('sbBody'), sbFoot = document.getElementById('sbFoot');
+let mode = 'cell';
+
+function openBox(){ veil.classList.add('on'); box.classList.add('on'); }
+function closeBox(){ veil.classList.remove('on'); box.classList.remove('on'); cur=null; mode='cell'; sbFoot.style.display='flex'; }
+
+function openPicker(rowId, pid){
+  const r = ROWS.find(x=>x.id===rowId); if(!r || r.kind==='calc') return;
+  const s = sheet(), p = livePlayers(s).find(x=>x.id===pid); if(!p) return;
+  cur = {r, pid}; mode='cell'; sbFoot.style.display='flex';
+  document.getElementById('sbTitle').textContent = r.name;
+  document.getElementById('sbSub').textContent = (p.name.v || 'Spieler') + ' · ' + r.hint;
+  const nowV = cellV(s,pid,r.id);
+  if (r.kind==='count'){
+    let h='<div class="opts">';
+    for(let n=1;n<=6;n++){ const pts=n*r.die;
+      h += `<button data-v="${pts}" class="${nowV===pts?'on':''}">${pts}<div style="font-size:9px;font-weight:700;opacity:.6">${n}×</div></button>`; }
+    sbBody.innerHTML = h + `<button class="big strike ${nowV===0?'on':''}" data-v="0">Streichen (0)</button></div>`;
+  } else if (r.kind==='fixed'){
+    sbBody.innerHTML = `<div class="opts">
+      <button class="big ${nowV===r.pts?'on':''}" data-v="${r.pts}">${r.pts} Punkte</button>
+      <button class="big strike ${nowV===0?'on':''}" data-v="0">Streichen (0)</button></div>`;
+  } else {
+    const has = (nowV!==null && nowV!==undefined);
+    sbBody.innerHTML = `<div class="numrow"><input id="sbNum" type="number" inputmode="numeric" min="0" max="${r.max}"
+        placeholder="Augensumme" value=""></div>
+      <div class="sub" style="text-align:center;margin:0 0 10px">${
+        has ? (nowV===0 ? 'steht auf gestrichen' : 'steht auf '+nowV+(r.kind==='sum2'?' (= '+nowV*2+')':''))
+            : (r.kind==='sum2' ? 'wird doppelt gewertet' : 'Summe aller sechs Würfel')}</div>
+      <div class="opts"><button class="big strike ${nowV===0?'on':''}" data-v="0">Streichen (0)</button>
+      <button class="big" data-ok="1">Übernehmen</button></div>`;
+    setTimeout(()=>document.getElementById('sbNum')?.focus(),260);
+  }
+  openBox();
+}
+function setVal(v){ if(!cur) return; setCell(sheet(), cur.pid, cur.r.id, v); touched(); }
+
+/* ======================= Endstand ======================= */
+/* Sobald jedes Feld jeder Spalte gefüllt ist, ist das Blatt fertig.
+   Das erkennt jedes Gerät für sich – die Daten sind ja überall dieselben. */
+const ENTRYROWS = ROWS.filter(r=>['count','sum','sum2','fixed'].includes(r.kind));
+function sheetDone(s){
+  const ps=livePlayers(s);
+  if(!ps.length) return false;
+  return ps.every(p=>ENTRYROWS.every(r=>{ const v=cellV(s,p.id,r.id); return v!==null&&v!==undefined; }));
+}
+function missingCount(s){
+  let n=0;
+  livePlayers(s).forEach(p=>ENTRYROWS.forEach(r=>{
+    const v=cellV(s,p.id,r.id); if(v===null||v===undefined) n++; }));
+  return n;
+}
+function missingList(s){
+  return livePlayers(s).map(p=>({
+    nm: p.name.v||'Spieler',
+    rows: ENTRYROWS.filter(r=>{ const v=cellV(s,p.id,r.id); return v===null||v===undefined; })
+  })).filter(x=>x.rows.length);
+}
+function standings(){
+  const s=sheet();
+  const list=livePlayers(s).map(p=>({id:p.id, nm:p.name.v||'Spieler', pts:calc(p.id).endTotal||0}))
+    .sort((a,b)=>b.pts-a.pts);
+  let rank=0, prev=null;
+  list.forEach((x,i)=>{ if(x.pts!==prev){ rank=i+1; prev=x.pts; } x.rank=rank; });
+  return list;
+}
+const FCOL={1:'#c9a227',2:'#98a0bb',3:'#b3763f'};
+/* Was ist theoretisch überhaupt drin? Oben sechs Würfel je Zahl plus Bonus,
+   unten jeweils der Höchstwert des Kästchens. Ergibt 880. */
+const MAXPTS = (()=>{
+  const augen = 5*6+9;                                  // größte Augensumme
+  let m = 6*(1+2+3+4+5+6) + 45;                         // oberer Teil samt Bonus
+  ROWS.forEach(r=>{
+    if(r.kind==='fixed') m += r.pts;
+    else if(r.kind==='sum')  m += augen;
+    else if(r.kind==='sum2') m += augen*2;
+  });
+  return m;
+})();
+function podiumSVG(list){
+  const W=360, n=list.length, axis=30, padr=12, gap=10;
+  const bw=Math.min(64,(W-axis-padr-(n-1)*gap)/n);
+  const total=n*bw+(n-1)*gap, x0=axis+(W-axis-padr-total)/2;
+  const TOP=52, BH=178, BASE=TOP+BH, best=list[0].pts;
+  const cap=(x,y,w,hh,r)=>{ r=Math.min(r,w/2,hh);
+    return `M${x} ${y+hh} L${x} ${y+r} Q${x} ${y} ${x+r} ${y} L${x+w-r} ${y} `
+         + `Q${x+w} ${y} ${x+w} ${y+r} L${x+w} ${y+hh} Z`; };
+  let P='';
+  [[0.5,''],[1,'']].forEach(([q])=>{
+    const y=BASE-BH*q;
+    P+=`<line x1="${axis-4}" y1="${y.toFixed(1)}" x2="${W-padr}" y2="${y.toFixed(1)}" stroke="var(--rule)" `
+     + `stroke-width="1" stroke-dasharray="3 5" opacity="${q===1?0.85:0.5}"/>`
+     + `<text x="${axis-8}" y="${(y+3).toFixed(1)}" font-size="8.5" font-weight="700" `
+     + `fill="var(--ink-soft)" text-anchor="end">${Math.round(MAXPTS*q)}</text>`;
+  });
+  const yb=BASE-BH*Math.min(1,best/MAXPTS);
+  P+=`<line x1="${axis-4}" y1="${yb.toFixed(1)}" x2="${W-padr}" y2="${yb.toFixed(1)}" stroke="${FCOL[1]}" `
+   + `stroke-width="1.2" stroke-dasharray="2 4" opacity=".8"/>`
+   + `<text x="${axis-8}" y="${(yb+3).toFixed(1)}" font-size="8.5" font-weight="800" fill="${FCOL[1]}" `
+   + `text-anchor="end">${best}</text>`;
+  list.forEach((x,i)=>{
+    const bx=x0+i*(bw+gap), cx=bx+bw/2;
+    const col=FCOL[x.rank]||'#6f74a3';
+    const hp=Math.max(8, BH*Math.min(1,x.pts/MAXPTS)), y=BASE-hp;
+    P+=`<path d="${cap(bx,TOP,bw,BH,8)}" fill="var(--paper)" stroke="var(--rule)" stroke-width="1" opacity=".75"/>`
+     + `<path d="${cap(bx,y,bw,hp,8)}" fill="var(--ink)"/>`
+     + `<path d="${cap(bx,y,bw,Math.min(hp,9),8)}" fill="${col}"/>`
+     + `<text x="${cx}" y="${(y-8).toFixed(1)}" font-size="12.5" font-weight="800" fill="var(--ink)" text-anchor="middle">${x.pts}</text>`
+     + `<text x="${cx}" y="${(BASE-9).toFixed(1)}" font-size="10" font-weight="800" fill="#fff" opacity=".55" text-anchor="middle">${x.rank}</text>`
+     + `<text x="${cx}" y="${(BASE+16).toFixed(1)}" font-size="11" font-weight="800" fill="var(--pencil)" text-anchor="middle">${esc(x.nm).slice(0,8)}</text>`
+     + `<text x="${cx}" y="${(BASE+28).toFixed(1)}" font-size="9" font-weight="700" fill="var(--ink-soft)" text-anchor="middle">${Math.round(x.pts/MAXPTS*100)} %</text>`;
+    if(x.rank===1){
+      const s=8, cy=y-23;
+      P+=`<path d="M${cx-s} ${cy} L${cx-s} ${cy-0.55*s} L${cx-0.5*s} ${cy-0.12*s} L${cx-0.25*s} ${cy-0.95*s} `
+       + `L${cx} ${cy-0.2*s} L${cx+0.25*s} ${cy-0.95*s} L${cx+0.5*s} ${cy-0.12*s} L${cx+s} ${cy-0.55*s} L${cx+s} ${cy} Z" fill="${FCOL[1]}"/>`;
+    }
+  });
+  P+=`<line x1="${axis-4}" y1="${BASE}" x2="${W-padr}" y2="${BASE}" stroke="var(--ink)" stroke-width="2"/>`;
+  return `<svg viewBox="0 0 ${W} ${BASE+40}" font-family="Avenir Next,system-ui,sans-serif">
+    <text x="${axis-8}" y="22" font-size="9.5" font-weight="800" fill="var(--ink-soft)" letter-spacing="1.2"
+      >PUNKTE IM VERHÄLTNIS ZUM MAXIMUM (${MAXPTS})</text>${P}</svg>`;
+}
+let finalSeen = (()=>{ try{ return new Set((localStorage.getItem('kniffel-final')||'').split(',')); }
+                      catch(e){ return new Set(); } })();
+function markFinalSeen(id){
+  finalSeen.add(id);
+  try{ localStorage.setItem('kniffel-final', [...finalSeen].slice(-20).join(',')); }catch(e){}
+}
+function openFinal(){
+  const s=sheet(), list=standings();
+  if(!list.length) return;
+  mode='final'; sbFoot.style.display='none';
+  const ls=liveSheets(), nr=ls.findIndex(x=>x.id===s.id)+1;
+  const offen=missingCount(s);
+  const first=list[0], zweite=list.find(x=>x.rank>1);
+  const geteilt=list.filter(x=>x.rank===1).length>1;
+  document.getElementById('sbTitle').textContent = offen
+    ? 'Zwischenstand'
+    : geteilt ? 'Gleichstand an der Spitze' : first.nm+' gewinnt';
+  document.getElementById('sbSub').textContent = offen
+    ? first.nm+' führt mit '+first.pts+' Punkten'
+    : geteilt ? list.filter(x=>x.rank===1).map(x=>x.nm).join(' und ')+' · je '+first.pts+' Punkte'
+      : first.pts+' Punkte'+(zweite?' · '+(first.pts-zweite.pts)+' vor '+zweite.nm:'')
+        +' · '+Math.round(first.pts/MAXPTS*100)+' % vom Maximum';
+  const rest=list.filter(x=>x.rank>3);
+  sbBody.innerHTML = `<div class="sub" style="text-align:center;margin:-6px 0 6px">Blatt ${nr} · ${
+    offen ? 'noch '+offen+' Feld'+(offen>1?'er':'')+' offen' : 'alle Felder ausgefüllt'}</div>
+    <div class="finalwrap">${podiumSVG(list)}</div>
+    ${offen?`<div class="franks">`+missingList(s).map(x=>
+      `<div class="frank"><span class="nm">${esc(x.nm)}</span><span class="pt" style="font-size:12px">${
+        x.rows.length===ENTRYROWS.length ? 'ganze Spalte leer'
+        : x.rows.length>4 ? x.rows.length+' Felder'
+        : x.rows.map(r=>r.name).join(', ')}</span></div>`).join('')+`</div>`:''}
+    ${offen?'':`<div class="franks">`+list.map(x=>
+      `<div class="frank"><span class="pl">${x.rank}</span><span class="nm">${esc(x.nm)}</span>
+       <span class="pt" style="font-size:12px;color:var(--ink-soft);font-weight:700">${
+         x.rank===1?'Sieg':'−'+(first.pts-x.pts)}</span>
+       <span class="pt">${x.pts}</span></div>`).join('')+`</div>`}
+    <div class="row2">${offen?'':'<button id="finalNew">Neues Blatt</button>'}
+      <button class="primary" id="doneBtn">Schließen</button></div>`;
+  if(!offen) markFinalSeen(s.id);   // nur der echte Endstand gilt als gesehen
+  openBox();
+}
+function maybeFinal(){
+  const s=sheet();
+  if(!s || finalSeen.has(s.id) || !sheetDone(s)) return;
+  if(box.classList.contains('on')) return;      // gerade ist ein anderes Fenster offen
+  setTimeout(openFinal, 400);
+}
+
+/* ======================= Würfelbrett ======================= */
+/* Fünf Holzwürfel und der zehnseitige Würfel mit 0–9, auf einem Filzbrett */
+const PIPS = {1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+let boardEl=null, hexEl=null, cupEl=null, cupG=null, cupCap=null;
+let dice=[], board=null, lastPid=null;
+const newBoard = pid => ({pid, roll:0, busy:false,
+  state:Array.from({length:6},()=>({v:null,inCup:true,x:0,y:0,rx:0,ry:0,rz:0}))});
+
+/* ================= Vektorkram ================= */
+const sub=(a,b)=>a.map((x,k)=>x-b[k]);
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const dot=(a,b)=>a.reduce((s,x,k)=>s+x*b[k],0);
+const norm=a=>{const l=Math.hypot(...a)||1; return a.map(x=>x/l);};
+const rotXY=(a,b,v)=>{            // Rx(a)·Ry(b)·v, Winkel in Grad
+  const ar=a*Math.PI/180, br=b*Math.PI/180, [x,y,z]=v;
+  const x1=x*Math.cos(br)+z*Math.sin(br), z1=-x*Math.sin(br)+z*Math.cos(br);
+  return [x1, y*Math.cos(ar)-z1*Math.sin(ar), y*Math.sin(ar)+z1*Math.cos(ar)];
+};
+/* Winkelpaar, das eine Richtung zur Kamera (0,0,1) dreht */
+function faceCam(n){
+  const b=-Math.atan2(n[0],n[2])*180/Math.PI;
+  const a=Math.atan2(n[1],Math.hypot(n[0],n[2]))*180/Math.PI;
+  return [a,b];
+}
+
+/* ================= Echter W10: Pentagonal-Trapezoeder ================= */
+/* Zehn Drachenflächen. Bei dieser Ringhöhe liegen alle vier Ecken je Fläche
+   exakt in einer Ebene – sonst wäre es kein echter Körper.               */
+const C36=Math.cos(Math.PI/5);
+const ZP=1.10, ZA=ZP*(1-C36)/(1+C36), RA=1.0, D10S=19.5;
+function d10Faces(){
+  const P=(r,deg,y)=>[r*Math.cos(deg*Math.PI/180), y, r*Math.sin(deg*Math.PI/180)];
+  const N=[0,-ZP,0], S=[0,ZP,0], A=[], B=[];
+  for(let i=0;i<5;i++){ A.push(P(RA,72*i,-ZA)); B.push(P(RA,72*i+36,ZA)); }
+  const out=[];
+  for(let i=0;i<5;i++){
+    out.push({v:[N,A[i],B[i],A[(i+1)%5]]});
+    out.push({v:[S,B[i],A[(i+1)%5],B[(i+1)%5]]});
+  }
+  const F=out.map(f=>{
+    const v=f.v.map(p=>p.map(x=>x*D10S));
+    const c=[0,1,2].map(k=>v.reduce((s,p)=>s+p[k],0)/4);
+    let n=norm(cross(sub(v[1],v[0]),sub(v[2],v[0])));
+    if(dot(n,c)<0) n=n.map(x=>-x);                 // Normale nach außen
+    const up=norm(sub(v[0],c));                     // Richtung zur Spitze
+    const ey=norm(sub(up,n.map(x=>x*dot(up,n)))).map(x=>-x);
+    const ex=norm(cross(ey,n));
+    const loc=v.map(p=>[dot(sub(p,c),ex), dot(sub(p,c),ey)]);
+    return {...f, c, n, ex, ey, loc};
+  });
+  /* Beschriftung wie beim echten Würfel: gegenüberliegende Flächen ergeben 9 */
+  const num=new Array(10).fill(null);
+  [0,2,4,6,8].forEach((k,j)=>{
+    num[k]=[0,2,4,6,8][j];
+    const opp=F.findIndex(g=>Math.hypot(...g.n.map((x,i)=>x+F[k].n[i]))<0.02);
+    if(opp>=0) num[opp]=9-num[k];
+  });
+  F.forEach((f,k)=>f.num=num[k]===null?0:num[k]);
+  return F;
+}
+const D10F=d10Faces();
+
+const D=42, R=D/2, HALF=21, BOX=70;
+const slowMo = typeof matchMedia==='function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+let W=330, HEXH=218, CUPW=92, CUPH=88;
+function geo(){
+  W=Math.max(240,Math.min(330,(document.body.clientWidth||330)-24));
+  HEXH=Math.round(W*0.66);
+  SC=Math.max(0.74,Math.min(1,W/330));   // schmale Bildschirme: kleinere Würfel
+  DE=D*SC;
+  boardEl.style.width=W+'px';
+  boardEl.style.height=(HEXH+10+CUPH+14)+'px';
+  hexEl.setAttribute('width',W); hexEl.setAttribute('height',HEXH);
+  hexEl.setAttribute('viewBox',`0 0 ${W} ${HEXH}`);
+  hexEl.innerHTML=`<defs>
+      <radialGradient id="feltg" cx=".34" cy=".26" r=".9">
+        <stop offset="0" stop-color="#2f7a45"/><stop offset=".5" stop-color="#1f5c33"/>
+        <stop offset="1" stop-color="#123c21"/></radialGradient>
+    </defs>
+    <polygon points="${hx(hexPts())}" fill="#e6cfa4" stroke="#9c7c46" stroke-width="1.2" stroke-linejoin="round"/>
+    ${woodSegs()}
+    <polygon points="${hx(hexPts(0.80))}" fill="url(#feltg)"/>
+    <polygon points="${hx(hexPts(0.80))}" fill="none" stroke="#0d2f1a" stroke-width="2.5"
+      stroke-linejoin="round" opacity=".55"/>
+    <polygon points="${hx(hexPts(0.74))}" fill="none" stroke="#5da572" stroke-width="10"
+      opacity=".07" stroke-linejoin="round"/>`;
+  cupEl.style.left=Math.round(W/2-CUPW/2)+'px';
+  cupEl.style.top=(HEXH+10)+'px';
+  cupEl.style.width=CUPW+'px'; cupEl.style.height=CUPH+'px';
+  cupCap.style.top=(HEXH+10+CUPH)+'px';
+}
+/* Regelmäßiges Achteck im Rechteck W x HEXH */
+function hexPts(s){
+  const cx=W/2, cy=HEXH/2, k=s||1, ax=0.293*W, ay=0.293*HEXH;
+  return [[ax,2],[W-ax,2],[W-2,ay],[W-2,HEXH-ay],[W-ax,HEXH-2],[ax,HEXH-2],[2,HEXH-ay],[2,ay]]
+    .map(([x,y])=>[cx+(x-cx)*k, cy+(y-cy)*k].map(n=>Math.round(n*10)/10));
+}
+const hx=v=>v.map(a=>a.join(',')).join(' ');
+function mix(a,b,t){
+  const p=c=>[1,3,5].map(i=>parseInt(c.substr(i,2),16));
+  const [r1,g1,b1]=p(a),[r2,g2,b2]=p(b);
+  const q=n=>Math.round(n).toString(16).padStart(2,'0');
+  return '#'+q(r1+(r2-r1)*t)+q(g1+(g2-g1)*t)+q(b1+(b2-b1)*t);
+}
+/* Acht Holzleisten, jede nach Lichteinfall von links oben eigen schattiert */
+function woodSegs(){
+  const O=hexPts(1), I=hexPts(0.80); let s='';
+  for(let i=0;i<8;i++){
+    const j=(i+1)%8;
+    const mx=(O[i][0]+O[j][0])/2-W/2, my=(O[i][1]+O[j][1])/2-HEXH/2;
+    const L=Math.hypot(mx,my)||1;
+    const t=Math.max(0,Math.min(1, 0.5-0.52*(mx/L*0.6+my/L*0.8)));
+    s+=`<polygon points="${O[i].join(',')} ${O[j].join(',')} ${I[j].join(',')} ${I[i].join(',')}"
+        fill="${mix('#c19a5f','#f7e7c6',t)}" stroke="#a8874f" stroke-width=".8" stroke-linejoin="round"/>`;
+  }
+  return s;
+}
+function inHex(x,y,s){
+  const pts=hexPts(s||0.70); let inside=false;
+  for(let i=0,j=pts.length-1;i<pts.length;j=i++){
+    const [xi,yi]=pts[i],[xj,yj]=pts[j];
+    if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi)) inside=!inside;
+  }
+  return inside;
+}
+/* Liegt der ganze Würfel auf dem Filz, nicht nur sein Mittelpunkt? */
+function onFelt(x,y,pad){
+  const r=(DE/2)*(pad===undefined?1:pad);
+  return inHex(x-r,y-r,0.80)&&inHex(x+r,y-r,0.80)&&inHex(x-r,y+r,0.80)&&inHex(x+r,y+r,0.80);
+}
+/* Platz im Filz suchen; findet sich keiner, rücken die Würfel enger zusammen */
+function freeSpot(taken){
+  for(const gap of [1.16,1.06,0.98,0.9,0.82]){
+    for(let t=0;t<300;t++){
+      const x=DE/2+4+Math.random()*(W-DE-8), y=DE/2+4+Math.random()*(HEXH-DE-8);
+      if(!onFelt(x,y)) continue;
+      if(taken.every(p=>Math.hypot(p.x-x,p.y-y)>DE*gap)) return {x,y};
+    }
+  }
+  return {x:W/2,y:HEXH/2};
+}
+function nearWall(){
+  const pts=hexPts(0.62), i=Math.floor(Math.random()*pts.length),
+        a=pts[i], b=pts[(i+1)%pts.length], m=0.3+Math.random()*0.4;
+  return {x:a[0]+(b[0]-a[0])*m, y:a[1]+(b[1]-a[1])*m};
+}
+function cupSlot(n){
+  const i=n%6, g=DE*0.6;
+  return {x:W/2-g+(i%3)*g, y:HEXH+10+34+Math.floor(i/3)*g*0.75};
+}
+
+/* ================= Holzfläche als Bild ================= */
+function rng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0;
+  let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t;
+  return ((t^t>>>14)>>>0)/4294967296; }; }
+const FACECACHE={};
+function woodFace(v,seed){
+  const key=v+'_'+seed; if(FACECACHE[key]) return FACECACHE[key];
+  const R=rng(seed*97+v);
+  let grain='';
+  for(let i=0;i<20;i++){
+    const y=R()*112-6, amp=1+R()*2.4, w=0.4+R()*1.1, op=0.05+R()*0.1;
+    const col=['#a87f48','#bb955f','#96703c'][Math.floor(R()*3)];
+    grain+=`<path d="M-6 ${y.toFixed(1)} C 30 ${(y-amp).toFixed(1)}, 70 ${(y+amp).toFixed(1)}, `
+         + `106 ${y.toFixed(1)}" stroke="${col}" stroke-width="${w.toFixed(2)}" fill="none" `
+         + `opacity="${op.toFixed(2)}"/>`;
+  }
+  let pips='';
+  (PIPS[v]||[]).forEach(k=>{
+    const cx=25+25*(k%3), cy=25+25*Math.floor(k/3), pr=8.6;
+    pips+=`<circle cx="${cx}" cy="${cy}" r="${pr}" fill="url(#h)"/>`
+        + `<path d="M ${cx-8.2} ${cy+2.2} A ${pr} ${pr} 0 0 1 ${cx+2.2} ${cy-8.3}" `
+        + `stroke="#0f0b05" stroke-width="2.2" fill="none" opacity=".38" stroke-linecap="round"/>`
+        + `<path d="M ${cx+7.4} ${cy+2.6} A 7.6 7.6 0 0 1 ${cx-2.6} ${cy+7.4}" `
+        + `stroke="#c9a465" stroke-width="1.7" fill="none" opacity=".55" stroke-linecap="round"/>`
+        + `<circle cx="${cx}" cy="${cy}" r="${pr+0.6}" fill="none" stroke="#8d6a3a" `
+        + `stroke-width=".9" opacity=".45"/>`;
+  });
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs>`
+   + `<linearGradient id="w" x1=".1" y1="0" x2=".6" y2="1">`
+   + `<stop offset="0" stop-color="#f2ddb6"/><stop offset=".5" stop-color="#e7cd9d"/>`
+   + `<stop offset="1" stop-color="#d8b985"/></linearGradient>`
+   + `<linearGradient id="l" x1="0" y1="0" x2=".25" y2="1">`
+   + `<stop offset="0" stop-color="#fff9ec" stop-opacity=".5"/>`
+   + `<stop offset=".45" stop-color="#fff9ec" stop-opacity="0"/>`
+   + `<stop offset="1" stop-color="#8a6531" stop-opacity=".22"/></linearGradient>`
+   + `<radialGradient id="h" cx=".4" cy=".36" r=".78">`
+   + `<stop offset="0" stop-color="#3d2a12"/><stop offset=".6" stop-color="#241806"/>`
+   + `<stop offset="1" stop-color="#150e04"/></radialGradient>`
+   + `<clipPath id="c"><rect width="100" height="100"/></clipPath></defs>`
+   + `<g clip-path="url(#c)"><rect width="100" height="100" fill="url(#w)"/>`
+   + grain + `<rect width="100" height="100" fill="url(#l)"/>` + pips + `</g>`
+   + `<rect x=".6" y=".6" width="98.8" height="98.8" fill="none" stroke="#a57f47" `
+   + `stroke-width="1.2" opacity=".5"/></svg>`;
+  return FACECACHE[key]='url("data:image/svg+xml,'+encodeURIComponent(svg)+'")';
+}
+
+/* ================= Körper bauen ================= */
+const CUBE=[
+  {v:1,n:'0,0,1',   t:`translateZ(${HALF}px)`},
+  {v:6,n:'0,0,-1',  t:`rotateY(180deg) translateZ(${HALF}px)`},
+  {v:2,n:'1,0,0',   t:`rotateY(90deg) translateZ(${HALF}px)`},
+  {v:5,n:'-1,0,0',  t:`rotateY(-90deg) translateZ(${HALF}px)`},
+  {v:3,n:'0,-1,0',  t:`rotateX(90deg) translateZ(${HALF}px)`},
+  {v:4,n:'0,1,0',   t:`rotateX(-90deg) translateZ(${HALF}px)`}];
+const FACE={1:[0,0],6:[0,180],2:[0,-90],5:[0,90],3:[-90,0],4:[90,0]};
+function pipHTML(v){
+  const on=PIPS[v]||[]; let g='';
+  for(let k=0;k<9;k++) g+=on.includes(k)?'<i></i>':'<i style="visibility:hidden"></i>';
+  return g;
+}
+function buildBody(i,seed){
+  if(i<5) return CUBE.map(f=>
+    `<div class="f f6" data-v="${f.v}" data-n="${f.n}" style="transform:${f.t}"></div>`).join('');
+  return D10F.map((f,k)=>{
+    const m=[...f.ex,0,...f.ey,0,...f.n,0,...f.c,1].map(x=>Math.round(x*1e4)/1e4).join(',');
+    const cp=f.loc.map(([x,y])=>`${(50+x/BOX*100).toFixed(2)}% ${(50+y/BOX*100).toFixed(2)}%`).join(',');
+    const cy=f.loc.reduce((s,p)=>s+p[1],0)/4;
+    return `<div class="f f10" data-face="${k}" style="width:${BOX}px;height:${BOX}px;
+      left:50%;top:50%;margin:${-BOX/2}px;background:#c8202e;
+      transform:matrix3d(${m});clip-path:polygon(${cp})">
+      <b style="top:${(BOX/2+cy-7).toFixed(1)}px">${f.num}</b></div>`;
+  }).join('');
+}
+
+const ease=p=>1-Math.pow(1-p,2.4);
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function tween(dur,fn){
+  return new Promise(res=>{
+    const t0=performance.now();
+    (function step(now){
+      const p=Math.min(1,(now-t0)/dur); fn(p);
+      p<1?requestAnimationFrame(step):res();
+    })(t0);
+  });
+}
+function ripple(x,y){
+  const r=document.createElement('div');
+  r.className='ring'; r.style.left=x+'px'; r.style.top=y+'px';
+  boardEl.appendChild(r); r.classList.add('go');
+  setTimeout(()=>r.remove(),460);
+}
+async function throwDie(d,target,delay){
+  const [erx,ery,erz]=restRot(d);
+  if(slowMo){ d.x=target.x; d.y=target.y; d.rx=erx; d.ry=ery; d.rz=erz; return place(d,0); }
+  await wait(delay);
+  const from={x:d.x,y:d.y}, rx0=d.rx, ry0=d.ry, rz0=d.rz;
+  const spinX=(Math.random()<0.5?-1:1)*(2+Math.floor(Math.random()*3))*360;
+  const spinY=(Math.random()<0.5?-1:1)*(1+Math.floor(Math.random()*3))*360;
+  const rxEnd=erx+spinX, ryEnd=ery+spinY, rzEnd=erz;
+  const mid=Math.random()<0.5?nearWall():null;
+  const legs=mid?[[from,mid,300,88,0,0.62],[mid,target,320,36,0.62,0.38]]
+                :[[from,target,510,120,0,1]];
+  for(const [a,b,dur,hi,r0,rk] of legs){
+    await tween(dur,p=>{
+      const e=r0?ease(p):p, q=r0+(r0?ease(p):p)*rk;
+      d.x=a.x+(b.x-a.x)*e; d.y=a.y+(b.y-a.y)*e;
+      d.rx=rx0+(rxEnd-rx0)*q; d.ry=ry0+(ryEnd-ry0)*q; d.rz=rz0+(rzEnd-rz0)*q;
+      place(d,hi*4*p*(1-p),1+0.05*Math.sin(Math.PI*p));
+    });
+    if(mid&&a===from) ripple(mid.x,mid.y);
+  }
+  d.x=target.x; d.y=target.y; d.rx=rxEnd; d.ry=ryEnd; d.rz=rzEnd;
+  ripple(target.x,target.y+6);
+  await tween(210,p=>place(d, 10*Math.sin(Math.PI*p)*(1-p), 1+0.12*Math.sin(Math.PI*p)*(1-p)));
+  place(d,0);
+}
+
+/* Endlage: welche Drehung legt den gewürfelten Wert nach oben? */
+function restRot(d){
+  if(d.i<5){ const [rx,ry]=FACE[d.v]||[0,0]; return [rx,ry,0]; }
+  const f=D10F.find(f=>f.num===d.v);
+  const [a,b]=faceCam(f.n);
+  const ey=rotXY(a,b,f.ey);                       // Ausrichtung der Ziffer
+  const rz=-Math.atan2(ey[0],ey[1])*180/Math.PI;  // aufrecht drehen
+  return [a,b,rz];
+}
+/* Licht von vorn links oben: jede Fläche wird nach ihrer Lage aufgehellt */
+function relight(d){
+  d.faces.forEach(f=>{
+    const n=rotXY(d.rx,d.ry,f.n);
+    const lit=0.58+0.46*Math.max(0, n[2]*0.8 - n[1]*0.4 - n[0]*0.22);
+    f.el.style.filter='brightness('+lit.toFixed(2)+')';
+  });
+}
+function place(d,h,scale){
+  const s=(scale||1)*SC, lift=h||0;
+  relight(d);
+  d.el.style.transform=`translate(${d.x-R}px,${d.y-R-lift}px) rotate(${d.rz}deg) scale(${s})`;
+  d.body.style.transform=`rotateX(${d.rx}deg) rotateY(${d.ry}deg)`;
+  const k=Math.max(0,Math.min(1,lift/120));
+  d.sh.style.transform=`translate(${2+k*7}px,${lift+k*4}px) scale(${1+k*0.55})`;
+  d.sh.style.opacity=String(0.55-k*0.32);
+}
+
+
+/* ---- Was ist mit diesem Wurf in welchem Kästchen zu holen? ---- */
+function scoreFor(row, d){
+  const sum=d.reduce((a,b)=>a+b,0), cnt={}; d.forEach(v=>cnt[v]=(cnt[v]||0)+1);
+  const has=n=>Object.values(cnt).some(c=>c>=n);
+  const kinds=n=>Object.keys(cnt).filter(k=>cnt[k]>=n).length;
+  const uniq=[...new Set(d)].sort((a,b)=>a-b);
+  let run=1,best=1;
+  for(let i=1;i<uniq.length;i++){ run=uniq[i]===uniq[i-1]+1?run+1:1; best=Math.max(best,run); }
+  const big=n=>{ const k=Object.keys(cnt).find(x=>cnt[x]>=n);
+    return k!==undefined && Object.keys(cnt).some(x=>x!==k && cnt[x]>=2); };
+  switch(row.id){
+    case 'e1':case 'e2':case 'e3':case 'e4':case 'e5':case 'e6':
+      return (cnt[row.die]||0)*row.die;
+    case 'l1':  return has(3)?sum:0;        case 'l2':  return has(4)?sum:0;
+    case 'l3':  return kinds(2)>=2?sum:0;   case 'l4':  return kinds(2)>=3?35:0;
+    case 'l5':  return kinds(3)>=2?45:0;    case 'l6':  return big(3)?25:0;
+    case 'l7':  return big(4)?45:0;         case 'l8':  return best>=4?30:0;
+    case 'l9':  return best>=5?40:0;        case 'l10': return best>=6?50:0;
+    case 'l11': return has(5)?50:0;         case 'l12': return has(6)?75:0;
+    case 'l13': return sum<=10?40:0;        case 'l14': return sum>=33?40:0;
+    case 'l15': return sum;                 case 'l16': return sum;
+    default: return 0;
+  }
+}
+/* Nur noch freie Kästchen vorschlagen, bestes zuerst */
+function suggestions(pid, d){
+  const s=sheet();
+  return ROWS.filter(r=>['count','sum','sum2','fixed'].includes(r.kind))
+    .filter(r=>{ const v=cellV(s,pid,r.id); return v===null||v===undefined; })
+    .map(r=>{
+      const raw=scoreFor(r,d), pts=r.kind==='sum2'?raw*2:raw;
+      let ex='';
+      if (UPPER.includes(r.id) && raw>0){
+        const b=bonusInfo(pid), rest=Math.max(0,b.need-raw);
+        ex = rest>0 ? `dann noch ${rest} bis 73` : 'damit ist der Bonus sicher';
+      } else if (r.kind==='sum2' && raw>0) ex=`${raw} Augen, doppelt`;
+      return {r, raw, pts, ex};
+    }).sort((a,b)=>b.pts-a.pts);
+}
+
+/* ---- DOM des Bretts einmal aufbauen, danach nur noch aktualisieren ---- */
+function boardHTML(){
+  return `<div class="plrow" id="plrow"></div>
+    <div class="board" id="board">
+      <svg class="hex" id="hex" aria-hidden="true"></svg>
+      <div class="cup" id="cup"><svg viewBox="0 0 120 120" aria-hidden="true">
+        <defs>
+          <linearGradient id="lea" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#4b4f7d"/><stop offset=".45" stop-color="#3a3e66"/>
+            <stop offset="1" stop-color="#23264a"/></linearGradient>
+          <linearGradient id="rimg" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#6d72a3"/><stop offset="1" stop-color="#3a3e66"/></linearGradient>
+        </defs>
+        <g class="cupg" id="cupg">
+          <path d="M30 27 L90 27 L80 97 Q60 107 40 97 Z" fill="url(#lea)"/>
+          <path d="M36 34 L44 34 L39 90 Z" fill="#fff" opacity=".13"/>
+          <path d="M34 40 L86 40" stroke="#8d92c4" stroke-width="1" stroke-dasharray="3 4" opacity=".55"/>
+          <ellipse cx="60" cy="27" rx="30" ry="10" fill="url(#rimg)"/>
+          <ellipse cx="60" cy="27" rx="23.5" ry="7.2" fill="#191c38"/>
+          <ellipse cx="60" cy="25.6" rx="23.5" ry="7.2" fill="#2a2e55"/>
+        </g></svg></div>
+      <div class="caption" id="cupCap"></div>
+    </div>
+    <div class="dicehint" id="dhint"></div>
+    <div class="row2" style="margin-top:0">
+      <button class="primary" id="rollBtn">Würfeln</button>
+      <button id="resetBtn">Neuer Zug</button>
+      <button id="doneBtn">Fertig</button></div>
+    <div id="sugghost"></div>`;
+}
+function makeDice(fresh){
+  boardEl.querySelectorAll('.wd,.ring').forEach(e=>e.remove());
+  dice=[];
+  for(let i=0;i<6;i++){
+    const st=board.state[i];
+    if(fresh){ st.v=null; st.inCup=true; st.rx=i<5?-14:26; st.ry=i<5?20:-34; st.rz=Math.random()*20-10; }
+    const el=document.createElement('div');
+    el.className='wd'; el.dataset.i=i;
+    el.innerHTML=`<div class="sh"></div><div class="body">${buildBody(i,i+1)}</div>`;
+    boardEl.appendChild(el);
+    if(i<5) el.querySelectorAll('.f6').forEach(fe=>{ fe.style.backgroundImage=woodFace(+fe.dataset.v,i+1); });
+    const d={i, v:st.v, inCup:st.inCup, x:st.x, y:st.y, rx:st.rx, ry:st.ry, rz:st.rz,
+             el, body:el.querySelector('.body'), sh:el.querySelector('.sh'), st, faces:[]};
+    d.faces=[...el.querySelectorAll('.f')].map((fe,k)=>({el:fe,
+      n: i<5 ? CUBE[k].n.split(',').map(Number) : D10F[k].n.slice()}));
+    if(d.inCup||d.v===null){ const s=cupSlot(dice.filter(x=>x.inCup).length); d.x=s.x; d.y=s.y; d.inCup=true; }
+    else if(!onFelt(d.x,d.y)){ d.x=W/2; d.y=HEXH/2; }
+    dice.push(d); place(d,0);
+  }
+  tidyCup();
+}
+function saveDice(){ dice.forEach(d=>{ Object.assign(d.st,
+  {v:d.v,inCup:d.inCup,x:d.x,y:d.y,rx:d.rx,ry:d.ry,rz:d.rz}); }); }
+
+async function doRoll(){
+  const cupDice=dice.filter(d=>d.inCup);
+  if(!board||board.busy||board.roll>=3||!cupDice.length) return;
+  board.busy=true; board.roll++; updateBoard();
+  cupG.classList.add('pour');
+  if(navigator.vibrate) navigator.vibrate(12);
+  const taken=dice.filter(d=>!d.inCup).map(d=>({x:d.x,y:d.y}));
+  await Promise.all(cupDice.map((d,k)=>{
+    const t=freeSpot(taken); taken.push(t);
+    d.inCup=false;
+    d.v = d.i<5 ? 1+Math.floor(Math.random()*6) : Math.floor(Math.random()*10);
+    return throwDie(d,t,130+k*75);
+  }));
+  cupG.classList.remove('pour');
+  board.busy=false; saveDice(); pushDice(); updateBoard();
+}
+
+/* ---- Ziehen ---- */
+let drag=null;
+function bindBoard(){
+  boardEl.addEventListener('pointerdown',e=>{
+    const el=e.target.closest('.wd'); if(!el||board.busy) return;
+    const d=dice[+el.dataset.i]; if(d.v===null) return;
+    const r=boardEl.getBoundingClientRect();
+    drag={d,dx:d.x-(e.clientX-r.left),dy:d.y-(e.clientY-r.top)};
+    el.setPointerCapture(e.pointerId); el.classList.add('grab');
+    place(d,12,1.08); e.preventDefault();
+  });
+  boardEl.addEventListener('pointermove',e=>{
+    if(!drag) return;
+    const r=boardEl.getBoundingClientRect();
+    drag.d.x=e.clientX-r.left+drag.dx; drag.d.y=e.clientY-r.top+drag.dy;
+    place(drag.d,12,1.08);
+    cupEl.classList.toggle('over',overCup(drag.d));
+  });
+  boardEl.addEventListener('pointerup',endDrag);
+  boardEl.addEventListener('pointercancel',endDrag);
+}
+function overCup(d){ return d.x>W/2-CUPW/2-10 && d.x<W/2+CUPW/2+10 && d.y>HEXH+4; }
+function endDrag(){
+  if(!drag) return;
+  const d=drag.d; d.el.classList.remove('grab'); cupEl.classList.remove('over');
+  if(overCup(d)){
+    d.inCup=true;
+    const n=dice.filter(x=>x.inCup&&x!==d).length, s=cupSlot(n);
+    d.x=s.x; d.y=s.y;
+    if(navigator.vibrate) navigator.vibrate(8);
+  } else {
+    d.inCup=false;
+    if(!onFelt(d.x,d.y)){
+      const c={x:W/2,y:HEXH/2}; let lo=0,hi=1;
+      for(let k=0;k<24;k++){const m=(lo+hi)/2; onFelt(c.x+(d.x-c.x)*m,c.y+(d.y-c.y)*m)?lo=m:hi=m;}
+      d.x=c.x+(d.x-c.x)*lo; d.y=c.y+(d.y-c.y)*lo;
+    }
+  }
+  place(d,0); drag=null; tidyCup(); saveDice(); pushDice(); updateBoard();
+}
+function tidyCup(){
+  dice.filter(d=>d.inCup).forEach((d,n)=>{const s=cupSlot(n); d.x=s.x; d.y=s.y; place(d,0);});
+}
+
+/* ---- Öffnen und Aktualisieren ---- */
+function openBoard(){
+  const ps=livePlayers(sheet());
+  if(!board) board=newBoard(lastPid&&ps.some(p=>p.id===lastPid)?lastPid:ps[0].id);
+  if(!ps.some(p=>p.id===board.pid)) board.pid=ps[0].id;
+  lastPid=board.pid;
+  mode='dice'; sbFoot.style.display='none';
+  document.getElementById('sbTitle').textContent='Würfelbrett';
+  sbBody.innerHTML=boardHTML();
+  boardEl=document.getElementById('board'); hexEl=document.getElementById('hex');
+  cupEl=document.getElementById('cup'); cupG=document.getElementById('cupg');
+  cupCap=document.getElementById('cupCap');
+  geo(); makeDice(false); bindBoard(); updateBoard();
+  openBox();
+}
+function updateBoard(){
+  if(!boardEl||!document.body.contains(boardEl)) return;
+  const ps=livePlayers(sheet()), p=ps.find(x=>x.id===board.pid);
+  const inCup=dice.filter(d=>d.inCup).length;
+  document.getElementById('sbSub').textContent =
+    (p&&p.name.v||'Spieler') + (board.roll?` · Wurf ${board.roll} von 3`:' · noch nicht gewürfelt');
+  document.getElementById('plrow').innerHTML = ps.length>1
+    ? ps.map(x=>`<button data-pl="${x.id}" class="${x.id===board.pid?'on':''}">${esc(x.name.v)||'Spieler'}</button>`).join('')
+    : '';
+  cupCap.textContent = inCup ? inCup+' im Becher' : 'Becher leer';
+  const btn=document.getElementById('rollBtn');
+  btn.textContent = board.roll?`Nochmal (${inCup})`:'Würfeln';
+  btn.disabled = board.busy||board.roll>=3||inCup===0;
+  document.getElementById('dhint').textContent =
+    board.roll===0?'Fünf Holzwürfel und der Zehnseiter mit 0 bis 9'
+    :board.roll<3?'Zieh in den Becher, was nochmal geworfen werden soll'
+    :'Dritter Wurf – jetzt eintragen';
+
+  const host=document.getElementById('sugghost');
+  if(board.roll===0||board.busy||dice.some(d=>d.v===null)){ host.innerHTML=''; return; }
+  const list=suggestions(board.pid, dice.map(d=>d.v));
+  const hit=list.filter(x=>x.pts>0), miss=list.filter(x=>x.pts===0);
+  host.innerHTML = `<div class="sub" style="margin:14px 0 6px">Eintragen bei</div><div class="sugg">`
+    + hit.map((x,i)=>`<button data-enter="${x.r.id}" data-raw="${x.raw}" class="${i===0?'top':''}">
+        <span><span class="nm">${x.r.name}</span>${x.ex?`<span class="ex">${x.ex}</span>`:''}</span>
+        <span class="pt">${x.pts}</span></button>`).join('')
+    + (miss.length?`<div class="sub" style="margin:10px 0 6px">oder streichen</div>`
+       + miss.map(x=>`<button data-enter="${x.r.id}" data-raw="0"><span class="nm">${x.r.name}</span>
+           <span class="pt nil">0</span></button>`).join('') : '')
+    + `</div>`;
+}
+function enterFromBoard(rowId, raw){
+  setCell(sheet(), board.pid, rowId, raw);
+  board = newBoard(board.pid); pushDice(); touched(); closeBox();
+}
+
+/* ======================= Coop ======================= */
+const BROKER = {host:'broker.hivemq.com', port:8884, path:'/mqtt'};
+const ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const makeCode = () => Array.from({length:4},()=>ALPHA[Math.floor(Math.random()*ALPHA.length)]).join('');
+let room = null, client = null, connected = false, retryT = null;
+/* Wer einer Runde beitritt, bringt sein leeres Blatt nicht mit hinein */
+let joining = false, joinT = null;
+/* Bei wackligem Netz stirbt die Verbindung oft lautlos. Deshalb:
+   jede eigene Nachricht kommt als Echo zurück – bleibt es aus, wird neu verbunden. */
+let lastRx=0, lastPub=0, echoWait=0, tries=0, stale=false;
+let nRx=0, nTx=0, lastPing=null, lastErr='', connecting=false, pingAt=0;
+/* Jede Nachricht trägt einen Fingerabdruck des Blocks und die Zahl der Einträge.
+   Weicht ein anderes Gerät ab, weiß die App: wir sind nicht gleichauf. */
+let peers={}, divergedSince=0, lastNudge=0, lastResub=0;
+const fpOf = s => { let x=5381; for(let i=0;i<s.length;i++) x=((x*33)^s.charCodeAt(i))>>>0; return x.toString(36); };
+const myFp = () => fpOf(canon(state.sheets));
+const myCount = () => liveSheets().reduce((n,s)=>n+Object.values(s.cells)
+  .filter(c=>c&&c.v!==null&&c.v!==undefined).length, 0);
+function peerGap(){                       // größte Abweichung unter den zuletzt gehörten Geräten
+  const t=Date.now(), me=myFp(); let worst=null;
+  Object.entries(peers).forEach(([id,p])=>{
+    if(t-p.t>60000 || !p.fp || p.fp===me) return;
+    if(!worst || Math.abs(p.n-myCount())>Math.abs(worst.n-myCount())) worst={id,...p};
+  });
+  return worst;
+}
+/* Strom sparen: nur solange gespielt wird, wird häufig gefunkt.
+   Passiert nichts, geht der Takt herunter; im Hintergrund pausiert alles. */
+let lastAct=Date.now(), sleeping=false, hiddenAt=0;
+const ACTIVE_MS=12000, IDLE_MS=60000, ACTIVE_WINDOW=90000, SLEEP_AFTER=45000;
+const busyNow = () => Date.now()-lastAct < ACTIVE_WINDOW;
+function activity(){ lastAct=Date.now(); if(sleeping) wake(); }
+const NOW = () => Date.now();
+const blankSheet = s => Object.values(s.cells||{}).every(c=>!c||c.v===null||c.v===undefined)
+                     && s.players.every(p=>!(p.name&&p.name.v));
+const nothingOwnYet = () => liveSheets().every(blankSheet);
+
+function chip(){
+  const c = document.getElementById('coopChip'), t = document.getElementById('coopText');
+  c.className = '';
+  if (!room){ t.textContent = 'Nur dieses Handy'; }
+  else if (connected && !stale && divergedSince){ c.className='wait';
+    t.textContent = 'Runde '+room+' · gleicht ab'; }
+  else if (connected && !stale){ c.className='live'; t.textContent = 'Runde '+room+' · live'; }
+  else if (connected){ c.className='wait'; t.textContent = 'Runde '+room+' · wackelig'; }
+  else if (sleeping){ c.className='wait'; t.textContent = 'Runde '+room+' · pausiert'; }
+  else { c.className='wait'; t.textContent = 'Runde '+room+' · verbinde…'; }
+}
+const topic     = () => 'kniffelx/'+room+'/v2';
+const diceTopic = () => 'kniffelx/'+room+'/dice';
+let remoteDice = null, stripT = null, stripSeen = '';
+function pushDice(){
+  if (!room || !connected || !client || !board || !board.roll) return;
+  try{
+    const p = livePlayers(sheet()).find(x=>x.id===board.pid);
+    const msg = new Paho.Message(JSON.stringify({by:DEV, name:(p&&p.name.v)||'',
+      vals:board.state.map(s=>s.v===null?0:s.v), roll:board.roll}));
+    msg.destinationName = diceTopic(); msg.qos = 0; msg.retained = true;
+    client.send(msg);
+  }catch(e){}
+}
+function onDice(d){
+  if (!d || d.by===DEV || !Array.isArray(d.vals) || !d.roll) return;
+  const neu = {name:String(d.name||'').slice(0,24).replace(/[<>&"']/g,''),
+    roll:Math.max(1,Math.min(3, +d.roll||1)),
+    vals:d.vals.slice(0,6).map(v=>Number.isFinite(+v)?Math.max(0,Math.min(9,+v)):0)};
+  if (stripKey(neu)===stripSeen) return;   // genau dieser Wurf wurde weggetippt
+  remoteDice = neu; drawStrip();
+  clearTimeout(stripT);
+  stripT = setTimeout(()=>{ remoteDice=null; drawStrip(); }, 20000);   // blendet sich selbst aus
+}
+function drawStrip(){
+  const el = document.getElementById('diceStrip');
+  if (!remoteDice){ el.style.display='none'; return; }
+  el.style.display='flex';
+  el.innerHTML = `<span class="who">${remoteDice.name||'Mitspieler'} · Wurf ${remoteDice.roll}</span>
+    <span class="mini">${remoteDice.vals.map((v,i)=>`<span class="${i===5?'x':''}">${v}</span>`).join('')}</span>
+    <button class="x" id="stripX" title="ausblenden">✕</button>`;
+  document.getElementById('stripX').onclick=()=>{
+    stripSeen = stripKey(remoteDice);      // dieser Wurf bleibt weg, der nächste kommt wieder
+    remoteDice=null; clearTimeout(stripT); drawStrip();
+  };
+}
+const stripKey = d => (d.name||'')+'|'+d.roll+'|'+d.vals.join(',');
+
+/* Zwei gleichzeitige Verbindungen mit derselben Kennung werfen sich gegenseitig
+   vom Server – das erzeugt eine Endlosschleife aus Neuverbinden und Senden.
+   Deshalb: immer nur ein Versuch, und alte Verbindungen werden stillgelegt. */
+function connect(){
+  retryT=null;
+  if (!room || !window.Paho || connecting || sleeping) return;
+  if (client && client.isConnected()){ connected=true; chip(); return; }
+  connecting = true;
+  if (client){                       // alte Verbindung abklemmen, damit sie nichts mehr auslöst
+    try{ client.onConnectionLost=null; client.onMessageArrived=null; }catch(e){}
+    try{ client.disconnect(); }catch(e){}
+    client=null;
+  }
+  const me = new Paho.Client(BROKER.host, BROKER.port, BROKER.path, 'kx'+DEV);
+  client = me;
+  client.onConnectionLost = (e) => {
+    if (client !== me) return;       // Meldung einer längst ersetzten Verbindung
+    connecting=false;
+    connected=false; echoWait=0;
+    lastErr=(e&&e.errorMessage||'Verbindung abgebrochen').slice(0,60); chip();
+    clearTimeout(retryT);
+    retryT=setTimeout(connect, Math.min(20000, 1500*Math.pow(1.7, tries++)));  // wachsender Abstand
+  };
+  client.onMessageArrived = m => { try{
+    const p = JSON.parse(m.payloadString);
+    lastRx=NOW(); nRx++;
+    if (p && p.by===DEV){                       // eigenes Echo: Leitung steht
+      if(pingAt) lastPing=lastRx-pingAt;
+      echoWait=0; if(stale){ stale=false; chip(); } }
+    if (String(m.destinationName||'').endsWith('/dice')) onDice(p); else onRemote(p);
+  }catch(e){} };
+  client.connect({
+    /* cleanSession:false -> der Server hebt verpasste Nachrichten auf und liefert sie
+       beim nächsten Verbinden nach. Genau das fehlt bei wackligem Netz. */
+    useSSL:true, timeout:10, keepAliveInterval:40, cleanSession:false, reconnect:false,
+    onSuccess: () => { if(client!==me) return;
+      connecting=false; connected=true; tries=0; stale=false; lastRx=NOW(); chip();
+      client.subscribe(topic(),{qos:1}); client.subscribe(diceTopic(),{qos:0});
+      if (joining){ clearTimeout(joinT);
+        joinT=setTimeout(()=>{ joining=false; push(); }, 5000); }  // niemand da? dann doch senden
+      else setTimeout(push,600); },
+    onFailure: (e) => { if(client!==me) return;
+      connecting=false; connected=false;
+      lastErr=(e&&e.errorMessage||'Verbindung abgelehnt').slice(0,60); chip();
+      clearTimeout(retryT);
+      retryT=setTimeout(connect, Math.min(20000, 2000*Math.pow(1.6, tries++))); }
+  });
+  chip();
+}
+function leave(){
+  clearTimeout(retryT); clearTimeout(joinT); joining=false;
+  try{ if(client && client.isConnected()) client.disconnect(); }catch(e){}
+  client=null; connected=false; room=null; remoteDice=null; stale=false; echoWait=0; drawStrip();
+  localStorage.removeItem(RKEY); history.replaceState(null,'',location.pathname);
+  chip();
+}
+let pushPend=false, pushGapT=null;
+const MIN_GAP=2000;                  // höchstens alle zwei Sekunden senden
+function push(){
+  if (!room || !connected || !client || sleeping) return;
+  const gap = NOW()-lastPub;
+  if (gap < MIN_GAP){                // zu schnell hintereinander: einmal nachholen, nicht stapeln
+    if (pushPend) return;
+    pushPend=true;
+    clearTimeout(pushGapT);
+    pushGapT=setTimeout(()=>{ pushPend=false; doPush(); }, MIN_GAP-gap);
+    return;
+  }
+  doPush();
+}
+function doPush(){
+  if (!room || !connected || !client || sleeping) return;
+  try{
+    const mine = lastPid && livePlayers(sheet()).find(x=>x.id===lastPid);
+    const msg = new Paho.Message(JSON.stringify({by:DEV, sheets:state.sheets,
+      fp:myFp(), n:myCount(), ver:VERSION.split(' ')[0], who:(mine&&mine.name.v)||''}));
+    lastPub=NOW(); nTx++; pingAt=lastPub; if(!echoWait) echoWait=lastPub;
+    msg.destinationName = topic(); msg.qos = 1; msg.retained = true;
+    client.send(msg);
+  }catch(e){}
+}
+let pushT=null;
+function pushSoon(){ clearTimeout(pushT); pushT=setTimeout(push,350); }
+
+function nap(){                       // Verbindung schlafen legen
+  if(sleeping||!room) return;
+  sleeping=true; clearTimeout(retryT); retryT=null;
+  try{ if(client&&client.isConnected()) client.disconnect(); }catch(e){}
+  connected=false; echoWait=0; chip();
+}
+function wake(){                       // und wieder aufwecken
+  if(!room) return;
+  sleeping=false; hiddenAt=0;
+  if(!connected){ clearTimeout(retryT); tries=0; retryT=setTimeout(connect,150); }
+  else push();
+  chip();
+}
+/* Alle paar Sekunden nachsehen, ob die Runde noch wirklich verbunden ist */
+setInterval(()=>{
+  if(!room || sleeping) return;
+  if(document.hidden){                 // im Hintergrund nach kurzer Frist abschalten
+    if(!hiddenAt) hiddenAt=Date.now();
+    else if(Date.now()-hiddenAt>SLEEP_AFTER) nap();
+    return;
+  }
+  hiddenAt=0;
+  const t=NOW();
+  if(!connected){ if(!retryT){ retryT=setTimeout(connect,300); } return; }
+  if(echoWait && t-echoWait>7000){        // eigene Nachricht kam nie zurück
+    stale=true; chip(); echoWait=0;
+    try{ client.disconnect(); }catch(e){}  // löst onConnectionLost und Neuaufbau aus
+    connected=false; clearTimeout(retryT); retryT=setTimeout(connect,600);
+    return;
+  }
+  if(divergedSince){                       // Blöcke unterscheiden sich: nachfassen
+    if(t-lastNudge>6000){
+      lastNudge=t;
+      push();                                   // nur senden
+      /* Erneut anmelden liefert den gespeicherten Stand nach – aber selten,
+         denn zwischen Ab- und Anmeldung können Nachrichten verlorengehen. */
+      if(t-lastResub>30000){ lastResub=t;
+        try{ client.subscribe(topic(),{qos:1}); }catch(e){} }
+    }
+    if(t-divergedSince>45000) divergedSince=0;   // aufgegeben, Anzeige nicht ewig blockieren
+  }
+  if(t-lastPub > (divergedSince?4000:(busyNow()?ACTIVE_MS:IDLE_MS))) push();             // hält den gespeicherten Stand frisch und prüft die Leitung
+}, 5000);
+
+/* Nach Bildschirmsperre, App-Wechsel oder Netzwechsel sofort nachfassen */
+['visibilitychange','online','focus','pageshow'].forEach(ev=>
+  addEventListener(ev, ()=>{
+    if(!room) return;
+    if(document.hidden){ hiddenAt=hiddenAt||Date.now(); return; }
+    lastAct=Date.now();
+    if(sleeping) return wake();
+    if(connected) push(); else { clearTimeout(retryT); retryT=setTimeout(connect,200); }
+  }));
+addEventListener('pointerdown', ()=>{ if(room) activity(); }, {passive:true, capture:true});
+
+/* Zusammenführen: bei jedem Feld gewinnt der neuere Eintrag */
+/* Neuerer Eintrag gewinnt; bei exakt gleichem Stand entscheidet die Gerätekennung,
+   damit alle Geräte unabhängig voneinander zum selben Ergebnis kommen. */
+const pick = (a,b) => !a ? b : !b ? a
+  : b.t>a.t ? b : a.t>b.t ? a
+  : ((b.d||'')>(a.d||'') ? b : a);
+function mergeSheet(a,b){
+  const out = {id:a.id, created:Math.min(a.created,b.created), del:pick(a.del,b.del), players:[], cells:{}};
+  const pm = new Map();
+  a.players.concat(b.players).forEach(p=>{
+    const ex = pm.get(p.id);
+    pm.set(p.id, ex ? {id:p.id, created:Math.min(ex.created,p.created),
+                       name:pick(ex.name,p.name), del:pick(ex.del,p.del)} : {...p});
+  });
+  out.players = [...pm.values()].sort((x,y)=>x.created-y.created);
+  new Set(Object.keys(a.cells).concat(Object.keys(b.cells))).forEach(k=>{
+    out.cells[k] = pick(a.cells[k], b.cells[k]);
+  });
+  return out;
+}
+function mergeAll(mine, theirs){
+  const m = new Map();
+  mine.forEach(s=>m.set(s.id,s));
+  theirs.forEach(s=>{ const ex=m.get(s.id); m.set(s.id, ex?mergeSheet(ex,s):s); });
+  return [...m.values()].sort((x,y)=>x.created-y.created);
+}
+const OKID = /^[A-Za-z0-9_-]{1,16}$/;
+const okNum = (n,max) => (typeof n==='number' && isFinite(n) && n>=0 && n<=max) ? n : null;
+const okT   = t => (typeof t==='number' && isFinite(t) && t>=0) ? t : 0;
+const okTxt = s => (typeof s==='string' ? s : '').replace(/[<>&"']/g,'').slice(0,24);
+const okDel = d => ({v: (d && d.v) ? 1 : 0, t: okT(d && d.t), d: okTxt(d && d.d)});
+const ROWIDS = new Set(ROWS.filter(r=>r.kind!=='calc'&&r.kind!=='gap').map(r=>r.id));
+/* Fremde Nachrichten koennen alles Moegliche enthalten – hier wird nur
+   durchgelassen, was wirklich wie ein Kniffelblock aussieht. */
+function sane(list){
+  if (!Array.isArray(list)) return [];
+  return list.slice(0,40).filter(s=>s && OKID.test(s.id||'')).map(s=>{
+    const ids = new Set();
+    const players = (Array.isArray(s.players)?s.players:[]).slice(0,MAXP*2)
+      .filter(p=>p && OKID.test(p.id||'') && !ids.has(p.id) && ids.add(p.id))
+      .map(p=>({id:p.id, created:okT(p.created),
+                name:{v:okTxt(p.name&&p.name.v), t:okT(p.name&&p.name.t),
+                      d:okTxt(p.name&&p.name.d)}, del:okDel(p.del)}));
+    const cells = {};
+    Object.keys(s.cells||{}).slice(0,MAXP*2*ROWIDS.size).forEach(k=>{
+      const [pid,row] = String(k).split('~');
+      if (!ids.has(pid) || !ROWIDS.has(row)) return;
+      const c = s.cells[k]; if (!c || typeof c!=='object') return;
+      cells[pid+'~'+row] = {v:(c.v===null||c.v===undefined)?null:okNum(c.v,300),
+                            t:okT(c.t), d:okTxt(c.d)};
+    });
+    return {id:s.id, created:okT(s.created), del:okDel(s.del), players, cells};
+  });
+}
+/* Vergleich unabhängig von Reihenfolge und Nebenfeldern – sonst sieht jede
+   empfangene Nachricht "anders" aus und löst eine endlose Antwortkette aus. */
+function canon(sheets){
+  return JSON.stringify(sheets.slice().sort((a,b)=>a.id<b.id?-1:1).map(s=>({
+    i:s.id, c:s.created, x:[s.del.v,s.del.t],
+    p:s.players.slice().sort((a,b)=>a.id<b.id?-1:1)
+       .map(q=>[q.id,q.created,q.name.v,q.name.t,q.del.v,q.del.t]),
+    z:Object.keys(s.cells).sort().map(k=>[k,s.cells[k].v,s.cells[k].t])
+  })));
+}
+function onRemote(raw){
+  if (!raw || !Array.isArray(raw.sheets)) return;
+  const fromSelf = raw.by===DEV;
+  if (!fromSelf && typeof raw.by==='string' && raw.by.length<24){
+    const known = peers[raw.by] || {};
+    /* Ältere Fassungen schicken keinen Fingerabdruck. Die dürfen nicht als
+       "abweichend mit 0 Einträgen" gelten – sonst gleicht die App endlos ab. */
+    peers[raw.by] = raw.fp ? {fp:String(raw.fp).slice(0,12), n:+raw.n||0, t:Date.now(),
+        ver:String(raw.ver||'?').slice(0,8).replace(/[<>&"']/g,''),
+        who:String(raw.who||'').slice(0,24).replace(/[<>&"']/g,'')}
+      : {...known, fp:null, n:null, t:Date.now(),
+         ver:String(raw.ver||'alt').slice(0,8).replace(/[<>&"']/g,''),
+         who:String(raw.who||known.who||'').slice(0,24).replace(/[<>&"']/g,'')};
+  }
+  const doc = {sheets: sane(raw.sheets)};
+  if (!doc.sheets.length) return;
+  if (joining){                       // erste Nachricht der Runde
+    joining=false; clearTimeout(joinT);
+    if (nothingOwnYet()){             // eigenes Blatt ist unbenutzt: übernehmen statt dazulegen
+      state.sheets = doc.sheets;
+      state.activeId = (liveSheets()[0]||{}).id;
+      lastSig=''; render(); saveLocal();
+      return;
+    }
+  }
+  /* Die Uhren der Handys gehen unterschiedlich. Deshalb zählt nicht die Uhrzeit,
+     sondern eine Zahl, die immer über allem liegt, was wir je gesehen haben –
+     sonst verlieren die Einträge des Geräts mit der nachgehenden Uhr für immer. */
+  doc.sheets.forEach(s=>{
+    lastT = Math.max(lastT, s.created||0, (s.del&&s.del.t)||0);
+    s.players.forEach(pl=>{ lastT = Math.max(lastT, pl.created||0,
+      (pl.name&&pl.name.t)||0, (pl.del&&pl.del.t)||0); });
+    Object.values(s.cells).forEach(c=>{ if(c) lastT = Math.max(lastT, c.t||0); });
+  });
+  const before = canon(state.sheets);
+  const merged = mergeAll(state.sheets, doc.sheets);
+  state.sheets = merged;
+  if (!sheet() && liveSheets()[0]) state.activeId = liveSheets()[0].id;
+  const mergedStr = canon(merged);
+  if (mergedStr !== before){ lastAct=Date.now(); src='theirs'; render(); src='mine'; saveLocal(); flash(); maybeFinal(); }
+  /* Nur antworten, wenn wir wirklich etwas haben, das dem anderen fehlt –
+     und niemals auf das eigene Echo. */
+  if (!fromSelf && mergedStr !== canon(doc.sheets)) setTimeout(push, 600+Math.random()*900);
+  /* Nach dem Zusammenführen prüfen, ob wir wirklich gleichauf sind */
+  if (!fromSelf){
+    const me=myFp();
+    if (raw.fp && peers[raw.by] && peers[raw.by].fp && peers[raw.by].fp!==me){
+      if(!divergedSince) divergedSince=Date.now();
+    } else if (peerGap()===null) divergedSince=0;
+    chip();
+  }
+}
+let flashT=null;
+function flash(){
+  const c = document.getElementById('coopChip');
+  c.style.transform='scale(1.04)';
+  clearTimeout(flashT); flashT=setTimeout(()=>c.style.transform='',220);
+}
+
+/* Zeigt, was die Verbindung gerade wirklich tut */
+function diagText(){
+  const t=NOW(), s=x=>x? Math.round((t-x)/1000)+' s her':'noch nie';
+  return [
+    'Verbindung: '+(sleeping?'pausiert':connected?(stale?'wackelig':'steht'):'getrennt'),
+    'Takt: '+(busyNow()?'aktiv, alle 12 s':'ruhend, alle 60 s'),
+    'zuletzt empfangen: '+s(lastRx),
+    'zuletzt gesendet: '+s(lastPub),
+    'Nachrichten: '+nTx+' raus / '+nRx+' rein',
+    (()=>{ const t=Date.now(), mine=VERSION.split(' ')[0];
+      const alt=Object.values(peers).filter(p=>t-p.t<120000 && p.ver && p.ver!==mine);
+      if(!alt.length) return nRx>40&&nRx>nTx*6 ? '⚠ Ein anderes Handy sendet zu viel' : '';
+      return '⚠ '+alt.map(p=>(p.who||'ein Gerät')+' läuft auf '+p.ver).join(', ')+' – dort neu laden';
+    })(),
+    'Antwortzeit: '+(lastPing!==null?lastPing+' ms':'—'),
+    (()=>{ const g=peerGap();
+      return g ? '⚠ nicht gleichauf: du '+myCount()+' Einträge, anderes Gerät '+g.n
+               : 'Blöcke gleichauf: '+myCount()+' Einträge'; })(),
+    lastErr?('letzter Fehler: '+lastErr):''
+  ].filter(Boolean).join('<br>');
+}
+let diagT=null;
+function startDiag(){
+  clearInterval(diagT);
+  diagT=setInterval(()=>{
+    const el=document.getElementById('diag');
+    if(!el){ clearInterval(diagT); return; }
+    el.innerHTML=diagText();
+    const sub=document.getElementById('sbSub');
+    if(sub && room) sub.textContent = sleeping ? 'Pausiert – tippen weckt die Runde'
+      : connected ? (stale?'Verbindung wackelt – wird neu aufgebaut'
+                          :'Alle Geräte mit diesem Code sehen denselben Block')
+      : 'Verbindung wird aufgebaut…';
+  },1000);
+}
+/* Coop-Dialog */
+function openCoop(){
+  mode='coop'; sbFoot.style.display='none';
+  document.getElementById('sbTitle').textContent = room ? 'Gemeinsame Runde' : 'Zusammen spielen';
+  document.getElementById('sbSub').textContent = room
+    ? (connected?'Alle Geräte mit diesem Code sehen denselben Block':'Verbindung wird aufgebaut…')
+    : 'Ein Code, mehrere Handys, ein Block';
+  if (room){
+    sbBody.innerHTML = `<div class="code">${room}</div>
+      <div class="row2" style="margin-top:0"><button id="shareBtn">Code teilen</button>
+      <button id="syncBtn">Jetzt abgleichen</button></div>
+      <div class="row2"><button id="leaveBtn">Runde verlassen</button></div>
+      <div class="row2"><button class="primary" id="doneBtn">Fertig</button></div>
+      <div class="diag" id="diag"></div>
+      <div class="note">Version ${VERSION} – muss auf allen Handys gleich sein.<br>
+      Wer den Code kennt, sieht und ändert den Block. Es läuft über einen
+      öffentlichen Testserver – schreib also nichts hinein, was niemanden angehen soll.</div>`;
+  } else {
+    sbBody.innerHTML = `<div class="row2" style="margin-top:0">
+        <button class="primary" id="startBtn">Neue Runde starten</button></div>
+      <div class="note" style="text-align:center;margin:14px 0 8px">oder Code eines Freundes eingeben</div>
+      <input class="codein" id="joinIn" maxlength="4" placeholder="CODE" autocapitalize="characters" autocomplete="off">
+      <div class="row2"><button id="joinBtn">Beitreten</button><button id="doneBtn">Abbrechen</button></div>
+      <div class="note">Version ${VERSION} – muss auf allen Handys gleich sein.<br>
+      Danach darf jedes Gerät jede Spalte pflegen – du kannst also zwei Spieler
+      führen, während zwei Freunde sich selbst eintragen.</div>`;
+  }
+  openBox();
+  if(room){ const el=document.getElementById('diag'); if(el){ el.innerHTML=diagText(); startDiag(); } }
+}
+function enterRoom(code, isJoin){
+  room = code.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4);
+  if (room.length<4){ room=null; return; }
+  joining = !!isJoin;
+  localStorage.setItem(RKEY, room);
+  history.replaceState(null,'','#'+room);
+  connect(); openCoop();
+}
+
+/* ======================= Ereignisse ======================= */
+grid.addEventListener('click', e=>{
+  const kill = e.target.closest('[data-kill]');
+  if (kill){
+    const s = sheet(), p = s.players.find(x=>x.id===kill.dataset.kill);
+    if (p && confirm(`${p.name.v||'Diese Spalte'} entfernen?`)){ p.del = stamp(1); lastSig=''; touched(); }
+    return;
+  }
+  if (e.target.closest('#addP')){ sheet().players.push(newPlayer()); lastSig=''; touched(); return; }
+  const td = e.target.closest('td.cell');
+  if (!td) return;
+  if (['bonus','upperSum','upperTot','upperTot2'].includes(td.dataset.row)) return openBonus(td.dataset.p);
+  openPicker(td.dataset.row, td.dataset.p);
+});
+grid.addEventListener('input', e=>{
+  const inp = e.target.closest('[data-name]'); if(!inp) return;
+  const p = sheet().players.find(x=>x.id===inp.dataset.name);
+  if (p){ p.name = stamp(inp.value); saveLocal(); pushSoon(); }
+});
+
+document.getElementById('tabs').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  if (b.dataset.add){
+    const s = newSheet(livePlayers(sheet()).map(p=>p.name.v));
+    state.sheets.push(s); state.activeId = s.id; lastSig='';
+  } else if (b.dataset.del){
+    const ls = liveSheets(); const i = ls.findIndex(s=>s.id===sheet().id);
+    if (!confirm(`Blatt ${i+1} löschen?`)) return;
+    sheet().del = stamp(1);
+    const rest = liveSheets(); state.activeId = rest.length?rest[0].id:null;
+    if (!rest.length){ const s=newSheet(); state.sheets.push(s); state.activeId=s.id; }
+    lastSig='';
+  } else { state.activeId = b.dataset.i; lastSig=''; }
+  touched();
+});
+
+sbBody.addEventListener('click', e=>{
+  const b = e.target.closest('button, [data-die]'); if(!b) return;
+  if (b.id==='doneBtn')  return closeBox();
+  if (b.id==='finalNew'){ closeBox();
+    const s=newSheet(livePlayers(sheet()).map(p=>p.name.v));
+    state.sheets.push(s); state.activeId=s.id; lastSig=''; touched();
+    scEl.scrollTo({top:0,behavior:'smooth'}); return; }
+  if (b.id==='rollBtn')  return doRoll();
+  if (b.id==='resetBtn'){ board=newBoard(board.pid); makeDice(true); pushDice(); return updateBoard(); }
+  if (b.dataset.pl)      { board=newBoard(b.dataset.pl); lastPid=board.pid;
+                           makeDice(true); pushDice(); return updateBoard(); }
+  if (b.dataset.enter)   return enterFromBoard(b.dataset.enter, +b.dataset.raw);
+  if (b.id==='startBtn') return enterRoom(makeCode(), false);
+  if (b.id==='joinBtn')  { const v=document.getElementById('joinIn').value.trim(); if(v.length>=4) enterRoom(v, true); return; }
+  if (b.id==='syncBtn') { closeBox(); refresh(); return; }
+  if (b.id==='leaveBtn') { leave(); closeBox(); return; }
+  if (b.id==='shareBtn'){
+    const url = location.origin+location.pathname+'#'+room;
+    const txt = `Kniffel-Block, Code ${room}: ${url}`;
+    if (navigator.share) navigator.share({title:'Kniffel Extreme', text:txt}).catch(()=>{});
+    else { navigator.clipboard?.writeText(txt); b.textContent='Kopiert ✓'; }
+    return;
+  }
+  if (b.dataset.ok){
+    const i = document.getElementById('sbNum'); const v = parseInt(i.value,10);
+    if (!isNaN(v)) setVal(Math.max(0,Math.min(cur.r.max,v)));
+    return closeBox();
+  }
+  if (b.dataset.v!==undefined){ setVal(+b.dataset.v); closeBox(); }
+});
+sbBody.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); sbBody.querySelector('[data-ok]')?.click(); } });
+document.getElementById('sbClear').onclick = ()=>{ setVal(null); closeBox(); };
+document.getElementById('sbClose').onclick = ()=>{
+  const i = document.getElementById('sbNum');
+  if (i && i.value!==''){ sbBody.querySelector('[data-ok]')?.click(); return; }
+  closeBox();
+};
+veil.onclick = closeBox;
+document.getElementById('coopChip').onclick = openCoop;
+document.getElementById('diceBtn').onclick = openBoard;
+document.getElementById('standBtn').onclick = openFinal;
+document.querySelector('footer > div').onclick = openFinal;
+document.querySelector('footer > div').style.cursor='pointer';
+
+document.getElementById('newSheet').onclick = ()=>{
+  const s = newSheet(livePlayers(sheet()).map(p=>p.name.v));
+  state.sheets.push(s); state.activeId = s.id; lastSig='';
+  touched(); window.scrollTo({top:0,behavior:'smooth'});
+};
+document.getElementById('clearSheet').onclick = ()=>{
+  const ls = liveSheets(); const i = ls.findIndex(s=>s.id===sheet().id);
+  if (!confirm(`Alle Punkte auf Blatt ${i+1} löschen? Die Namen bleiben.`)) return;
+  const s = sheet();
+  livePlayers(s).forEach(p=>ROWS.forEach(r=>{ if(r.kind!=='calc'&&r.kind!=='gap') setCell(s,p.id,r.id,null); }));
+  touched();
+};
+
+/* ---- Kopfbereich beim Scrollen wegklappen ---- */
+const scEl=document.querySelector('.scroller'), bigHead=document.getElementById('bighead');
+let lastY=0;
+scEl.addEventListener('scroll',()=>{
+  const y=scEl.scrollTop;
+  if(y<14) bigHead.classList.remove('hide');
+  else if(y>lastY+6) bigHead.classList.add('hide');
+  else if(y<lastY-8) bigHead.classList.remove('hide');
+  lastY=y;
+},{passive:true});
+document.getElementById('sheetNow').onclick=()=>{
+  bigHead.classList.remove('hide');
+  scEl.scrollTo({top:0,behavior:'smooth'});
+};
+
+/* ---- Nach unten ziehen holt den Stand der Runde neu ---- */
+const pullBar=document.getElementById('pullbar'), pullTxt=document.getElementById('pulltext');
+const PULL_TRIGGER=56;
+let pullStart=null, pullNow=0, refreshing=false, pullId=null;
+function setPull(px, text){
+  pullNow=px;
+  pullBar.style.transform='translateY('+(px-14)+'px)';
+  pullBar.style.opacity = px>3 ? Math.min(1, px/40) : 0;
+  if(text) pullTxt.textContent=text;
+}
+function onPullStart(y){
+  if(refreshing) return;
+  pullStart = scEl.scrollTop<=2 ? y : null;   // nur ganz oben
+}
+function onPullMove(y){
+  if(refreshing) return false;
+  if(pullStart===null){                        // erst hochgescrollt, dann weitergezogen
+    if(scEl.scrollTop<=0){ pullStart=y; } else return false;
+  }
+  const dy=y-pullStart;
+  if(scEl.scrollTop>2){ pullStart=null; setPull(0); return false; }
+  if(dy<=0){ setPull(0); return false; }
+  setPull(Math.min(96, dy*0.6), dy*0.6>=PULL_TRIGGER ? 'Loslassen zum Aktualisieren'
+                                                     : 'Zum Aktualisieren ziehen');
+  return true;
+}
+function onPullEnd(){
+  if(pullStart===null) return;
+  const d=pullNow; pullStart=null;
+  pullBar.classList.add('snap');
+  if(d>=PULL_TRIGGER) refresh(); else setPull(0);
+}
+/* Holt den Stand der Runde neu und meldet ehrlich, was dabei herauskam */
+function refresh(){
+  if(refreshing) return;
+  refreshing=true; lastAct=Date.now(); if(sleeping) sleeping=false; pullBar.classList.add('busy');
+  pullBar.classList.add('snap'); setPull(PULL_TRIGGER,'Aktualisiere…');
+  const seen=lastRx;
+  if(room){
+    if(!connected){ clearTimeout(retryT); tries=0; connect(); }
+    else {
+      try{ client.subscribe(topic(),{qos:1}); }catch(e){}
+      try{ client.subscribe(diceTopic(),{qos:0}); }catch(e){}
+      echoWait=0; push();
+    }
+  }
+  setTimeout(()=>{
+    pullBar.classList.remove('busy');
+    const ok = lastRx>seen;                    // ist wirklich etwas angekommen?
+    setPull(PULL_TRIGGER, !room ? 'Du spielst allein – nichts abzugleichen'
+      : ok ? 'Stand geholt' : connected ? 'Keine Antwort – versuche weiter' : 'Keine Verbindung');
+    if(room && !ok){ stale=true; chip(); clearTimeout(retryT); tries=0;
+                     try{ client.disconnect(); }catch(e){} connected=false; retryT=setTimeout(connect,400); }
+    setTimeout(()=>{ setPull(0); pullBar.classList.remove('snap'); refreshing=false; }, 1300);
+  }, 2500);
+}
+scEl.addEventListener('touchstart', e=>{
+  if(e.touches.length!==1) return;
+  pullId=e.touches[0].identifier; pullBar.classList.remove('snap');
+  onPullStart(e.touches[0].clientY);
+}, {passive:true});
+scEl.addEventListener('touchmove', e=>{
+  const t=[...e.touches].find(x=>x.identifier===pullId); if(!t) return;
+  if(onPullMove(t.clientY) && e.cancelable) e.preventDefault();
+}, {passive:false});
+scEl.addEventListener('touchend', onPullEnd, {passive:true});
+scEl.addEventListener('touchcancel', ()=>{ pullStart=null; setPull(0); }, {passive:true});
+
+/* ---- Spaltenfarben an oder aus, Einstellung bleibt gespeichert ---- */
+const TKEY='kniffel-tint';
+function setTint(on){
+  document.body.classList.toggle('tint', on);
+  const b=document.getElementById('tintBtn');
+  b.classList.toggle('off', !on);
+  b.textContent = on ? 'Farben an' : 'Farben';
+  try{ localStorage.setItem(TKEY, on?'1':'0'); }catch(e){}
+}
+document.getElementById('tintBtn').onclick=()=>setTint(!document.body.classList.contains('tint'));
+try{ setTint(localStorage.getItem(TKEY)==='1'); }catch(e){ setTint(false); }
+
+/* ======================= Speichern ======================= */
+const KEY = 'kniffel-extreme-v3', RKEY = 'kniffel-room';
+let saveT=null;
+function saveLocal(){
+  clearTimeout(saveT);
+  saveT = setTimeout(()=>{ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} },300);
+}
+/* Ohne Verzögerung schreiben – vor dem Neuladen und beim Verlassen der Seite */
+function saveNow(){
+  clearTimeout(saveT);
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+}
+addEventListener('pagehide', saveNow);
+addEventListener('beforeunload', saveNow);
+
+/* Schaut nach, ob eine neuere Fassung vorliegt – sparsam: erst nur die
+   Kopfzeilen abfragen (wenige Bytes), die ganze Datei nur bei echter Änderung. */
+let newVer=null, lastCheck=0, fileTag=null;
+async function fileStamp(){
+  const r=await fetch(location.pathname+'?cb='+Date.now(), {method:'HEAD', cache:'no-store'});
+  if(!r.ok) return null;
+  return r.headers.get('etag') || r.headers.get('last-modified') || null;
+}
+async function checkUpdate(){
+  if(newVer || Date.now()-lastCheck < 300000) return;   // höchstens alle fünf Minuten
+  lastCheck=Date.now();
+  try{
+    const tag=await fileStamp();
+    if(!tag){ return; }
+    if(fileTag===null){ fileTag=tag; return; }          // erster Abgleich merkt sich nur den Stand
+    if(tag===fileTag) return;                           // unverändert: keine weiteren Daten nötig
+    const r=await fetch(location.pathname+'?cb='+Date.now(), {cache:'no-store'});
+    if(!r.ok) return;
+    const m=(await r.text()).match(/const VERSION = '([^']+)'/);
+    fileTag=tag;
+    if(m && m[1] && m[1]!==VERSION){
+      newVer=m[1];
+      const bar=document.getElementById('upbar');
+      bar.querySelector('b').textContent='Neue Version '+m[1].split(' ')[0]+' verfügbar';
+      bar.classList.add('on');
+    }
+  }catch(e){}
+}
+document.getElementById('upBtn').onclick=()=>{
+  saveNow();                                  // erst sichern, dann neu laden
+  location.replace(location.pathname+'?v='+encodeURIComponent(newVer||'').slice(0,8));
+};
+setTimeout(checkUpdate, 8000);
+setInterval(checkUpdate, 3600000);                       // einmal pro Stunde reicht
+addEventListener('focus', ()=>setTimeout(checkUpdate,800));
+
+function loadLocal(){
+  try{
+    const raw = localStorage.getItem(KEY); if(!raw) return;
+    const s = JSON.parse(raw);
+    if (s && Array.isArray(s.sheets) && s.sheets.length){
+      state = s;
+      state.sheets.forEach(sh=>{ lastT = Math.max(lastT, sh.created||0); });
+      if (!sheet()) state.activeId = (liveSheets()[0]||{}).id;
+    }
+  }catch(e){}
+}
+
+document.getElementById('ver').textContent = 'Version '+VERSION;
+
+/* ======================= Start ======================= */
+loadLocal();
+if (!state.sheets.length || !sheet()){ const s=newSheet(); state.sheets=[s]; state.activeId=s.id; }
+buildTable(); lastSig = livePlayers(sheet()).map(p=>p.id).join(',')+'|'+sheet().id;
+render(); chip();
+setTimeout(maybeFinal, 900);      // fertiges Blatt beim Öffnen der App ebenfalls zeigen
+
+const fromUrl = (location.hash||'').replace(/[^A-Za-z0-9]/g,'').toUpperCase().slice(0,4);
+const saved = localStorage.getItem(RKEY);
+if (fromUrl.length===4) enterRoom(fromUrl, true);
+else if (saved) { room = saved; connect(); }
+</script>
+</body>
+</html>
