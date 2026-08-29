@@ -423,7 +423,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v31 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v32 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS = [
@@ -1373,6 +1373,12 @@ const fpOf = s => { let x=5381; for(let i=0;i<s.length;i++) x=((x*33)^s.charCode
 const myFp = () => fpOf(canon(state.sheets));
 const myCount = () => liveSheets().reduce((n,s)=>n+Object.values(s.cells)
   .filter(c=>c&&c.v!==null&&c.v!==undefined).length, 0);
+/* Geräte zählen, von denen in den letzten zwei Minuten etwas kam – plus uns selbst.
+   Nach oben sofort genau, nach unten träge: wer aufhört, fällt erst verzögert raus. */
+function deviceCount(){
+  const t=Date.now();
+  return 1 + Object.values(peers).filter(p=>t-p.t < 120000).length;
+}
 function peerGap(){                       // größte Abweichung unter den zuletzt gehörten Geräten
   const t=Date.now(), me=myFp(); let worst=null;
   Object.entries(peers).forEach(([id,p])=>{
@@ -1395,14 +1401,18 @@ const nothingOwnYet = () => liveSheets().every(blankSheet);
 function chip(){
   const c = document.getElementById('coopChip'), t = document.getElementById('coopText');
   c.className = '';
-  if (!room){ t.textContent = 'Nur dieses Handy'; }
-  else if (connected && !stale && divergedSince){ c.className='wait';
-    t.textContent = 'Runde '+room+' · gleicht ab'; }
-  else if (connected && !stale){ c.className='live'; t.textContent = 'Runde '+room+' · live'; }
-  else if (connected){ c.className='wait'; t.textContent = 'Runde '+room+' · wackelig'; }
-  else if (sleeping){ c.className='wait'; t.textContent = 'Runde '+room+' · pausiert'; }
-  else { c.className='wait'; t.textContent = 'Runde '+room+' · verbinde…'; }
+  if (!room){ t.textContent = 'Offline · zu online wechseln'; }
+  else if (sleeping){ c.className='wait'; t.textContent = room+' · pausiert'; }
+  else if (!connected){ c.className='wait'; t.textContent = room+' · verbinde…'; }
+  else if (stale){ c.className='wait'; t.textContent = room+' · wackelig'; }
+  else if (divergedSince){ c.className='wait'; t.textContent = room+' · gleicht ab'; }
+  else {
+    const n=deviceCount();
+    c.className='live';
+    t.textContent = room+' · '+(n===1 ? 'allein drin' : n+' Geräte');
+  }
 }
+
 const topic     = () => 'kniffelx/'+room+'/v2';
 const diceTopic = () => 'kniffelx/'+room+'/dice';
 let remoteDice = null, stripT = null, stripSeen = '';
@@ -1565,7 +1575,8 @@ setInterval(()=>{
     }
     if(t-divergedSince>45000) divergedSince=0;   // aufgegeben, Anzeige nicht ewig blockieren
   }
-  if(t-lastPub > (divergedSince?4000:(busyNow()?ACTIVE_MS:IDLE_MS))) push();             // hält den gespeicherten Stand frisch und prüft die Leitung
+  if(t-lastPub > (divergedSince?4000:(busyNow()?ACTIVE_MS:IDLE_MS))) push();
+  chip();                                  // Gerätezahl aktuell halten             // hält den gespeicherten Stand frisch und prüft die Leitung
 }, 5000);
 
 /* Nach Bildschirmsperre, App-Wechsel oder Netzwechsel sofort nachfassen */
@@ -1650,12 +1661,14 @@ function onRemote(raw){
     const known = peers[raw.by] || {};
     /* Ältere Fassungen schicken keinen Fingerabdruck. Die dürfen nicht als
        "abweichend mit 0 Einträgen" gelten – sonst gleicht die App endlos ab. */
+    const neu = !peers[raw.by];
     peers[raw.by] = raw.fp ? {fp:String(raw.fp).slice(0,12), n:+raw.n||0, t:Date.now(),
         ver:String(raw.ver||'?').slice(0,8).replace(/[<>&"']/g,''),
         who:String(raw.who||'').slice(0,24).replace(/[<>&"']/g,'')}
       : {...known, fp:null, n:null, t:Date.now(),
          ver:String(raw.ver||'alt').slice(0,8).replace(/[<>&"']/g,''),
          who:String(raw.who||known.who||'').slice(0,24).replace(/[<>&"']/g,'')};
+    if(neu) chip();                        // neues Gerät sofort anzeigen
   }
   const doc = {sheets: sane(raw.sheets)};
   if (!doc.sheets.length) return;
@@ -1710,6 +1723,7 @@ function diagText(){
     'Takt: '+(busyNow()?'aktiv, alle 12 s':'ruhend, alle 60 s'),
     'zuletzt empfangen: '+s(lastRx),
     'zuletzt gesendet: '+s(lastPub),
+    'Geräte in der Runde: '+deviceCount(),
     'Nachrichten: '+nTx+' raus / '+nRx+' rein',
     (()=>{ const t=Date.now(), mine=VERSION.split(' ')[0];
       const alt=Object.values(peers).filter(p=>t-p.t<120000 && p.ver && p.ver!==mine);
