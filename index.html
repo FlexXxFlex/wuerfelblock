@@ -423,7 +423,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v32 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v33 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS = [
@@ -1368,7 +1368,7 @@ let lastRx=0, lastPub=0, echoWait=0, tries=0, stale=false;
 let nRx=0, nTx=0, lastPing=null, lastErr='', connecting=false, pingAt=0;
 /* Jede Nachricht trägt einen Fingerabdruck des Blocks und die Zahl der Einträge.
    Weicht ein anderes Gerät ab, weiß die App: wir sind nicht gleichauf. */
-let peers={}, divergedSince=0, lastNudge=0, lastResub=0;
+let peers={}, divergedSince=0, lastNudge=0, lastResub=0, freshSession=false;
 const fpOf = s => { let x=5381; for(let i=0;i<s.length;i++) x=((x*33)^s.charCodeAt(i))>>>0; return x.toString(36); };
 const myFp = () => fpOf(canon(state.sheets));
 const myCount = () => liveSheets().reduce((n,s)=>n+Object.values(s.cells)
@@ -1484,9 +1484,10 @@ function connect(){
   client.connect({
     /* cleanSession:false -> der Server hebt verpasste Nachrichten auf und liefert sie
        beim nächsten Verbinden nach. Genau das fehlt bei wackligem Netz. */
-    useSSL:true, timeout:10, keepAliveInterval:40, cleanSession:false, reconnect:false,
+    useSSL:true, timeout:10, keepAliveInterval:40, cleanSession:freshSession, reconnect:false,
     onSuccess: () => { if(client!==me) return;
-      connecting=false; connected=true; tries=0; stale=false; lastRx=NOW(); chip();
+      connecting=false; connected=true; tries=0; stale=false; freshSession=false;
+      lastRx=NOW(); chip();
       client.subscribe(topic(),{qos:1}); client.subscribe(diceTopic(),{qos:0});
       if (joining){ clearTimeout(joinT);
         joinT=setTimeout(()=>{ joining=false; push(); }, 5000); }  // niemand da? dann doch senden
@@ -1502,7 +1503,8 @@ function connect(){
 function leave(){
   clearTimeout(retryT); clearTimeout(joinT); joining=false;
   try{ if(client && client.isConnected()) client.disconnect(); }catch(e){}
-  client=null; connected=false; room=null; remoteDice=null; stale=false; echoWait=0; drawStrip();
+  client=null; connected=false; room=null; remoteDice=null; stale=false; echoWait=0;
+  peers={}; divergedSince=0; lastPing=null; freshSession=true; drawStrip();
   localStorage.removeItem(RKEY); history.replaceState(null,'',location.pathname);
   chip();
 }
@@ -1782,8 +1784,17 @@ function openCoop(){
   if(room){ const el=document.getElementById('diag'); if(el){ el.innerHTML=diagText(); startDiag(); } }
 }
 function enterRoom(code, isJoin){
-  room = code.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4);
-  if (room.length<4){ room=null; return; }
+  const neu = code.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4);
+  if (neu.length<4) return;
+  if (room && room!==neu){
+    /* Alte Runde sauber abmelden. Die Sitzung beim Server merkt sich sonst das
+       alte Thema – man bekäme weiter die Nachrichten der vorigen Runde. */
+    try{ if(client && client.isConnected()){ client.unsubscribe(topic()); client.unsubscribe(diceTopic()); } }catch(e){}
+    try{ if(client && client.isConnected()) client.disconnect(); }catch(e){}
+    connected=false; connecting=false; client=null; freshSession=true;
+  }
+  peers={}; divergedSince=0; lastPing=null; remoteDice=null; drawStrip();
+  room = neu;
   joining = !!isJoin;
   localStorage.setItem(RKEY, room);
   history.replaceState(null,'','#'+room);
