@@ -420,7 +420,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v35 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v36 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS = [
@@ -1359,6 +1359,9 @@ const makeCode = () => Array.from({length:4},()=>ALPHA[Math.floor(Math.random()*
 let room = null, client = null, connected = false, retryT = null;
 /* Wer einer Runde beitritt, bringt sein leeres Blatt nicht mit hinein */
 let joining = false, joinT = null, askJoin = null;   // offene Rückfrage beim Beitreten
+/* Der Server hebt den letzten Stand einer Runde auf. Beim Beitreten muss die App
+   also unterscheiden: kommt das von einem anwesenden Gerät oder aus der Konserve? */
+let staleDoc = null, liveSeen = false;
 /* Bei wackligem Netz stirbt die Verbindung oft lautlos. Deshalb:
    jede eigene Nachricht kommt als Echo zurück – bleibt es aus, wird neu verbunden. */
 let lastRx=0, lastPub=0, echoWait=0, tries=0, stale=false;
@@ -1472,6 +1475,7 @@ function connect(){
   };
   client.onMessageArrived = m => { try{
     const p = JSON.parse(m.payloadString);
+    p.__retained = !!m.retained;
     lastRx=NOW(); nRx++;
     if (p && p.by===DEV){                       // eigenes Echo: Leitung steht
       if(pingAt) lastPing=lastRx-pingAt;
@@ -1501,7 +1505,8 @@ function leave(){
   clearTimeout(retryT); clearTimeout(joinT); joining=false;
   try{ if(client && client.isConnected()) client.disconnect(); }catch(e){}
   client=null; connected=false; room=null; remoteDice=null; stale=false; echoWait=0;
-  peers={}; divergedSince=0; lastPing=null; freshSession=true; drawStrip();
+  peers={}; divergedSince=0; lastPing=null; freshSession=true;
+  staleDoc=null; liveSeen=false; joining=false; clearTimeout(joinT); drawStrip();
   localStorage.removeItem(RKEY); history.replaceState(null,'',location.pathname);
   chip();
 }
@@ -1589,6 +1594,25 @@ setInterval(()=>{
   }));
 addEventListener('pointerdown', ()=>{ if(room) activity(); }, {passive:true, capture:true});
 
+/* Kurzer Zuruf beim Betreten: „ist jemand da?" */
+function sayHello(){
+  if(!room || !connected || !client) return;
+  try{
+    const msg = new Paho.Message(JSON.stringify({by:DEV, hello:1}));
+    msg.destinationName = topic(); msg.qos = 0; msg.retained = false;
+    client.send(msg);
+  }catch(e){}
+}
+/* Nach fünf Sekunden ohne Lebenszeichen gilt die Runde als leer */
+function joinTimeout(){
+  if(!joining) return;
+  joining=false;
+  if(liveSeen) return;
+  staleDoc=null;                 // aufbewahrter Stand wird verworfen, nicht übernommen
+  push();                        // unser Stand wird der neue Stand der Runde
+  chip();
+}
+
 /* Zusammenführen: bei jedem Feld gewinnt der neuere Eintrag */
 /* Neuerer Eintrag gewinnt; bei exakt gleichem Stand entscheidet die Gerätekennung,
    damit alle Geräte unabhängig voneinander zum selben Ergebnis kommen. */
@@ -1654,8 +1678,15 @@ function canon(sheets){
   })));
 }
 function onRemote(raw){
-  if (!raw || !Array.isArray(raw.sheets)) return;
+  if (!raw) return;
   const fromSelf = raw.by===DEV;
+  if (raw.hello){ if(!fromSelf) push(); return; }     // jemand fragt: wir melden uns
+  if (!Array.isArray(raw.sheets)) return;
+  if (!fromSelf && !raw.__retained) liveSeen = true;  // da ist wirklich jemand
+  if (joining && raw.__retained && !fromSelf){
+    staleDoc = raw;                                   // erstmal zurückhalten
+    return;
+  }
   if (!fromSelf && typeof raw.by==='string' && raw.by.length<24){
     const known = peers[raw.by] || {};
     /* Ältere Fassungen schicken keinen Fingerabdruck. Die dürfen nicht als
@@ -1671,8 +1702,8 @@ function onRemote(raw){
   }
   const doc = {sheets: sane(raw.sheets)};
   if (!doc.sheets.length) return;
-  if (joining){                       // erste Nachricht der Runde
-    joining=false; clearTimeout(joinT);
+  if (joining && !fromSelf){          // erste Nachricht von einem anwesenden Gerät
+    joining=false; clearTimeout(joinT); staleDoc=null;
     const fremdVoll = doc.sheets.some(s=>!s.del.v &&
       Object.values(s.cells||{}).some(c=>c&&c.v!==null&&c.v!==undefined));
     if (nothingOwnYet()){             // eigenes Blatt ist unbenutzt: übernehmen statt dazulegen
@@ -1836,7 +1867,8 @@ function enterRoom(code, isJoin){
     try{ if(client && client.isConnected()) client.disconnect(); }catch(e){}
     connected=false; connecting=false; client=null; freshSession=true;
   }
-  peers={}; divergedSince=0; lastPing=null; remoteDice=null; drawStrip();
+  peers={}; divergedSince=0; lastPing=null; remoteDice=null;
+  staleDoc=null; liveSeen=false; clearTimeout(joinT); drawStrip();
   room = neu;
   joining = !!isJoin;
   localStorage.setItem(RKEY, room);
