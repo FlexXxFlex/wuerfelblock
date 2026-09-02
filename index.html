@@ -39,7 +39,7 @@ body{background:var(--paper);color:var(--ink);
 .mini .now{border:1.5px solid var(--rule);background:var(--card);color:var(--ink);
   border-radius:999px;padding:5px 12px;font:800 12px inherit;cursor:pointer;white-space:nowrap}
 /* Kopfbereich klappt beim Scrollen weg */
-.bighead{flex:0 0 auto;overflow:hidden;max-height:260px;
+.bighead{flex:0 0 auto;overflow:hidden;max-height:260px;will-change:max-height;
   transition:max-height .24s ease, opacity .18s ease}
 .bighead.hide{max-height:0;opacity:0}
 
@@ -424,7 +424,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v39 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v40 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS = [
@@ -1989,11 +1989,13 @@ document.getElementById('clearSheet').onclick = ()=>{
 /* ---- Kopfbereich beim Scrollen wegklappen ---- */
 const scEl=document.querySelector('.scroller'), bigHead=document.getElementById('bighead');
 let lastY=0;
+/* Genügend Abstand zwischen Aus- und Einklappen, sonst flackert der Kopf
+   beim leichten Wackeln des Fingers und die Seite springt. */
 scEl.addEventListener('scroll',()=>{
   const y=scEl.scrollTop;
-  if(y<14) bigHead.classList.remove('hide');
-  else if(y>lastY+6) bigHead.classList.add('hide');
-  else if(y<lastY-8) bigHead.classList.remove('hide');
+  if(y<24) bigHead.classList.remove('hide');
+  else if(y>120 && y>lastY+16) bigHead.classList.add('hide');
+  else if(y<lastY-40) bigHead.classList.remove('hide');
   lastY=y;
 },{passive:true});
 document.getElementById('sheetNow').onclick=()=>{
@@ -2016,10 +2018,7 @@ function onPullStart(y){
   pullStart = scEl.scrollTop<=2 ? y : null;   // nur ganz oben
 }
 function onPullMove(y){
-  if(refreshing) return false;
-  if(pullStart===null){                        // erst hochgescrollt, dann weitergezogen
-    if(scEl.scrollTop<=0){ pullStart=y; } else return false;
-  }
+  if(refreshing || pullStart===null) return false;
   const dy=y-pullStart;
   if(scEl.scrollTop>2){ pullStart=null; setPull(0); return false; }
   if(dy<=0){ setPull(0); return false; }
