@@ -119,7 +119,7 @@ tr.total td.cell{color:#fff;font-size:17px}
 tr.total td.cell.lead{color:#ffd873}
 tr.total td.cell.lead::after{content:'★';position:absolute;top:2px;right:5px;font-size:9px;color:#ffd873}
 tr.bonus td.cell.hit{color:var(--ok)}
-tr.gap td{height:12px;border:none;background:var(--paper)}
+tr.sep td{border-top:2.5px solid var(--ink)}
 .dice{display:inline-flex;gap:2px;vertical-align:middle;flex:0 0 auto}
 .die{width:9px;height:9px;border:1px solid var(--ink-soft);border-radius:2px;display:grid;place-items:center}
 .die i{width:2px;height:2px;background:var(--ink-soft);border-radius:50%;display:block}
@@ -424,7 +424,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v41 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v42 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS = [
@@ -586,8 +586,9 @@ function buildTable(){
   if (ps.length < MAXP) h += '<th class="addcol"><button id="addP">+</button></th>';
   h += '</tr></thead><tbody>';
   ROWS.forEach(r=>{
-    if (r.kind==='gap'){ h += `<tr class="gap"><td colspan="${ps.length+2}"></td></tr>`; return; }
-    h += `<tr class="${r.total?'total':(r.kind==='calc'?'sum':'')}${r.id==='bonus'?' bonus':''}">`;
+    if (r.kind==='gap') return;                 // keine Leerzeile mehr, siehe .sep
+    const sep = r.id==='l1' ? ' sep' : '';       // Trennlinie zum unteren Teil
+    h += `<tr class="${r.total?'total':(r.kind==='calc'?'sum':'')}${r.id==='bonus'?' bonus':''}${sep}">`;
     h += `<td class="lbl"><span class="n">${r.name}</span>`;
     h += r.kind==='count'
        ? `<span class="h d">${pips(r.die)}${r.hint}</span>`
