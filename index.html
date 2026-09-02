@@ -424,7 +424,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v38 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v39 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS = [
@@ -2036,7 +2036,8 @@ function onPullEnd(){
 /* Holt den Stand der Runde neu und meldet ehrlich, was dabei herauskam */
 function refresh(){
   if(refreshing) return;
-  refreshing=true; lastAct=Date.now(); if(sleeping) sleeping=false; pullBar.classList.add('busy');
+  refreshing=true; lastAct=Date.now(); if(sleeping) sleeping=false;
+  checkUpdate(true);                       // beim Ziehen auch nach einer neuen Fassung sehen pullBar.classList.add('busy');
   pullBar.classList.add('snap'); setPull(PULL_TRIGGER,'Aktualisiere…');
   const seen=lastRx;
   if(room){
@@ -2050,7 +2051,9 @@ function refresh(){
   setTimeout(()=>{
     pullBar.classList.remove('busy');
     const ok = lastRx>seen;                    // ist wirklich etwas angekommen?
-    setPull(PULL_TRIGGER, !room ? 'Du spielst allein – nichts abzugleichen'
+    setPull(PULL_TRIGGER,
+      newVer ? 'Neue Version '+newVer.split(' ')[0]+' – oben neu laden'
+      : !room ? 'Du spielst allein – nichts abzugleichen'
       : ok ? 'Stand geholt' : connected ? 'Keine Antwort – versuche weiter' : 'Keine Verbindung');
     if(room && !ok){ stale=true; chip(); clearTimeout(retryT); tries=0;
                      try{ client.disconnect(); }catch(e){} connected=false; retryT=setTimeout(connect,400); }
@@ -2104,8 +2107,9 @@ async function fileStamp(){
   if(!r.ok) return null;
   return r.headers.get('etag') || r.headers.get('last-modified') || null;
 }
-async function checkUpdate(){
-  if(newVer || Date.now()-lastCheck < 300000) return;   // höchstens alle fünf Minuten
+async function checkUpdate(force){
+  if(newVer) return;
+  if(!force && Date.now()-lastCheck < 300000) return;   // von selbst höchstens alle fünf Minuten
   lastCheck=Date.now();
   try{
     const tag=await fileStamp();
