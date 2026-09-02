@@ -72,7 +72,10 @@ header.sheet-head{display:flex;align-items:center;justify-content:space-between;
   padding-bottom:104px;overscroll-behavior:none}
 /* Ohne feste Aufteilung schluckt die Beschriftungsspalte auf breiten Geräten
    den ganzen Rest – Tabellenzellen beachten max-width nämlich nicht. */
-table{border-collapse:separate;border-spacing:0;width:100%;table-layout:fixed;background:var(--card)}
+/* Nur so breit wie die Spalten es brauchen, und mittig. Sonst verteilt der
+   Browser den Überschuss auf die Beschriftungsspalte – auf dem iPad sichtbar. */
+table{border-collapse:separate;border-spacing:0;width:max-content;min-width:min(100%,max-content);
+  margin:0 auto;table-layout:fixed;background:var(--card)}
 th,td{border-right:1px solid var(--rule-soft);border-bottom:1px solid var(--rule-soft)}
 thead th{background:var(--shade);padding:5px 3px;text-align:center;position:sticky;top:0;z-index:3;
   vertical-align:top;box-shadow:0 2px 0 var(--rule)}
@@ -84,6 +87,9 @@ th.pcol input{width:100%;border:none;border-bottom:1.5px solid var(--rule);backg
 th.pcol input:focus{outline:none;border-bottom-color:var(--ink)}
 th.pcol .kill{position:absolute;top:2px;right:3px;border:none;background:none;color:#adb0c8;font-size:12px;line-height:1;cursor:pointer;padding:2px 4px}
 th.addcol{width:44px;min-width:44px}
+/* Spalte unter dem Plus-Knopf bleibt neutral, auch in Summen- und Trennzeilen */
+#grid td.pad, #grid tr.sum td.pad, #grid tr.total td.pad, #grid tr.sep td.pad{
+  background:var(--paper);border:none}
 th.addcol button{border:1.5px dashed var(--rule);background:var(--card);color:var(--ink-soft);
   border-radius:8px;width:32px;height:32px;font:800 16px inherit;cursor:pointer;margin-top:6px}
 
@@ -110,11 +116,7 @@ td.cell.hl-theirs::before{content:'';position:absolute;top:3px;left:4px;width:5p
 td.cell .zero{display:inline-block;width:16px;height:2.6px;border-radius:2px;
   background:#a9adc6;font-size:0;line-height:0;vertical-align:middle}
 td.cell .dbl{display:block;font-size:8.5px;color:var(--ink-soft);font-weight:700;margin-top:1px}
-/* Muss die Regeln der Summen- und Trennzeilen überstimmen, sonst laufen deren
-   Flächen und Linien über die leere Auffangspalte weiter. */
-#grid td.pad, #grid th.filler{background:var(--paper);border:none;width:auto}
-#grid tr.sum td.pad, #grid tr.total td.pad, #grid tr.sep td.pad,
-#grid thead th.filler{background:var(--paper);border:none}
+
 tr.sum td{background:var(--shade);font-weight:800;cursor:default}
 tr.sum td.lbl{background:var(--shade)}
 tr.sum td.cell{color:var(--ink)}
@@ -435,7 +437,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v45 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v46 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS = [
@@ -595,7 +597,7 @@ function buildTable(){
       <input type="text" data-name="${p.id}" value="${esc(p.name.v)}" placeholder="Spieler ${i+1}" autocomplete="off"></th>`;
   });
   if (ps.length < MAXP) h += '<th class="addcol"><button id="addP">+</button></th>';
-  h += '<th class="filler"></th></tr></thead><tbody>';
+  h += '</tr></thead><tbody>';
   ROWS.forEach(r=>{
     if (r.kind==='gap') return;                 // keine Leerzeile mehr, siehe .sep
     const sep = r.id==='l1' ? ' sep' : '';       // Trennlinie zum unteren Teil
@@ -607,7 +609,7 @@ function buildTable(){
     h += '</td>';
     ps.forEach((p,i) => h += `<td class="cell p${i}" data-row="${r.id}" data-p="${p.id}"></td>`);
     if (ps.length < MAXP) h += '<td class="pad"></td>';
-    h += '<td class="pad"></td></tr>';
+    h += '</tr>';
   });
   grid.innerHTML = h + '</tbody>';
 }
