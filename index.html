@@ -424,7 +424,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v37 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v38 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS = [
@@ -651,6 +651,12 @@ function render(){
     });
   });
 
+  /* Namensfelder mitziehen, wenn ein anderes Gerät sie ändert.
+     Wer gerade selbst tippt, wird dabei nicht unterbrochen. */
+  ps.forEach(p=>{
+    const inp = grid.querySelector(`th.pcol input[data-name="${p.id}"]`);
+    if (inp && document.activeElement!==inp && inp.value!==p.name.v) inp.value = p.name.v;
+  });
   const nm = id => { const p = ps.find(x=>x.id===id); return p ? (p.name.v || 'Spieler') : ''; };
   const fl = document.getElementById('footLabel'), fv = document.getElementById('footVal');
   if (bestVal===null){ fl.textContent='FÜHRT'; fv.textContent='—'; }
@@ -1426,19 +1432,22 @@ function pushDice(){
     const p = livePlayers(sheet()).find(x=>x.id===board.pid);
     const msg = new Paho.Message(JSON.stringify({by:DEV, name:(p&&p.name.v)||'',
       vals:board.state.map(s=>s.v===null?0:s.v), roll:board.roll}));
-    msg.destinationName = diceTopic(); msg.qos = 0; msg.retained = true;
+    /* Würfel sind flüchtig: nicht aufbewahren, sonst begrüßt der letzte Wurf
+       der Vorwoche jeden, der die Runde betritt. */
+    msg.destinationName = diceTopic(); msg.qos = 0; msg.retained = false;
     client.send(msg);
   }catch(e){}
 }
 function onDice(d){
   if (!d || d.by===DEV || !Array.isArray(d.vals) || !d.roll) return;
+  if (d.__retained) return;              // alte Konserve vom Server: ignorieren
   const neu = {name:String(d.name||'').slice(0,24).replace(/[<>&"']/g,''),
     roll:Math.max(1,Math.min(3, +d.roll||1)),
     vals:d.vals.slice(0,6).map(v=>Number.isFinite(+v)?Math.max(0,Math.min(9,+v)):0)};
   if (stripKey(neu)===stripSeen) return;   // genau dieser Wurf wurde weggetippt
   remoteDice = neu; drawStrip();
   clearTimeout(stripT);
-  stripT = setTimeout(()=>{ remoteDice=null; drawStrip(); }, 20000);   // blendet sich selbst aus
+  stripT = setTimeout(()=>{ remoteDice=null; drawStrip(); }, 10000);   // blendet sich nach 10 s aus
 }
 function drawStrip(){
   const el = document.getElementById('diceStrip');
@@ -1973,6 +1982,7 @@ document.getElementById('clearSheet').onclick = ()=>{
   if (!confirm(`Alle Punkte auf Blatt ${i+1} löschen? Die Namen bleiben.`)) return;
   const s = sheet();
   livePlayers(s).forEach(p=>ROWS.forEach(r=>{ if(r.kind!=='calc'&&r.kind!=='gap') setCell(s,p.id,r.id,null); }));
+  remoteDice=null; clearTimeout(stripT); drawStrip();
   touched();
 };
 
