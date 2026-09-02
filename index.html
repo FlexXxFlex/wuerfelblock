@@ -70,7 +70,9 @@ header.sheet-head{display:flex;align-items:center;justify-content:space-between;
 /* Dieser Bereich scrollt – dadurch bleibt die Namenszeile oben kleben */
 .scroller{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;
   padding-bottom:104px;overscroll-behavior:none}
-table{border-collapse:separate;border-spacing:0;width:100%;background:var(--card)}
+/* Ohne feste Aufteilung schluckt die Beschriftungsspalte auf breiten Geräten
+   den ganzen Rest – Tabellenzellen beachten max-width nämlich nicht. */
+table{border-collapse:separate;border-spacing:0;width:100%;table-layout:fixed;background:var(--card)}
 th,td{border-right:1px solid var(--rule-soft);border-bottom:1px solid var(--rule-soft)}
 thead th{background:var(--shade);padding:5px 3px;text-align:center;position:sticky;top:0;z-index:3;
   vertical-align:top;box-shadow:0 2px 0 var(--rule)}
@@ -108,7 +110,7 @@ td.cell.hl-theirs::before{content:'';position:absolute;top:3px;left:4px;width:5p
 td.cell .zero{display:inline-block;width:16px;height:2.6px;border-radius:2px;
   background:#a9adc6;font-size:0;line-height:0;vertical-align:middle}
 td.cell .dbl{display:block;font-size:8.5px;color:var(--ink-soft);font-weight:700;margin-top:1px}
-td.pad{background:var(--paper);border:none}
+td.pad,th.filler{background:var(--paper);border:none;width:auto}
 tr.sum td{background:var(--shade);font-weight:800;cursor:default}
 tr.sum td.lbl{background:var(--shade)}
 tr.sum td.cell{color:var(--ink)}
@@ -125,8 +127,14 @@ tr.sep td{border-top:2.5px solid var(--ink)}
 .die i{width:2px;height:2px;background:var(--ink-soft);border-radius:50%;display:block}
 
 footer{position:fixed;left:0;right:0;bottom:0;background:rgba(242,241,236,.95);backdrop-filter:blur(8px);
-  border-top:1.5px solid var(--rule);padding:8px 12px calc(8px + env(safe-area-inset-bottom));
+  border-top:1.5px solid var(--rule);
+  padding:8px calc(12px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom))
+          calc(12px + env(safe-area-inset-left));
   display:flex;align-items:center;justify-content:space-between;gap:10px}
+footer>div{max-width:900px}
+@media (min-width:820px){
+  footer{padding-left:calc((100vw - 900px)/2);padding-right:calc((100vw - 900px)/2)}
+}
 footer .lead-l{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--ink-soft)}
 footer .val{font-size:20px;font-weight:800;line-height:1.15}
 footer .btns{display:flex;gap:6px}
@@ -424,7 +432,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v42 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v43 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS = [
@@ -584,7 +592,7 @@ function buildTable(){
       <input type="text" data-name="${p.id}" value="${esc(p.name.v)}" placeholder="Spieler ${i+1}" autocomplete="off"></th>`;
   });
   if (ps.length < MAXP) h += '<th class="addcol"><button id="addP">+</button></th>';
-  h += '</tr></thead><tbody>';
+  h += '<th class="filler"></th></tr></thead><tbody>';
   ROWS.forEach(r=>{
     if (r.kind==='gap') return;                 // keine Leerzeile mehr, siehe .sep
     const sep = r.id==='l1' ? ' sep' : '';       // Trennlinie zum unteren Teil
@@ -596,7 +604,7 @@ function buildTable(){
     h += '</td>';
     ps.forEach((p,i) => h += `<td class="cell p${i}" data-row="${r.id}" data-p="${p.id}"></td>`);
     if (ps.length < MAXP) h += '<td class="pad"></td>';
-    h += '</tr>';
+    h += '<td class="pad"></td></tr>';
   });
   grid.innerHTML = h + '</tbody>';
 }
