@@ -446,7 +446,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v54 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v57 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS = [
@@ -1242,21 +1242,24 @@ function drawD10(d){
   const fl=D10F.map(f=>{
     const v=f.v.map(pt=>rotXY(d.rx,d.ry,pt));
     const n=rotXY(d.rx,d.ry,f.n);
-    return {v,n,z:v.reduce((s,p)=>s+p[2],0)/4,num:f.num,ex:f.ex};
+    return {v,n,z:v.reduce((s,p)=>s+p[2],0)/4,num:f.num,ey:f.ey};
   }).sort((a,b)=>a.z-b.z);
   let out='';
   fl.forEach(f=>{
     if(f.n[2]<=0.02) return;
+    const gilt = f.num===d.v;                     // die Fläche, die zählt
     const lit=Math.max(0,Math.min(1,0.5-0.5*(f.n[0]*0.5+f.n[1]*0.7-f.n[2]*0.9)));
-    const col=`rgb(${Math.round(150+80*lit)},${Math.round(16+34*lit)},${Math.round(26+34*lit)})`;
+    const col = gilt ? `rgb(${Math.round(196+50*lit)},${Math.round(34+40*lit)},${Math.round(44+40*lit)})`
+                     : `rgb(${Math.round(132+60*lit)},${Math.round(14+26*lit)},${Math.round(23+26*lit)})`;
     out+=`<polygon points="${f.v.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" `
-       + `fill="${col}" stroke="#7d0d16" stroke-width=".7" stroke-linejoin="round"/>`;
-    if(f.n[2]>0.4){
+       + `fill="${col}" stroke="${gilt?'#fff':'#7d0d16'}" stroke-width="${gilt?1.1:0.7}" `
+       + `stroke-linejoin="round"/>`;
+    /* Nur die geltende Zahl beschriften – sonst weiß man nicht, welche zählt */
+    if(gilt && f.n[2]>0.3){
       const cx=f.v.reduce((s,p)=>s+p[0],0)/4, cy=f.v.reduce((s,p)=>s+p[1],0)/4;
-      const gr=7+7*f.n[2];
-      /* Ziffer entlang der Fläche kippen, sonst steht sie auf schrägen Seiten kopf */
-      const ex=rotXY(d.rx,d.ry,f.ex);
-      const dreh=Math.atan2(ex[1],ex[0])*180/Math.PI;
+      const gr=9+6*f.n[2];
+      const ey=rotXY(d.rx,d.ry,f.ey);
+      const dreh=-Math.atan2(ey[0],ey[1])*180/Math.PI;
       out+=`<text x="${cx.toFixed(1)}" y="${(cy+gr*0.36).toFixed(1)}" font-size="${gr.toFixed(1)}" `
          + `font-weight="800" fill="#fff" text-anchor="middle" `
          + `transform="rotate(${dreh.toFixed(1)} ${cx.toFixed(1)} ${cy.toFixed(1)})">${f.num}</text>`;
@@ -1312,7 +1315,11 @@ async function throwDie(d,target,delay){
 function restRot(d){
   if(d.i<5){ const [rx,ry]=FACE[d.v]||[0,0]; return [rx,ry,0]; }
   const f=D10F.find(f=>f.num===d.v);
-  const [a,b]=faceCam(f.n);
+  let [a,b]=faceCam(f.n);
+  /* Ganz frontal sieht der Körper flach aus wie eine Raute. Eine leichte Neigung
+     zeigt die Nachbarflächen und lässt ihn räumlich wirken – die Wertfläche
+     bleibt dabei klar die vorderste. */
+  a -= 13; b += 16;
   const ey=rotXY(a,b,f.ey);                       // Ausrichtung der Ziffer
   const rz=-Math.atan2(ey[0],ey[1])*180/Math.PI;  // aufrecht drehen
   return [a,b,rz];
@@ -1329,7 +1336,9 @@ function place(d,h,scale){
   const s=(scale||1)*SC, lift=h||0;
   if(d.i<5) relight(d); else drawD10(d);
   d.el.style.transform=`translate(${d.x-R}px,${d.y-R-lift}px) rotate(${d.rz}deg) scale(${s})`;
-  d.body.style.transform=`rotateX(${d.rx}deg) rotateY(${d.ry}deg)`;
+  /* Nur die Würfel werden räumlich gedreht. Der Zehnseiter ist bereits
+     fertig gezeichnet – ihn zusätzlich zu kippen drückt ihn platt. */
+  d.body.style.transform = d.i<5 ? `rotateX(${d.rx}deg) rotateY(${d.ry}deg)` : '';
   const k=Math.max(0,Math.min(1,lift/120));
   d.sh.style.transform=`translate(${2+k*7}px,${lift+k*4}px) scale(${1+k*0.55})`;
   d.sh.style.opacity=String(0.55-k*0.32);
