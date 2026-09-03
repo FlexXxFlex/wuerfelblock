@@ -446,7 +446,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v52 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v53 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS = [
@@ -871,6 +871,27 @@ const MAXPTS = (()=>{
   });
   return m;
 })();
+/* Siegsterne: bis drei nebeneinander, vier als Viereck, fünf als zwei über drei,
+   ab sechs die Zahl mit einem Stern – so bleibt es auch bei sechs Spalten lesbar. */
+function sternForm(cx,cy,r){
+  let pts=[];
+  for(let i=0;i<10;i++){
+    const a=-Math.PI/2 + i*Math.PI/5, rr=i%2===0?r:r*0.45;
+    pts.push((cx+rr*Math.cos(a)).toFixed(2)+','+(cy+rr*Math.sin(a)).toFixed(2));
+  }
+  return `<polygon points="${pts.join(' ')}" fill="${FCOL[1]}"/>`;
+}
+function sterne(n,cx,cy){
+  const r=4.2, d=2*r+2;
+  if(n>=6) return `<text x="${cx-6}" y="${cy+4}" font-size="11" font-weight="800" `
+    + `fill="${FCOL[1]}" text-anchor="end">${n}</text>` + sternForm(cx+1.5,cy,r);
+  if(n<=3){ const x0=cx-(n-1)*d/2; let s='';
+    for(let i=0;i<n;i++) s+=sternForm(x0+i*d,cy,r); return s; }
+  if(n===4){ let s='';
+    for(let i=0;i<4;i++) s+=sternForm(cx+((i%2)-0.5)*d, cy+(Math.floor(i/2)-0.5)*d, r); return s; }
+  return sternForm(cx-d/2,cy-d/2,r)+sternForm(cx+d/2,cy-d/2,r)
+       + sternForm(cx-d,cy+d/2,r)+sternForm(cx,cy+d/2,r)+sternForm(cx+d,cy+d/2,r);
+}
 function podiumSVG(list, siege){
   const W=360, n=list.length, axis=30, padr=12, gap=10;
   const bw=Math.min(64,(W-axis-padr-(n-1)*gap)/n);
@@ -903,10 +924,7 @@ function podiumSVG(list, siege){
      + `<text x="${cx}" y="${(BASE-9).toFixed(1)}" font-size="10" font-weight="800" fill="#fff" opacity=".55" text-anchor="middle">${x.rank}</text>`
      + `<text x="${cx}" y="${(BASE+16).toFixed(1)}" font-size="11" font-weight="800" fill="var(--pencil)" text-anchor="middle">${esc(x.nm).slice(0,8)}</text>`
      + `<text x="${cx}" y="${(BASE+28).toFixed(1)}" font-size="9" font-weight="700" fill="var(--ink-soft)" text-anchor="middle">${Math.round(x.pts/MAXPTS*100)} %</text>`
-     + ((siege&&siege[x.nm])
-        ? `<text x="${cx}" y="${(BASE+41).toFixed(1)}" font-size="11" fill="${FCOL[1]}" `
-          + `text-anchor="middle">${'★'.repeat(Math.min(siege[x.nm],5))}${siege[x.nm]>5?'+'+siege[x.nm]:''}</text>`
-        : '');
+     + ((siege&&siege[x.nm]) ? sterne(siege[x.nm], cx, BASE+41) : '');
     if(x.rank===1){
       const s=8, cy=y-23;
       P+=`<path d="M${cx-s} ${cy} L${cx-s} ${cy-0.55*s} L${cx-0.5*s} ${cy-0.12*s} L${cx-0.25*s} ${cy-0.95*s} `
@@ -914,7 +932,8 @@ function podiumSVG(list, siege){
     }
   });
   P+=`<line x1="${axis-4}" y1="${BASE}" x2="${W-padr}" y2="${BASE}" stroke="var(--ink)" stroke-width="2"/>`;
-  const hoch = BASE + (siege&&Object.keys(siege).length ? 52 : 40);
+  const viele = siege && Object.values(siege).some(n=>n===4||n===5);
+  const hoch = BASE + (siege&&Object.keys(siege).length ? (viele?56:50) : 40);
   return `<svg viewBox="0 0 ${W} ${hoch}" font-family="Avenir Next,system-ui,sans-serif">
     <text x="${axis-8}" y="22" font-size="9.5" font-weight="800" fill="var(--ink-soft)" letter-spacing="1.2"
       >PUNKTE IM VERHÄLTNIS ZUM MAXIMUM (${MAXPTS})</text>${P}</svg>`;
