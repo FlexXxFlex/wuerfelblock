@@ -132,21 +132,13 @@ tr.sep td{border-top:2.5px solid var(--ink)}
 .die{width:9px;height:9px;border:1px solid var(--ink-soft);border-radius:2px;display:grid;place-items:center}
 .die i{width:2px;height:2px;background:var(--ink-soft);border-radius:50%;display:block}
 
-footer{position:fixed;left:0;right:0;bottom:0;background:rgba(242,241,236,.95);backdrop-filter:blur(8px);
+/* Ebene über den klebenden Tabellenzellen (die liegen auf 2 bis 5) */
+footer{position:fixed;left:0;right:0;bottom:0;z-index:12;background:rgba(242,241,236,.97);backdrop-filter:blur(8px);
   border-top:1.5px solid var(--rule);
   padding:8px calc(12px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom))
           calc(12px + env(safe-area-inset-left));
   display:flex;align-items:center;justify-content:space-between;gap:10px}
 footer{display:block}
-/* Auf Tablets alles auf die Mitte ausrichten – sonst klebt der Kopf links,
-   während die Tabelle mittig steht. */
-@media (min-width:760px){
-  .mini,.coopbar,.tabs{justify-content:center}
-  .sheet-head{justify-content:center;gap:18px}
-  header.sheet-head .logo{text-align:center}
-  footer .fin{max-width:640px}
-  .hint{text-align:center}
-}
 footer .fin{max-width:900px;margin:0 auto;display:flex;align-items:center;
   justify-content:space-between;gap:10px}
 footer .lead-l{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--ink-soft)}
@@ -309,6 +301,14 @@ footer .val{font-size:16px}
 footer button{padding:9px 9px;font-size:12.5px}
 #diag{margin-top:12px;padding:10px 12px;border:1.5px solid var(--rule);border-radius:10px;
   background:var(--paper);font:600 11.5px/1.7 ui-monospace,Menlo,monospace;color:var(--ink-soft)}
+
+/* ---------- Breite Geräte: alles auf eine Mittelachse ---------- */
+@media (min-width:760px){
+  header.sheet-head{justify-content:center;gap:18px}
+  .mini, .coopbar, .tabs{justify-content:center}
+  footer .fin{max-width:600px}
+  .hint{text-align:center}
+}
 </style>
 </head>
 <body>
@@ -446,7 +446,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v47 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v51 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS = [
@@ -828,6 +828,28 @@ function winChances(sims){
   return val;
 }
 
+/* Wer hat welches abgeschlossene Blatt gewonnen? Gezählt wird über den Namen,
+   denn jedes Blatt hat eigene Spielerkennungen. */
+function sheetWinners(s){
+  const ps=livePlayers(s);
+  if(!ps.length || !sheetDone(s)) return [];
+  const tot=ps.map(p=>{
+    let up=0, low=0;
+    ROWS.forEach(r=>{
+      if(!['count','sum','sum2','fixed'].includes(r.kind)) return;
+      const v=cellV(s,p.id,r.id)||0;
+      if(UPPER.includes(r.id)) up+=v; else low+=(r.kind==='sum2'?v*2:v);
+    });
+    return {nm:p.name.v||'Spieler', pts:up+(up>=73?45:0)+low};
+  });
+  const best=Math.max(...tot.map(x=>x.pts));
+  return tot.filter(x=>x.pts===best).map(x=>x.nm);
+}
+function seriesWins(){
+  const w={};
+  liveSheets().forEach(s=>sheetWinners(s).forEach(nm=>{ w[nm]=(w[nm]||0)+1; }));
+  return w;
+}
 function standings(){
   const s=sheet();
   const list=livePlayers(s).map(p=>({id:p.id, nm:p.name.v||'Spieler', pts:calc(p.id).endTotal||0}))
@@ -849,7 +871,7 @@ const MAXPTS = (()=>{
   });
   return m;
 })();
-function podiumSVG(list){
+function podiumSVG(list, siege){
   const W=360, n=list.length, axis=30, padr=12, gap=10;
   const bw=Math.min(64,(W-axis-padr-(n-1)*gap)/n);
   const total=n*bw+(n-1)*gap, x0=axis+(W-axis-padr-total)/2;
@@ -880,7 +902,11 @@ function podiumSVG(list){
      + `<text x="${cx}" y="${(y-8).toFixed(1)}" font-size="12.5" font-weight="800" fill="var(--ink)" text-anchor="middle">${x.pts}</text>`
      + `<text x="${cx}" y="${(BASE-9).toFixed(1)}" font-size="10" font-weight="800" fill="#fff" opacity=".55" text-anchor="middle">${x.rank}</text>`
      + `<text x="${cx}" y="${(BASE+16).toFixed(1)}" font-size="11" font-weight="800" fill="var(--pencil)" text-anchor="middle">${esc(x.nm).slice(0,8)}</text>`
-     + `<text x="${cx}" y="${(BASE+28).toFixed(1)}" font-size="9" font-weight="700" fill="var(--ink-soft)" text-anchor="middle">${Math.round(x.pts/MAXPTS*100)} %</text>`;
+     + `<text x="${cx}" y="${(BASE+28).toFixed(1)}" font-size="9" font-weight="700" fill="var(--ink-soft)" text-anchor="middle">${Math.round(x.pts/MAXPTS*100)} %</text>`
+     + ((siege&&siege[x.nm])
+        ? `<text x="${cx}" y="${(BASE+41).toFixed(1)}" font-size="11" fill="${FCOL[1]}" `
+          + `text-anchor="middle">${'★'.repeat(Math.min(siege[x.nm],5))}${siege[x.nm]>5?'+'+siege[x.nm]:''}</text>`
+        : '');
     if(x.rank===1){
       const s=8, cy=y-23;
       P+=`<path d="M${cx-s} ${cy} L${cx-s} ${cy-0.55*s} L${cx-0.5*s} ${cy-0.12*s} L${cx-0.25*s} ${cy-0.95*s} `
@@ -888,7 +914,8 @@ function podiumSVG(list){
     }
   });
   P+=`<line x1="${axis-4}" y1="${BASE}" x2="${W-padr}" y2="${BASE}" stroke="var(--ink)" stroke-width="2"/>`;
-  return `<svg viewBox="0 0 ${W} ${BASE+40}" font-family="Avenir Next,system-ui,sans-serif">
+  const hoch = BASE + (siege&&Object.keys(siege).length ? 52 : 40);
+  return `<svg viewBox="0 0 ${W} ${hoch}" font-family="Avenir Next,system-ui,sans-serif">
     <text x="${axis-8}" y="22" font-size="9.5" font-weight="800" fill="var(--ink-soft)" letter-spacing="1.2"
       >PUNKTE IM VERHÄLTNIS ZUM MAXIMUM (${MAXPTS})</text>${P}</svg>`;
 }
@@ -917,7 +944,7 @@ function openFinal(){
   const rest=list.filter(x=>x.rank>3);
   sbBody.innerHTML = `<div class="sub" style="text-align:center;margin:-6px 0 6px">Blatt ${nr} · ${
     offen ? 'noch '+offen+' Feld'+(offen>1?'er':'')+' offen' : 'alle Felder ausgefüllt'}</div>
-    <div class="finalwrap">${podiumSVG(list)}</div>
+    <div class="finalwrap">${podiumSVG(list, seriesWins())}</div>
     ${offen?(()=>{
       const ch=winChances(), fehlt={};
       missingList(s).forEach(x=>fehlt[x.nm]=x.rows.length);
@@ -991,7 +1018,7 @@ function faceCam(n){
 /* Zehn Drachenflächen. Bei dieser Ringhöhe liegen alle vier Ecken je Fläche
    exakt in einer Ebene – sonst wäre es kein echter Körper.               */
 const C36=Math.cos(Math.PI/5);
-const ZP=1.10, ZA=ZP*(1-C36)/(1+C36), RA=1.0, D10S=19.5;
+const ZP=1.10, ZA=ZP*(1-C36)/(1+C36), RA=1.0, D10S=24;
 function d10Faces(){
   const P=(r,deg,y)=>[r*Math.cos(deg*Math.PI/180), y, r*Math.sin(deg*Math.PI/180)];
   const N=[0,-ZP,0], S=[0,ZP,0], A=[], B=[];
@@ -1010,7 +1037,7 @@ function d10Faces(){
     const ey=norm(sub(up,n.map(x=>x*dot(up,n)))).map(x=>-x);
     const ex=norm(cross(ey,n));
     const loc=v.map(p=>[dot(sub(p,c),ex), dot(sub(p,c),ey)]);
-    return {...f, c, n, ex, ey, loc};
+    return {...f, v, c, n, ex, ey, loc};   // v in Bildpunkten mitgeben
   });
   /* Beschriftung wie beim echten Würfel: gegenüberliegende Flächen ergeben 9 */
   const num=new Array(10).fill(null);
@@ -1176,15 +1203,40 @@ function pipHTML(v){
 function buildBody(i,seed){
   if(i<5) return CUBE.map(f=>
     `<div class="f f6" data-v="${f.v}" data-n="${f.n}" style="transform:${f.t}"></div>`).join('');
-  return D10F.map((f,k)=>{
-    const m=[...f.ex,0,...f.ey,0,...f.n,0,...f.c,1].map(x=>Math.round(x*1e4)/1e4).join(',');
-    const cp=f.loc.map(([x,y])=>`${(50+x/BOX*100).toFixed(2)}% ${(50+y/BOX*100).toFixed(2)}%`).join(',');
-    const cy=f.loc.reduce((s,p)=>s+p[1],0)/4;
-    return `<div class="f f10" data-face="${k}" style="width:${BOX}px;height:${BOX}px;
-      left:50%;top:50%;margin:${-BOX/2}px;background:#c8202e;
-      transform:matrix3d(${m});clip-path:polygon(${cp})">
-      <b style="top:${(BOX/2+cy-7).toFixed(1)}px">${f.num}</b></div>`;
-  }).join('');
+  /* Gezeichnet statt aus Flächen gebaut: zehn schräge Ebenen mit Beschneidung
+     stellt Chrome nicht zuverlässig dar – geprüft mit echten Aufnahmen. */
+  const R=Math.round(D10S*1.4);
+  return `<svg class="d10" viewBox="${-R} ${-R} ${2*R} ${2*R}"
+    style="position:absolute;left:50%;top:50%;width:${2*R}px;height:${2*R}px;
+           margin:${-R}px 0 0 ${-R}px;overflow:visible"></svg>`;
+}
+/* Zehnseiter für die aktuelle Lage neu zeichnen */
+function drawD10(d){
+  const svg=d.el.querySelector('svg.d10'); if(!svg) return;
+  const fl=D10F.map(f=>{
+    const v=f.v.map(pt=>rotXY(d.rx,d.ry,pt));
+    const n=rotXY(d.rx,d.ry,f.n);
+    return {v,n,z:v.reduce((s,p)=>s+p[2],0)/4,num:f.num,ex:f.ex};
+  }).sort((a,b)=>a.z-b.z);
+  let out='';
+  fl.forEach(f=>{
+    if(f.n[2]<=0.02) return;
+    const lit=Math.max(0,Math.min(1,0.5-0.5*(f.n[0]*0.5+f.n[1]*0.7-f.n[2]*0.9)));
+    const col=`rgb(${Math.round(150+80*lit)},${Math.round(16+34*lit)},${Math.round(26+34*lit)})`;
+    out+=`<polygon points="${f.v.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" `
+       + `fill="${col}" stroke="#7d0d16" stroke-width=".7" stroke-linejoin="round"/>`;
+    if(f.n[2]>0.4){
+      const cx=f.v.reduce((s,p)=>s+p[0],0)/4, cy=f.v.reduce((s,p)=>s+p[1],0)/4;
+      const gr=7+7*f.n[2];
+      /* Ziffer entlang der Fläche kippen, sonst steht sie auf schrägen Seiten kopf */
+      const ex=rotXY(d.rx,d.ry,f.ex);
+      const dreh=Math.atan2(ex[1],ex[0])*180/Math.PI;
+      out+=`<text x="${cx.toFixed(1)}" y="${(cy+gr*0.36).toFixed(1)}" font-size="${gr.toFixed(1)}" `
+         + `font-weight="800" fill="#fff" text-anchor="middle" `
+         + `transform="rotate(${dreh.toFixed(1)} ${cx.toFixed(1)} ${cy.toFixed(1)})">${f.num}</text>`;
+    }
+  });
+  svg.innerHTML=out;
 }
 
 const ease=p=>1-Math.pow(1-p,2.4);
@@ -1249,7 +1301,7 @@ function relight(d){
 }
 function place(d,h,scale){
   const s=(scale||1)*SC, lift=h||0;
-  relight(d);
+  if(d.i<5) relight(d); else drawD10(d);
   d.el.style.transform=`translate(${d.x-R}px,${d.y-R-lift}px) rotate(${d.rz}deg) scale(${s})`;
   d.body.style.transform=`rotateX(${d.rx}deg) rotateY(${d.ry}deg)`;
   const k=Math.max(0,Math.min(1,lift/120));
@@ -1341,8 +1393,8 @@ function makeDice(fresh){
     if(i<5) el.querySelectorAll('.f6').forEach(fe=>{ fe.style.backgroundImage=woodFace(+fe.dataset.v,i+1); });
     const d={i, v:st.v, inCup:st.inCup, x:st.x, y:st.y, rx:st.rx, ry:st.ry, rz:st.rz,
              el, body:el.querySelector('.body'), sh:el.querySelector('.sh'), st, faces:[]};
-    d.faces=[...el.querySelectorAll('.f')].map((fe,k)=>({el:fe,
-      n: i<5 ? CUBE[k].n.split(',').map(Number) : D10F[k].n.slice()}));
+    d.faces = i<5 ? [...el.querySelectorAll('.f')].map((fe,k)=>({el:fe,
+      n: CUBE[k].n.split(',').map(Number)})) : [];
     if(d.inCup||d.v===null){ const s=cupSlot(dice.filter(x=>x.inCup).length); d.x=s.x; d.y=s.y; d.inCup=true; }
     else if(!onFelt(d.x,d.y)){ d.x=W/2; d.y=HEXH/2; }
     dice.push(d); place(d,0);
