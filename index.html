@@ -509,7 +509,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v69 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v70 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS_EXTREME = [
@@ -2375,7 +2375,7 @@ sbBody.addEventListener('click', e=>{
   if (b.id==='confirmYes'){ const fn=pendingConfirm; pendingConfirm=null; closeBox(); if(fn) fn(); return; }
   if (b.id==='backToRoom'){ closeBox(); hideLobby(); return; }
   if (b.id==='joinNewRoom'){ const v=pendingRoomVariant; pendingRoomVariant=null; closeBox();
-    leave(); doLobbySelect(v, 'online'); return; }
+    leave(); doLobbySelect(v, 'online'); return; }   // Raum ist schon weg, doLobbySelect prüft nur noch die Blätter
   if (b.id==='joinTake')  return joinTake();
   if (b.id==='joinBring') return joinBring();
   if (b.id==='restoreBtn') return restoreBackup();
@@ -2420,20 +2420,33 @@ function askRoomChoice(variant){
   pendingRoomVariant = variant;
   openBox();
 }
+/* Eine Variante ist ein eigener, abgeschlossener Modus: beim Wechsel werden
+   die Blätter der jeweils anderen Variante entfernt statt danebenzuliegen. */
 function doLobbySelect(variant, mode){
-  appVariant = variant;
-  /* Passendes Blatt sicherstellen: ein noch leeres wird einfach umbenannt,
-     eines mit echten Einträgen bleibt unangetastet und es entsteht ein neues –
-     sonst landet man beim Umschalten weiter auf dem alten Blatt der falschen Variante. */
-  if(sheet() && sheet().variant!==variant){
-    if(blankSheet(sheet())){ sheet().variant=variant; lastSig=''; }
-    else { const s=newSheet([],variant); state.sheets.push(s); state.activeId=s.id; lastSig=''; }
+  const wasRoom = room;
+  const others = liveSheets().filter(s=>(s.variant||'extreme')!==variant);
+  const hasData = others.some(s=>!cellsBlank(s));
+  const finish = () => {
+    if(wasRoom) leave();
+    others.forEach(s=>{ s.del=stamp(1); });
+    appVariant = variant;
+    let target = liveSheets().find(s=>(s.variant||'extreme')===variant);
+    if(!target){ target = newSheet(undefined, variant); state.sheets.push(target); }
+    state.activeId = target.id; lastSig='';
+    myName = document.getElementById('lobbyName').value.trim();
+    try{ localStorage.setItem('kniffel-myname', myName); }catch(err){}
+    claimName();
+    hideLobby(); touched();
+    if(mode==='online') openCoop();
+  };
+  if(hasData || wasRoom){
+    const bits=[];
+    if(wasRoom) bits.push(`verlasst ihr die Runde ${esc(room)}`);
+    if(hasData) bits.push(`werden alle „${esc(VARIANTS[others[0].variant||'extreme'].label)}“-Blätter gelöscht`);
+    askConfirm('Dabei '+bits.join(' und ')+'. Fortfahren?', finish, 'Ja, wechseln', false);
+  } else {
+    finish();
   }
-  myName = document.getElementById('lobbyName').value.trim();
-  try{ localStorage.setItem('kniffel-myname', myName); }catch(err){}
-  claimName();
-  hideLobby(); touched();
-  if(mode==='online') openCoop();
 }
 document.getElementById('lobby').addEventListener('click', e=>{
   const back=e.target.closest('#lobbyBackBtn'); if(back){ hideLobby(); return; }
@@ -2441,13 +2454,7 @@ document.getElementById('lobby').addEventListener('click', e=>{
   const lv=e.target.closest('#lobbyLeave'); if(lv){ leave(); showLobby(); return; }
   const b=e.target.closest('[data-lobby]'); if(!b) return;
   const [variant, wantMode] = b.dataset.lobby.split('-');
-  if(room){
-    if(wantMode==='online'){ askRoomChoice(variant); return; }
-    askConfirm(`Ihr spielt gerade in Runde ${esc(room)}. Wechseln zu „${VARIANTS[variant].label}“
-       trennt euch von dieser Runde.`,
-      ()=>{ leave(); doLobbySelect(variant, wantMode); }, 'Ja, wechseln', false);
-    return;
-  }
+  if(room && wantMode==='online'){ askRoomChoice(variant); return; }
   doLobbySelect(variant, wantMode);
 });
 document.getElementById('diceBtn').onclick = openBoard;
