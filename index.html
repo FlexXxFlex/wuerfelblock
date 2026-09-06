@@ -368,6 +368,10 @@ footer button{padding:9px 9px;font-size:12.5px}
     </div>
   </div>
   <div class="lback" id="lobbyBack"></div>
+  <p style="text-align:center;margin-top:28px;font-size:11.5px;color:var(--ink-soft);line-height:1.6">
+    <span id="verLobby" style="opacity:.75"></span><br>
+    <span class="byfoot">App by <b>Felix</b></span>
+  </p>
   </div>
 </div>
 <div class="wrap">
@@ -505,7 +509,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v66 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v67 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS_EXTREME = [
@@ -2601,6 +2605,7 @@ function loadLocal(){
 }
 
 document.getElementById('ver').textContent = 'Version '+VERSION;
+document.getElementById('verLobby').textContent = 'Version '+VERSION;
 
 /* ======================= Start ======================= */
 loadLocal();
