@@ -36,7 +36,7 @@ body{background:var(--paper);color:var(--ink);
 
 /* Schmale Leiste unter der Statusleiste – bleibt beim Scrollen stehen */
 .mini{display:flex;align-items:center;gap:8px;padding:2px 2px 6px;flex:0 0 auto}
-.mini .now{border:1.5px solid var(--rule);background:var(--card);color:var(--ink);
+.mini .now, .coopbar .now{border:1.5px solid var(--rule);background:var(--card);color:var(--ink);
   border-radius:999px;padding:5px 12px;font:800 12px inherit;cursor:pointer;white-space:nowrap}
 /* Kopfbereich klappt beim Scrollen weg */
 .bighead{flex:0 0 auto;overflow:hidden;max-height:260px;will-change:max-height;
@@ -165,7 +165,7 @@ footer button.primary{background:var(--ink);border-color:var(--ink);color:#fff}
 .opts button.on{background:var(--ink);border-color:var(--ink);color:#fff}
 .numrow{display:flex;gap:8px;margin-bottom:10px}
 .numrow input{flex:1;border:1.5px solid var(--rule);border-radius:10px;padding:12px;
-  font:800 22px inherit;text-align:center;color:var(--pencil);background:var(--paper)}
+  font-family:inherit;font-weight:800;font-size:22px;text-align:center;color:var(--pencil);background:var(--paper)}
 .numrow input:focus{outline:none;border-color:var(--ink)}
 .row2{display:flex;gap:8px;margin-top:12px}
 .row2 button{flex:1;border-radius:10px;padding:12px;font:800 14px inherit;cursor:pointer;
@@ -217,7 +217,7 @@ body.tint th.pcol.p2{background:#dff0e5}
 body.tint th.pcol.p3{background:#f9e9d5}
 body.tint th.pcol.p4{background:#e6e2f5}
 body.tint th.pcol.p5{background:#f9e0e4}
-.mini .now.off{color:var(--ink-soft);opacity:.7}
+.mini .now.off, .coopbar .now.off{color:var(--ink-soft);opacity:.7}
 
 /* ---------- Hinweis auf eine neue Version ---------- */
 #upbar{display:none;align-items:center;gap:10px;margin:0 2px 8px;padding:9px 12px;
@@ -309,9 +309,62 @@ footer button{padding:9px 9px;font-size:12.5px}
   footer .fin{max-width:600px}
   .hint{text-align:center}
 }
+/* ---------- Lobby: Startbildschirm vor dem Block ---------- */
+#lobby{position:fixed;inset:0;z-index:50;background:var(--paper);
+  display:flex;flex-direction:column;justify-content:center;
+  padding:calc(24px + env(safe-area-inset-top)) 20px 24px;
+  overflow-y:auto}
+#lobby.hide{display:none}
+@media (min-width:600px){
+  #lobby .lhead, #lobby .lname, .lcard{max-width:420px;margin-left:auto;margin-right:auto}
+  .lcard{margin-bottom:14px}
+}
+#lobby .lhead{text-align:center;margin-bottom:28px}
+#lobby .lhead b{font-size:30px;font-weight:800;font-style:italic;color:var(--ink);letter-spacing:-1px}
+#lobby .lhead small{display:block;font-size:11px;font-weight:700;letter-spacing:2px;
+  color:var(--ink-soft);margin-top:4px}
+#lobby .lname{margin-bottom:24px}
+#lobby .lname label{display:block;font-size:11px;font-weight:800;letter-spacing:1.5px;
+  color:var(--ink-soft);margin-bottom:8px}
+#lobby .lname input{width:100%;padding:13px;border:1.5px solid var(--rule);border-radius:10px;
+  font-family:inherit;font-weight:700;font-size:16px;color:var(--pencil);background:var(--card)}
+.lcard{background:var(--card);border:1.5px solid var(--rule);border-radius:14px;
+  padding:16px;margin-bottom:14px}
+.lcard .lt{font-size:17px;font-weight:800;color:var(--ink);margin-bottom:2px}
+.lcard .ls{font-size:12px;color:var(--ink-soft);font-weight:600;margin-bottom:12px}
+.lcard .lrow{display:flex;gap:10px}
+.lcard button{flex:1;border:1.5px solid var(--rule);background:var(--paper);color:var(--ink);
+  border-radius:10px;padding:13px 6px;font:800 13.5px inherit;cursor:pointer}
+.lcard button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+#lobby .lback{margin-top:auto;text-align:center;font-size:11.5px;color:var(--ink-soft);
+  font-weight:600;padding-top:16px}
 </style>
 </head>
 <body>
+<div id="lobby" class="hide">
+  <div class="lhead"><b>Würfelblock</b><small>WÄHLE, WIE IHR SPIELT</small></div>
+  <div class="lname">
+    <label>DEIN NAME</label>
+    <input id="lobbyName" placeholder="Wird beim Beitreten übernommen" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false">
+  </div>
+  <div class="lcard">
+    <div class="lt">Würfelblock</div>
+    <div class="ls">5 Würfel · 13 Kästchen · klassisch</div>
+    <div class="lrow">
+      <button data-lobby="classic-offline">Offline</button>
+      <button data-lobby="classic-online">Online</button>
+    </div>
+  </div>
+  <div class="lcard">
+    <div class="lt">Würfelblock Extreme</div>
+    <div class="ls">6 Würfel · 22 Kästchen · mit Zehnseiter</div>
+    <div class="lrow">
+      <button data-lobby="extreme-offline">Offline</button>
+      <button data-lobby="extreme-online">Online</button>
+    </div>
+  </div>
+  <div class="lback" id="lobbyBack"></div>
+</div>
 <div class="wrap">
   <div class="mini">
     <button class="now" id="sheetNow">Blatt 1</button>
@@ -331,6 +384,7 @@ footer button{padding:9px 9px;font-size:12.5px}
         <small>6 WÜRFEL · BIS 6 SPIELER</small></div>
     </header>
     <div class="coopbar">
+      <button class="now" id="variantBtn">Kniffel Extreme</button>
       <button id="coopChip"><span class="dot"></span><span id="coopText">Nur dieses Handy</span></button>
     </div>
     <div class="tabs" id="tabs"></div>
@@ -446,10 +500,10 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v57 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v65 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
-const ROWS = [
+const ROWS_EXTREME = [
   {id:'e1', kind:'count', die:1, name:'nur Einser',  hint:'zählen'},
   {id:'e2', kind:'count', die:2, name:'nur Zweier',  hint:'zählen'},
   {id:'e3', kind:'count', die:3, name:'nur Dreier',  hint:'zählen'},
@@ -460,7 +514,7 @@ const ROWS = [
   {id:'bonus',    kind:'calc', name:'noch bis 73', hint:'Bonus plus 45'},
   {id:'upperTot', kind:'calc', name:'gesamt oberer Teil', hint:'→'},
   {id:'__gap',    kind:'gap'},
-  {id:'l1',  kind:'sum',   max:39, name:'Dreierpasch',       hint:'alle Augen zählen'},
+  {id:'l1',  kind:'sum',   max:39, name:'Dreierpasch',       hint:'alle Augen zählen', firstLower:true},
   {id:'l2',  kind:'sum',   max:39, name:'Viererpasch',       hint:'alle Augen zählen'},
   {id:'l3',  kind:'sum',   max:39, name:'Zwei Paare',        hint:'alle Augen zählen'},
   {id:'l4',  kind:'fixed', pts:35, name:'Drei Paare',        hint:'35 Punkte'},
@@ -480,21 +534,59 @@ const ROWS = [
   {id:'upperTot2',kind:'calc', name:'gesamt oberer Teil',  hint:'→'},
   {id:'endTotal', kind:'calc', name:'Endsumme', hint:'→', total:true}
 ];
+/* Klassisches Kniffel: fünf Würfel, 13 Kästchen, Bonus bei 63/35 und die
+   Bonus-Kniffel-Regel (+50, wenn nach einem eingetragenen Kniffel ein
+   zweiter gewürfelt wird – dann als Joker in ein beliebiges Feld). */
+const ROWS_CLASSIC = [
+  {id:'e1', kind:'count', die:1, name:'nur Einser',  hint:'zählen'},
+  {id:'e2', kind:'count', die:2, name:'nur Zweier',  hint:'zählen'},
+  {id:'e3', kind:'count', die:3, name:'nur Dreier',  hint:'zählen'},
+  {id:'e4', kind:'count', die:4, name:'nur Vierer',  hint:'zählen'},
+  {id:'e5', kind:'count', die:5, name:'nur Fünfer',  hint:'zählen'},
+  {id:'e6', kind:'count', die:6, name:'nur Sechser', hint:'zählen'},
+  {id:'upperSum', kind:'calc', name:'gesamt', hint:'→'},
+  {id:'bonus',    kind:'calc', name:'noch bis 63', hint:'Bonus plus 35'},
+  {id:'upperTot', kind:'calc', name:'gesamt oberer Teil', hint:'→'},
+  {id:'__gap',    kind:'gap'},
+  {id:'c1', kind:'sum',   max:30, name:'Dreierpasch',   hint:'alle Augen zählen', firstLower:true},
+  {id:'c2', kind:'sum',   max:30, name:'Viererpasch',   hint:'alle Augen zählen'},
+  {id:'c3', kind:'fixed', pts:25, name:'Full-House',    hint:'25 Punkte'},
+  {id:'c4', kind:'fixed', pts:30, name:'Kleine Straße', hint:'30 Punkte'},
+  {id:'c5', kind:'fixed', pts:40, name:'Große Straße',  hint:'40 Punkte'},
+  {id:'c6', kind:'fixed', pts:50, name:'Kniffel',       hint:'50 Punkte'},
+  {id:'c7', kind:'sum',   max:30, name:'Chance',        hint:'alle Augen zählen'},
+  {id:'lowerTot', kind:'calc', name:'gesamt unterer Teil', hint:'→'},
+  {id:'upperTot2',kind:'calc', name:'gesamt oberer Teil',  hint:'→'},
+  {id:'endTotal', kind:'calc', name:'Endsumme', hint:'→', total:true}
+];
+/* Welche Zeilenliste und welcher Bonus gehören zu welcher Variante? */
+const VARIANTS = {
+  extreme: {rows:ROWS_EXTREME, t:73, p:45, dice:6, label:'Kniffel Extreme', short:'Extreme'},
+  classic: {rows:ROWS_CLASSIC, t:63, p:35, dice:5, label:'Kniffel',         short:'Kniffel'}
+};
+const rowsOf   = v => VARIANTS[v||'extreme'].rows;
+const bonusOf  = v => VARIANTS[v||'extreme'];
+const DICE_N   = v => VARIANTS[v||'extreme'].dice;
+let appVariant = 'extreme';   // Variante für neu erstellte Blätter
+
 const UPPER  = ['e1','e2','e3','e4','e5','e6'];
-const LOWERR = ROWS.filter(r=>['sum','sum2','fixed'].includes(r.kind));
+
+const lowerrOf = v => rowsOf(v).filter(r=>['sum','sum2','fixed'].includes(r.kind));
 
 /* ======================= Zustand ======================= */
 let lastT = 0;
 const now = () => { const t = Math.max(Date.now(), lastT+1); lastT = t; return t; };
 const rid = () => Math.random().toString(36).slice(2,9);
 /* Gerätekennung bleibt erhalten – sie entscheidet bei gleichem Zeitstempel */
+let myName = (()=>{ try{ return localStorage.getItem('kniffel-myname')||''; }catch(e){ return ''; } })();
 const DEV = (()=>{ try{ let v=localStorage.getItem('kniffel-dev');
   if(!v){ v=rid()+rid().slice(0,3); localStorage.setItem('kniffel-dev',v); } return v; }
   catch(e){ return rid(); } })();
 const stamp = v => ({v, t:now(), d:DEV});
 
 const newPlayer = (name='') => ({id:rid(), created:now(), name:stamp(name), del:{v:0,t:0}});
-const newSheet  = (names=['','']) => ({id:rid(), created:now(), del:{v:0,t:0},
+const newSheet  = (names=['',''], variant) => ({id:rid(), created:now(), del:{v:0,t:0},
+                                       variant: variant||appVariant,
                                        players:names.map(n=>newPlayer(n)), cells:{}});
 
 let state = {activeId:null, sheets:[newSheet()]};
@@ -510,11 +602,13 @@ const setCell = (s,pid,row,v) => { s.cells[ck(pid,row)] = stamp(v); };
 /* ======================= Rechnen ======================= */
 function calc(pid){
   const s = sheet(); if(!s) return {};
+  const v_=s.variant||'extreme', B=bonusOf(v_);
   let upper=0, upperAny=false;
   UPPER.forEach(id=>{ const v=cellV(s,pid,id); if(v!==null&&v!==undefined){upper+=v;upperAny=true;} });
-  const bonus = upper>=73 ? 45 : 0;
+  const bonus = upper>=B.t ? B.p : 0;
   let lower=0, lowerAny=false;
-  LOWERR.forEach(r=>{ const v=cellV(s,pid,r.id); if(v!==null&&v!==undefined){lower += r.kind==='sum2'?v*2:v; lowerAny=true;} });
+  lowerrOf(v_).forEach(r=>{ const v=cellV(s,pid,r.id); if(v!==null&&v!==undefined){lower += r.kind==='sum2'?v*2:v; lowerAny=true;} });
+  if(v_==='classic'){ const j=cellV(s,pid,'joker'); if(j){ lower+=j; lowerAny=true; } }
   return {upperSum:upperAny?upper:null, bonus:upperAny?bonus:null, upperTot:upperAny?upper+bonus:null,
           lowerTot:lowerAny?lower:null, endTotal:(upperAny||lowerAny)?(upper+bonus+lower):null};
 }
@@ -522,26 +616,28 @@ function calc(pid){
 /* =============== Bonus bei 73: was fehlt, und wie man hinkommt =============== */
 const ZAHL = ['','Einser','Zweier','Dreier','Vierer','Fünfer','Sechser'];
 function bonusInfo(pid){
-  const s = sheet(); let sum=0, any=false; const open=[];
+  const s = sheet(), v_=s.variant||'extreme', B=bonusOf(v_), n=DICE_N(v_);
+  let sum=0, any=false; const open=[];
   UPPER.forEach((id,i)=>{
     const v = cellV(s,pid,id);
     if (v===null||v===undefined) open.push(i+1); else { sum+=v; any=true; }
   });
-  const need = Math.max(0, 73-sum);
-  const max  = open.reduce((a,v)=>a+6*v, 0);
+  const need = Math.max(0, B.t-sum);
+  const max  = open.reduce((a,v)=>a+n*v, 0);
   const state = need===0 ? 'ok' : !any ? 'idle' : max<need ? 'dead' : 'open';
   return {sum, need, open, max, state};
 }
 /* Alle Kombinationen aus den offenen Zahlen durchgehen und die
    sparsamsten bzw. gleichmäßigsten Wege heraussuchen. */
-function bonusWays(open, need){
+function bonusWays(open, need, diceN){
+  diceN = diceN || 6;
   const all = [];
   (function rec(i, counts, sum, dice){
     if (i === open.length){
       if (sum>=need) all.push({counts:[...counts], sum, dice, spread:Math.max(...counts)});
       return;
     }
-    for (let n=0; n<=6; n++){ counts.push(n); rec(i+1, counts, sum+n*open[i], dice+n); counts.pop(); }
+    for (let n=0; n<=diceN; n++){ counts.push(n); rec(i+1, counts, sum+n*open[i], dice+n); counts.pop(); }
   })(0, [], 0, 0);
   if (!all.length) return [];
   const fmt = w => open.map((v,i)=>w.counts[i]?`${w.counts[i]}× ${ZAHL[v]}`:null).filter(Boolean).join(' · ');
@@ -554,30 +650,33 @@ function bonusWays(open, need){
 }
 function openBonus(pid){
   const p = livePlayers(sheet()).find(x=>x.id===pid); if(!p) return;
+  const s = sheet(), v_ = s.variant||'extreme', B = bonusOf(v_);
   const b = bonusInfo(pid);
+  const dreiGleiche = 3*(1+2+3+4+5+6);          // 63, unabhängig von der Variante
+  const tipp = dreiGleiche>=B.t
+    ? 'Drei Gleiche von jeder Zahl reichen für die vollen '+dreiGleiche+' Punkte – dann ist der Bonus sicher.'
+    : 'Drei Gleiche von jeder Zahl bringen '+dreiGleiche+' – für den Bonus brauchst du bei einigen Zahlen einen weiteren Würfel.';
   mode='bonus'; sbFoot.style.display='none';
-  document.getElementById('sbTitle').textContent = 'Bonus bei 73';
+  document.getElementById('sbTitle').textContent = 'Bonus bei '+B.t;
   document.getElementById('sbSub').textContent = (p.name.v || 'Spieler') + ' · oberer Teil';
   let body;
   if (b.state==='ok'){
     body = `<div class="bonusbig ok">geschafft</div>
-      <div class="bsub">${b.sum} Punkte oben · die 45 sind sicher</div>`;
+      <div class="bsub">${b.sum} Punkte oben · die ${B.p} sind sicher</div>`;
   } else if (b.state==='dead'){
     body = `<div class="bonusbig dead">nicht mehr</div>
       <div class="bsub">Du stehst bei ${b.sum}. Offen sind höchstens ${b.max} Punkte,
         nötig wären noch ${b.need}.</div>`;
   } else if (b.state==='idle'){
-    body = `<div class="bonusbig">73</div>
-      <div class="bsub">Noch nichts eingetragen. Drei Gleiche von jeder Zahl bringen 63 –
-        für den Bonus brauchst du bei einigen Zahlen den vierten Würfel.</div>`;
+    body = `<div class="bonusbig">${B.t}</div>
+      <div class="bsub">Noch nichts eingetragen. ${tipp}</div>`;
   } else {
-    const ways = bonusWays(b.open, b.need);
+    const ways = bonusWays(b.open, b.need, DICE_N(v_));
     const offen = b.open.map(v=>ZAHL[v]).join(', ');
     body = `<div class="bonusbig">noch ${b.need}</div>
-      <div class="bsub">${b.sum} von 73 · offen: ${offen}</div>
+      <div class="bsub">${b.sum} von ${B.t} · offen: ${offen}</div>
       <div class="blist">${ways.map(w=>`<div>${w.t}<span>${w.sum}</span></div>`).join('')}</div>
-      <div class="note">Drei Gleiche von jeder Zahl bringen nur 63 – für den Bonus
-        brauchst du bei einigen Zahlen den vierten Würfel.</div>`;
+      <div class="note">${tipp}</div>`;
   }
   sbBody.innerHTML = body + `<div class="row2"><button class="primary" id="doneBtn">Fertig</button></div>`;
   openBox();
@@ -603,13 +702,13 @@ function buildTable(){
   let h = '<thead><tr><th class="lbl">NAME</th>';
   ps.forEach((p,i)=>{
     h += `<th class="pcol p${i}">${ps.length>1?`<button class="kill" data-kill="${p.id}">✕</button>`:''}
-      <input type="text" data-name="${p.id}" value="${esc(p.name.v)}" placeholder="Spieler ${i+1}" autocomplete="off"></th>`;
+      <input type="text" data-name="${p.id}" value="${esc(p.name.v)}" placeholder="Spieler ${i+1}" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"></th>`;
   });
   if (ps.length < MAXP) h += '<th class="addcol"><button id="addP">+</button></th>';
   h += '</tr></thead><tbody>';
-  ROWS.forEach(r=>{
+  rowsOf(s.variant).forEach(r=>{
     if (r.kind==='gap') return;                 // keine Leerzeile mehr, siehe .sep
-    const sep = r.id==='l1' ? ' sep' : '';       // Trennlinie zum unteren Teil
+    const sep = r.firstLower ? ' sep' : '';      // Trennlinie zum unteren Teil
     h += `<tr class="${r.total?'total':(r.kind==='calc'?'sum':'')}${r.id==='bonus'?' bonus':''}${sep}">`;
     h += `<td class="lbl"><span class="n">${r.name}</span>`;
     h += r.kind==='count'
@@ -643,14 +742,15 @@ function render(){
   ps.forEach(p=>{ const e=calc(p.id).endTotal; if(e!==null&&(bestVal===null||e>bestVal)){bestVal=e;best=p.id;} });
   const tie = ps.filter(p=>calc(p.id).endTotal===bestVal).length>1;
 
-  ROWS.forEach(r=>{
+  const B_ = bonusOf(s.variant);
+  rowsOf(s.variant).forEach(r=>{
     ps.forEach(p=>{
       const td = grid.querySelector(`td.cell[data-row="${r.id}"][data-p="${p.id}"]`);
       if (!td) return;
       let html;
       if (r.id==='bonus'){
         const b = bonusInfo(p.id);
-        html = b.state==='ok' ? '+45' : b.state==='dead' ? '<span class="zero">—</span>'
+        html = b.state==='ok' ? '+'+B_.p : b.state==='dead' ? '<span class="zero">—</span>'
              : b.state==='open' ? String(b.need) : '';
         td.classList.toggle('hit',  b.state==='ok');
         td.classList.toggle('need', b.state==='open');
@@ -691,7 +791,7 @@ function render(){
   const sb=document.getElementById('standBtn');
   if (sb) sb.textContent = offen ? 'Stand · '+offen : 'Endstand';
 
-  renderTabs();
+  renderTabs(); updateVariantChip();
   refreshFinal();
 }
 
@@ -721,7 +821,7 @@ function openBox(){ veil.classList.add('on'); box.classList.add('on'); }
 function closeBox(){ veil.classList.remove('on'); box.classList.remove('on'); cur=null; mode='cell'; sbFoot.style.display='flex'; }
 
 function openPicker(rowId, pid){
-  const r = ROWS.find(x=>x.id===rowId); if(!r || r.kind==='calc') return;
+  const r = rowsOf(sheet().variant).find(x=>x.id===rowId); if(!r || r.kind==='calc') return;
   const s = sheet(), p = livePlayers(s).find(x=>x.id===pid); if(!p) return;
   cur = {r, pid}; mode='cell'; sbFoot.style.display='flex';
   document.getElementById('sbTitle').textContent = r.name;
@@ -754,32 +854,39 @@ function setVal(v){ if(!cur) return; setCell(sheet(), cur.pid, cur.r.id, v); tou
 /* ======================= Endstand ======================= */
 /* Sobald jedes Feld jeder Spalte gefüllt ist, ist das Blatt fertig.
    Das erkennt jedes Gerät für sich – die Daten sind ja überall dieselben. */
-const ENTRYROWS = ROWS.filter(r=>['count','sum','sum2','fixed'].includes(r.kind));
+const entryRowsOf = v => rowsOf(v).filter(r=>['count','sum','sum2','fixed'].includes(r.kind));
 function sheetDone(s){
   const ps=livePlayers(s);
   if(!ps.length) return false;
-  return ps.every(p=>ENTRYROWS.every(r=>{ const v=cellV(s,p.id,r.id); return v!==null&&v!==undefined; }));
+  const RS=entryRowsOf(s.variant);
+  return ps.every(p=>RS.every(r=>{ const v=cellV(s,p.id,r.id); return v!==null&&v!==undefined; }));
 }
 function missingCount(s){
-  let n=0;
-  livePlayers(s).forEach(p=>ENTRYROWS.forEach(r=>{
+  let n=0; const RS=entryRowsOf(s.variant);
+  livePlayers(s).forEach(p=>RS.forEach(r=>{
     const v=cellV(s,p.id,r.id); if(v===null||v===undefined) n++; }));
   return n;
 }
 function missingList(s){
+  const RS=entryRowsOf(s.variant);
   return livePlayers(s).map(p=>({
     nm: p.name.v||'Spieler',
-    rows: ENTRYROWS.filter(r=>{ const v=cellV(s,p.id,r.id); return v===null||v===undefined; })
+    rows: RS.filter(r=>{ const v=cellV(s,p.id,r.id); return v===null||v===undefined; })
   })).filter(x=>x.rows.length);
 }
-/* Erwartungswert und Streuung je Kästchen, ausgewürfelt mit je 120000 Partien
-   und einer einfachen Halte-Strategie. Grundlage der Gewinnchance. */
-const ODDS = {e1:[2.38,1.19], e2:[4.76,2.38], e3:[7.12,3.55], e4:[9.51,4.77], e5:[11.89,5.94], e6:[14.27,7.14], l1:[19.48,10.24], l2:[9.88,12.34], l3:[14.58,11.35], l4:[0.78,5.17], l5:[2.86,10.97], l6:[12.79,12.5], l7:[4.41,13.38], l8:[18.33,14.63], l9:[14.0,19.08], l10:[7.17,17.52], l11:[5.96,16.21], l12:[0.99,8.57], l13:[6.93,15.14], l14:[10.3,17.49], l15:[29.48,4.25], l16:[58.96,8.48]};
-const CAPS = (()=>{ const c={};
-  ROWS.forEach(r=>{ if(r.kind==='count') c[r.id]=6*r.die;
-    else if(r.kind==='fixed') c[r.id]=r.pts;
-    else if(r.kind==='sum') c[r.id]=39; else if(r.kind==='sum2') c[r.id]=78; });
-  return c; })();
+/* Erwartungswert und Streuung je Kästchen, ausgewürfelt mit je 120000–150000 Partien
+   und einer einfachen Halte-Strategie. Grundlage der Gewinnchance – je Variante eigens simuliert. */
+const ODDS_EXTREME = {e1:[2.38,1.19], e2:[4.76,2.38], e3:[7.12,3.55], e4:[9.51,4.77], e5:[11.89,5.94], e6:[14.27,7.14], l1:[19.48,10.24], l2:[9.88,12.34], l3:[14.58,11.35], l4:[0.78,5.17], l5:[2.86,10.97], l6:[12.79,12.5], l7:[4.41,13.38], l8:[18.33,14.63], l9:[14.0,19.08], l10:[7.17,17.52], l11:[5.96,16.21], l12:[0.99,8.57], l13:[6.93,15.14], l14:[10.3,17.49], l15:[29.48,4.25], l16:[58.96,8.48]};
+const ODDS_CLASSIC = {e1:[2.11,1.1], e2:[4.22,2.21], e3:[6.32,3.3], e4:[8.43,4.41], e5:[10.54,5.54], e6:[12.65,6.61], c1:[13.98,9.61], c2:[5.44,9.3], c3:[8.71,11.91], c4:[13.2,14.89], c5:[6.93,15.14], c6:[2.35,10.59], c7:[23.13,2.87]};
+const oddsOf = v => v==='classic' ? ODDS_CLASSIC : ODDS_EXTREME;
+const capsOf = (()=>{ const cache={};
+  return v => { v=v||'extreme'; if(cache[v]) return cache[v]; const c={};
+    const augen=(DICE_N(v)-1)*6+(v==='extreme'?9:6);
+    rowsOf(v).forEach(r=>{ if(r.kind==='count') c[r.id]=DICE_N(v)*r.die;
+      else if(r.kind==='fixed') c[r.id]=r.pts;
+      else if(r.kind==='sum') c[r.id]=augen; else if(r.kind==='sum2') c[r.id]=augen*2; });
+    return cache[v]=c; };
+})();
 let gaussSpare=null;
 function gauss(){                       // Standardnormalverteilung, Box-Muller
   if(gaussSpare!==null){ const v=gaussSpare; gaussSpare=null; return v; }
@@ -793,18 +900,20 @@ let oddsCache={key:'', val:null};
 function winChances(sims){
   const s=sheet(), ps=livePlayers(s);
   if(ps.length<2) return null;
+  const v_=s.variant||'extreme', B=bonusOf(v_), ODDS=oddsOf(v_), CAPS=capsOf(v_);
   const key = canon(state.sheets)+'|'+ps.length;
   if(oddsCache.key===key) return oddsCache.val;
   const N = sims || 4000;
   const spieler = ps.map(p=>{
     let curUp=0, curLow=0; const offUp=[], offLow=[];
-    ROWS.forEach(r=>{
+    rowsOf(v_).forEach(r=>{
       if(!['count','sum','sum2','fixed'].includes(r.kind)) return;
       const v=cellV(s,p.id,r.id);
       const gefuellt = v!==null && v!==undefined;
       if(UPPER.includes(r.id)){ gefuellt ? curUp+=v : offUp.push(r.id); }
       else { gefuellt ? curLow+=(r.kind==='sum2'?v*2:v) : offLow.push(r.id); }
     });
+    if(v_==='classic') curLow += cellV(s,p.id,'joker')||0;
     return {id:p.id, nm:p.name.v||'Spieler', curUp, curLow, offUp, offLow};
   });
   const wins = spieler.map(()=>0);
@@ -818,7 +927,7 @@ function winChances(sims){
       const x=spieler[i];
       let up=x.curUp; x.offUp.forEach(id=>up+=zieh(id));
       let low=x.curLow; x.offLow.forEach(id=>low+=zieh(id));
-      const total = up + (up>=73?45:0) + low;
+      const total = up + (up>=B.t?B.p:0) + low;
       if(total>best){ best=total; gew=[i]; } else if(total===best) gew.push(i);
     }
     gew.forEach(i=>wins[i]+=1/gew.length);
@@ -833,14 +942,16 @@ function winChances(sims){
 function sheetWinners(s){
   const ps=livePlayers(s);
   if(!ps.length || !sheetDone(s)) return [];
+  const v_=s.variant||'extreme', B=bonusOf(v_);
   const tot=ps.map(p=>{
     let up=0, low=0;
-    ROWS.forEach(r=>{
+    rowsOf(v_).forEach(r=>{
       if(!['count','sum','sum2','fixed'].includes(r.kind)) return;
       const v=cellV(s,p.id,r.id)||0;
       if(UPPER.includes(r.id)) up+=v; else low+=(r.kind==='sum2'?v*2:v);
     });
-    return {nm:p.name.v||'Spieler', pts:up+(up>=73?45:0)+low};
+    if(v_==='classic') low += cellV(s,p.id,'joker')||0;
+    return {nm:p.name.v||'Spieler', pts:up+(up>=B.t?B.p:0)+low};
   });
   const best=Math.max(...tot.map(x=>x.pts));
   return tot.filter(x=>x.pts===best).map(x=>x.nm);
@@ -861,15 +972,18 @@ function standings(){
 const FCOL={1:'#c9a227',2:'#98a0bb',3:'#b3763f'};
 /* Was ist theoretisch überhaupt drin? Oben sechs Würfel je Zahl plus Bonus,
    unten jeweils der Höchstwert des Kästchens. Ergibt 880. */
-const MAXPTS = (()=>{
-  const augen = 5*6+9;                                  // größte Augensumme
-  let m = 6*(1+2+3+4+5+6) + 45;                         // oberer Teil samt Bonus
-  ROWS.forEach(r=>{
-    if(r.kind==='fixed') m += r.pts;
-    else if(r.kind==='sum')  m += augen;
-    else if(r.kind==='sum2') m += augen*2;
-  });
-  return m;
+const maxptsOf = (()=>{ const cache={};
+  return v => { v=v||'extreme'; if(cache[v]!=null) return cache[v];
+    const n=DICE_N(v), B=bonusOf(v);
+    const augen = (n-1)*6 + (v==='extreme'?9:6);        // größte Augensumme dieser Variante
+    let m = n*(1+2+3+4+5+6) + B.p;                       // oberer Teil samt Bonus
+    rowsOf(v).forEach(r=>{
+      if(r.kind==='fixed') m += r.pts;
+      else if(r.kind==='sum')  m += augen;
+      else if(r.kind==='sum2') m += augen*2;
+    });
+    return cache[v]=m;
+  };
 })();
 /* Siegsterne: bis drei nebeneinander, vier als Viereck, fünf als zwei über drei,
    ab sechs die Zahl mit einem Stern – so bleibt es auch bei sechs Spalten lesbar. */
@@ -893,6 +1007,7 @@ function sterne(n,cx,cy){
        + sternForm(cx-d,cy+d/2,r)+sternForm(cx,cy+d/2,r)+sternForm(cx+d,cy+d/2,r);
 }
 function podiumSVG(list, siege){
+  const MAXPTS = maxptsOf(sheet().variant);
   const W=360, n=list.length, axis=30, padr=12, gap=10;
   const bw=Math.min(64,(W-axis-padr-(n-1)*gap)/n);
   const total=n*bw+(n-1)*gap, x0=axis+(W-axis-padr-total)/2;
@@ -959,7 +1074,7 @@ function openFinal(){
     ? first.nm+' führt mit '+first.pts+' Punkten'
     : geteilt ? list.filter(x=>x.rank===1).map(x=>x.nm).join(' und ')+' · je '+first.pts+' Punkte'
       : first.pts+' Punkte'+(zweite?' · '+(first.pts-zweite.pts)+' vor '+zweite.nm:'')
-        +' · '+Math.round(first.pts/MAXPTS*100)+' % vom Maximum';
+        +' · '+Math.round(first.pts/maxptsOf(s.variant)*100)+' % vom Maximum';
   const rest=list.filter(x=>x.rank>3);
   sbBody.innerHTML = `<div class="sub" style="text-align:center;margin:-6px 0 6px">Blatt ${nr} · ${
     offen ? 'noch '+offen+' Feld'+(offen>1?'er':'')+' offen' : 'alle Felder ausgefüllt'}</div>
@@ -1020,8 +1135,8 @@ function maybeFinal(){
 const PIPS = {1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
 let boardEl=null, hexEl=null, cupEl=null, cupG=null, cupCap=null;
 let dice=[], board=null, lastPid=null;
-const newBoard = pid => ({pid, roll:0, busy:false,
-  state:Array.from({length:6},()=>({v:null,inCup:true,x:0,y:0,rx:0,ry:0,rz:0}))});
+const newBoard = (pid, variant) => ({pid, roll:0, busy:false, variant:variant||'extreme',
+  state:Array.from({length:DICE_N(variant)},()=>({v:null,inCup:true,x:0,y:0,rx:0,ry:0,rz:0}))});
 
 /* ================= Vektorkram ================= */
 const sub=(a,b)=>a.map((x,k)=>x-b[k]);
@@ -1345,8 +1460,10 @@ function place(d,h,scale){
 }
 
 
+function hasN5(d){ const c={}; d.forEach(v=>c[v]=(c[v]||0)+1); return Object.values(c).some(x=>x>=5); }
 /* ---- Was ist mit diesem Wurf in welchem Kästchen zu holen? ---- */
-function scoreFor(row, d){
+function isFullExact(cnt){ const v=Object.values(cnt).sort((a,b)=>a-b); return v.length===2&&v[0]===2&&v[1]===3; }
+function scoreFor(row, d, joker){
   const sum=d.reduce((a,b)=>a+b,0), cnt={}; d.forEach(v=>cnt[v]=(cnt[v]||0)+1);
   const has=n=>Object.values(cnt).some(c=>c>=n);
   const kinds=n=>Object.keys(cnt).filter(k=>cnt[k]>=n).length;
@@ -1366,21 +1483,30 @@ function scoreFor(row, d){
     case 'l11': return has(5)?50:0;         case 'l12': return has(6)?75:0;
     case 'l13': return sum<=10?40:0;        case 'l14': return sum>=33?40:0;
     case 'l15': return sum;                 case 'l16': return sum;
+    case 'c1':  return joker?sum:(has(3)?sum:0);
+    case 'c2':  return joker?sum:(has(4)?sum:0);
+    case 'c3':  return (joker||isFullExact(cnt))?25:0;
+    case 'c4':  return (joker||best>=4)?30:0;
+    case 'c5':  return (joker||best>=5)?40:0;
+    case 'c6':  return has(5)?50:0;
+    case 'c7':  return sum;
     default: return 0;
   }
 }
 /* Nur noch freie Kästchen vorschlagen, bestes zuerst */
 function suggestions(pid, d){
-  const s=sheet();
-  return ROWS.filter(r=>['count','sum','sum2','fixed'].includes(r.kind))
+  const s=sheet(), v_=s.variant||'extreme', B=bonusOf(v_);
+  const joker = v_==='classic' && hasN5(d) && cellV(s,pid,'c6')===50;
+  return rowsOf(v_).filter(r=>['count','sum','sum2','fixed'].includes(r.kind))
     .filter(r=>{ const v=cellV(s,pid,r.id); return v===null||v===undefined; })
     .map(r=>{
-      const raw=scoreFor(r,d), pts=r.kind==='sum2'?raw*2:raw;
+      const raw=scoreFor(r,d,joker), pts=r.kind==='sum2'?raw*2:raw;
       let ex='';
       if (UPPER.includes(r.id) && raw>0){
         const b=bonusInfo(pid), rest=Math.max(0,b.need-raw);
-        ex = rest>0 ? `dann noch ${rest} bis 73` : 'damit ist der Bonus sicher';
+        ex = rest>0 ? `dann noch ${rest} bis ${B.t}` : 'damit ist der Bonus sicher';
       } else if (r.kind==='sum2' && raw>0) ex=`${raw} Augen, doppelt`;
+      else if (joker && raw>0 && v_==='classic') ex='Bonus-Kniffel · plus 50';
       return {r, raw, pts, ex};
     }).sort((a,b)=>b.pts-a.pts);
 }
@@ -1409,6 +1535,7 @@ function boardHTML(){
       <div class="caption" id="cupCap"></div>
     </div>
     <div class="dicehint" id="dhint"></div>
+    <div id="jokerhost"></div>
     <div class="row2" style="margin-top:0">
       <button class="primary" id="rollBtn">Würfeln</button>
       <button id="resetBtn">Neuer Zug</button>
@@ -1418,7 +1545,8 @@ function boardHTML(){
 function makeDice(fresh){
   boardEl.querySelectorAll('.wd,.ring').forEach(e=>e.remove());
   dice=[];
-  for(let i=0;i<6;i++){
+  const nDice = DICE_N(board.variant);
+  for(let i=0;i<nDice;i++){
     const st=board.state[i];
     if(fresh){ st.v=null; st.inCup=true; st.rx=i<5?-14:26; st.ry=i<5?20:-34; st.rz=Math.random()*20-10; }
     const el=document.createElement('div');
@@ -1502,9 +1630,10 @@ function tidyCup(){
 
 /* ---- Öffnen und Aktualisieren ---- */
 function openBoard(){
-  const ps=livePlayers(sheet());
-  if(!board) board=newBoard(lastPid&&ps.some(p=>p.id===lastPid)?lastPid:ps[0].id);
-  if(!ps.some(p=>p.id===board.pid)) board.pid=ps[0].id;
+  const s=sheet(), ps=livePlayers(s), v_=s.variant||'extreme';
+  if(!board || board.variant!==v_){
+    board=newBoard(lastPid&&ps.some(p=>p.id===lastPid)?lastPid:ps[0].id, v_);
+  } else if(!ps.some(p=>p.id===board.pid)) board.pid=ps[0].id;
   lastPid=board.pid;
   mode='dice'; sbFoot.style.display='none';
   document.getElementById('sbTitle').textContent='Würfelbrett';
@@ -1529,13 +1658,21 @@ function updateBoard(){
   btn.textContent = board.roll?`Nochmal (${inCup})`:'Würfeln';
   btn.disabled = board.busy||board.roll>=3||inCup===0;
   document.getElementById('dhint').textContent =
-    board.roll===0?'Fünf Holzwürfel und der Zehnseiter mit 0 bis 9'
+    board.roll===0?(board.variant==='classic'?'Fünf Holzwürfel':'Fünf Holzwürfel und der Zehnseiter mit 0 bis 9')
     :board.roll<3?'Zieh in den Becher, was nochmal geworfen werden soll'
     :'Dritter Wurf – jetzt eintragen';
 
   const host=document.getElementById('sugghost');
-  if(board.roll===0||board.busy||dice.some(d=>d.v===null)){ host.innerHTML=''; return; }
-  const list=suggestions(board.pid, dice.map(d=>d.v));
+  const jh=document.getElementById('jokerhost');
+  if(board.roll===0||board.busy||dice.some(d=>d.v===null)){ host.innerHTML=''; if(jh) jh.innerHTML=''; return; }
+  const vals=dice.map(d=>d.v);
+  const jokerNow = board.variant==='classic' && hasN5(vals) && cellV(sheet(),board.pid,'c6')===50;
+  if(jh) jh.innerHTML = jokerNow
+    ? `<div style="background:#eefaf4;color:var(--ok);font:700 12.5px inherit;
+         padding:8px 10px;border-radius:9px;margin:10px 0;text-align:center">
+         Bonus-Kniffel! Plus 50 Punkte, egal wo du einträgst</div>`
+    : '';
+  const list=suggestions(board.pid, vals);
   const hit=list.filter(x=>x.pts>0), miss=list.filter(x=>x.pts===0);
   host.innerHTML = `<div class="sub" style="margin:14px 0 6px">Eintragen bei</div><div class="sugg">`
     + hit.map((x,i)=>`<button data-enter="${x.r.id}" data-raw="${x.raw}" class="${i===0?'top':''}">
@@ -1547,8 +1684,11 @@ function updateBoard(){
     + `</div>`;
 }
 function enterFromBoard(rowId, raw){
-  setCell(sheet(), board.pid, rowId, raw);
-  board = newBoard(board.pid); pushDice(); touched(); closeBox();
+  const s=sheet(), pid=board.pid, v_=s.variant||'extreme';
+  const joker = v_==='classic' && hasN5(dice.map(d=>d.v)) && cellV(s,pid,'c6')===50;
+  setCell(s, pid, rowId, raw);
+  if(joker) setCell(s, pid, 'joker', (cellV(s,pid,'joker')||0)+50);
+  board = newBoard(pid, board.variant); pushDice(); touched(); closeBox();
 }
 
 /* ======================= Coop ======================= */
@@ -1594,10 +1734,55 @@ const busyNow = () => Date.now()-lastAct < ACTIVE_WINDOW;
 function activity(){ lastAct=Date.now(); if(sleeping) wake(); }
 const NOW = () => Date.now();
 const blankSheet = s => Object.values(s.cells||{}).every(c=>!c||c.v===null||c.v===undefined)
-                     && s.players.every(p=>!(p.name&&p.name.v));
-const nothingOwnYet = () => liveSheets().every(blankSheet);
+                     && s.players.every(p=>!(p.name&&p.name.v))
+/* Nur für die Beitritts-Entscheidung: ein getippter Name allein macht ein Blatt
+   noch nicht "belegt" – sonst verhindert der eigene Name vor dem Beitritt genau
+   die Übernahme, die ihn hinterher erst zuordnen soll. Punkte zählen, Namen nicht. */
+const cellsBlank = s => Object.values(s.cells||{}).every(c=>!c||c.v===null||c.v===undefined);
+const nothingOwnYet = () => liveSheets().every(cellsBlank);
 
+let pendingConfirm = null;
+function askConfirm(msg, onYes){
+  mode='confirm'; sbFoot.style.display='none';
+  document.getElementById('sbTitle').textContent = 'Sicher?';
+  document.getElementById('sbSub').textContent = msg;
+  sbBody.innerHTML = `<div class="row2" style="margin-top:0">
+      <button id="confirmYes" style="background:#b3392f;border-color:#b3392f;color:#fff">Ja, löschen</button></div>
+    <div class="row2"><button id="doneBtn">Abbrechen</button></div>`;
+  pendingConfirm = onYes;
+  openBox();
+}
+let lobbyDone = false;
+function showLobby(){
+  document.getElementById('lobbyName').value = myName;
+  const locked = !!room;
+  document.querySelectorAll('#lobby [data-lobby]').forEach(b=>{
+    b.disabled = locked;
+    b.style.opacity = locked ? .4 : 1;
+  });
+  const cur = (sheet()&&sheet().variant)||appVariant;
+  const el=document.getElementById('lobbyBack');
+  const hasProgress = room || (sheet() && !blankSheet(sheet()));
+  el.innerHTML = locked
+    ? `In Runde ${esc(room)} · ${esc(VARIANTS[cur].label)} ·
+       <span id="lobbyLeave" style="text-decoration:underline;cursor:pointer">Runde verlassen</span>`
+    : hasProgress
+    ? `<span id="lobbySkip" style="text-decoration:underline;cursor:pointer">Weiter mit deinem bestehenden Blatt</span>`
+    : '';
+  document.getElementById('lobby').classList.remove('hide');
+}
+function hideLobby(){ document.getElementById('lobby').classList.add('hide'); lobbyDone=true; }
+function updateVariantChip(){
+  const btn=document.getElementById('variantBtn'); if(!btn) return;
+  const v = (sheet()&&sheet().variant)||appVariant;
+  btn.textContent = '☰ Lobby · '+VARIANTS[v].short;
+  btn.classList.toggle('off', !!room);
+  const small=document.querySelector('.logo small'), word=document.querySelector('.logo span');
+  if(small) small.textContent = v==='classic' ? '5 WÜRFEL · BIS 6 SPIELER' : '6 WÜRFEL · BIS 6 SPIELER';
+  if(word) word.textContent = v==='classic' ? 'Klassisch' : 'Extreme';
+}
 function chip(){
+  updateVariantChip();
   const c = document.getElementById('coopChip'), t = document.getElementById('coopText');
   c.className = '';
   if (!room){ t.textContent = 'Offline · zu online wechseln'; }
@@ -1692,8 +1877,9 @@ function connect(){
       connecting=false; connected=true; tries=0; stale=false; freshSession=false;
       lastRx=NOW(); chip();
       client.subscribe(topic(),{qos:1}); client.subscribe(diceTopic(),{qos:0});
-      if (joining){ clearTimeout(joinT);
-        joinT=setTimeout(()=>{ joining=false; push(); }, 5000); }  // niemand da? dann doch senden
+      /* Beim Beitreten nicht ungefragt senden – erst prüfen, ob wirklich
+         niemand geantwortet hat (joinTimeout kümmert sich darum). */
+      if (joining){ clearTimeout(joinT); joinT=setTimeout(joinTimeout, 5000); }
       else setTimeout(push,600); },
     onFailure: (e) => { if(client!==me) return;
       connecting=false; connected=false;
@@ -1709,7 +1895,8 @@ function leave(){
   client=null; connected=false; room=null; remoteDice=null; stale=false; echoWait=0;
   peers={}; divergedSince=0; lastPing=null; freshSession=true;
   staleDoc=null; liveSeen=false; joining=false; clearTimeout(joinT); drawStrip();
-  localStorage.removeItem(RKEY); history.replaceState(null,'',location.pathname);
+  try{ localStorage.removeItem(RKEY); }catch(e){}
+  try{ history.replaceState(null,'',location.pathname); }catch(e){}
   chip();
 }
 let pushPend=false, pushGapT=null;
@@ -1824,7 +2011,8 @@ const pick = (a,b) => !a ? b : !b ? a
   : b.t>a.t ? b : a.t>b.t ? a
   : ((b.d||'')>(a.d||'') ? b : a);
 function mergeSheet(a,b){
-  const out = {id:a.id, created:Math.min(a.created,b.created), del:pick(a.del,b.del), players:[], cells:{}};
+  const out = {id:a.id, created:Math.min(a.created,b.created), del:pick(a.del,b.del),
+    variant:a.variant||b.variant||'extreme', players:[], cells:{}};
   const pm = new Map();
   a.players.concat(b.players).forEach(p=>{
     const ex = pm.get(p.id);
@@ -1848,7 +2036,8 @@ const okNum = (n,max) => (typeof n==='number' && isFinite(n) && n>=0 && n<=max) 
 const okT   = t => (typeof t==='number' && isFinite(t) && t>=0) ? t : 0;
 const okTxt = s => (typeof s==='string' ? s : '').replace(/[<>&"']/g,'').slice(0,24);
 const okDel = d => ({v: (d && d.v) ? 1 : 0, t: okT(d && d.t), d: okTxt(d && d.d)});
-const ROWIDS = new Set(ROWS.filter(r=>r.kind!=='calc'&&r.kind!=='gap').map(r=>r.id));
+const ROWIDS = new Set([...ROWS_EXTREME, ...ROWS_CLASSIC]
+  .filter(r=>r.kind!=='calc'&&r.kind!=='gap').map(r=>r.id).concat(['joker']));
 /* Fremde Nachrichten koennen alles Moegliche enthalten – hier wird nur
    durchgelassen, was wirklich wie ein Kniffelblock aussieht. */
 function sane(list){
@@ -1868,7 +2057,8 @@ function sane(list){
       cells[pid+'~'+row] = {v:(c.v===null||c.v===undefined)?null:okNum(c.v,300),
                             t:okT(c.t), d:okTxt(c.d)};
     });
-    return {id:s.id, created:okT(s.created), del:okDel(s.del), players, cells};
+    return {id:s.id, created:okT(s.created), del:okDel(s.del),
+      variant:(s.variant==='classic'?'classic':'extreme'), players, cells};
   });
 }
 /* Vergleich unabhängig von Reihenfolge und Nebenfeldern – sonst sieht jede
@@ -1914,6 +2104,7 @@ function onRemote(raw){
       state.sheets = doc.sheets;
       state.activeId = (liveSheets()[0]||{}).id;
       lastSig=''; render(); saveLocal();
+      claimName();                    // eigenen gemerkten Namen jetzt in die übernommene Runde eintragen
       return;
     }
     if (fremdVoll){                   // beide Seiten haben Inhalt: nachfragen, nichts vermischen
@@ -2040,7 +2231,7 @@ function restoreBackup(){
     const alt=JSON.parse(localStorage.getItem(BKEY)||'[]');
     if(!alt.length) return;
     state.sheets = mergeAll(state.sheets, alt);
-    localStorage.removeItem(BKEY);
+    try{ localStorage.removeItem(BKEY); }catch(e){}
     lastSig=''; touched(); closeBox();
   }catch(e){}
 }
@@ -2063,7 +2254,11 @@ function openCoop(){
       Wer den Code kennt, sieht und ändert den Block. Es läuft über einen
       öffentlichen Testserver – schreib also nichts hinein, was niemanden angehen soll.</div>`;
   } else {
-    sbBody.innerHTML = `<div class="row2" style="margin-top:0">
+    sbBody.innerHTML = `<input id="myNameIn" placeholder="Dein Name (optional)" value="${esc(myName)}"
+        autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"
+        style="width:100%;margin-bottom:12px;padding:11px;border:1.5px solid var(--rule);
+        border-radius:10px;font-family:inherit;font-weight:600;font-size:16px;color:var(--pencil);background:var(--paper)">
+      <div class="row2" style="margin-top:0">
         <button class="primary" id="startBtn">Neue Runde starten</button></div>
       <div class="note" style="text-align:center;margin:14px 0 8px">oder Code eines Freundes eingeben</div>
       <input class="codein" id="joinIn" maxlength="4" placeholder="CODE" autocapitalize="characters" autocomplete="off">
@@ -2090,8 +2285,9 @@ function enterRoom(code, isJoin){
   staleDoc=null; liveSeen=false; clearTimeout(joinT); drawStrip();
   room = neu; joinedAt = Date.now();
   joining = !!isJoin;
-  localStorage.setItem(RKEY, room);
-  history.replaceState(null,'','#'+room);
+  try{ localStorage.setItem(RKEY, room); }catch(e){}
+  try{ history.replaceState(null,'','#'+room); }catch(e){}
+  claimName();
   connect(); openCoop();
 }
 
@@ -2100,7 +2296,8 @@ grid.addEventListener('click', e=>{
   const kill = e.target.closest('[data-kill]');
   if (kill){
     const s = sheet(), p = s.players.find(x=>x.id===kill.dataset.kill);
-    if (p && confirm(`${p.name.v||'Diese Spalte'} entfernen?`)){ p.del = stamp(1); lastSig=''; touched(); }
+    if (p) askConfirm(`${p.name.v||'Diese Spalte'} entfernen?`,
+      ()=>{ p.del = stamp(1); lastSig=''; touched(); });
     return;
   }
   if (e.target.closest('#addP')){ sheet().players.push(newPlayer()); lastSig=''; touched(); return; }
@@ -2114,19 +2311,38 @@ grid.addEventListener('input', e=>{
   const p = sheet().players.find(x=>x.id===inp.dataset.name);
   if (p){ p.name = stamp(inp.value); saveLocal(); pushSoon(); }
 });
+sbBody.addEventListener('input', e=>{
+  const inp = e.target.closest('#myNameIn'); if(!inp) return;
+  myName = inp.value; try{ localStorage.setItem('kniffel-myname', myName); }catch(e){}
+});
+/* Beim Betreten einer Runde die gemerkte Spalte übernehmen oder anlegen –
+   ohne Namen oder bei einem Treffer passiert nichts. */
+function claimName(){
+  const nm=(myName||'').trim(); if(!nm) return;
+  const s=sheet(); if(!s) return;
+  const ps=livePlayers(s);
+  if(ps.some(p=>(p.name.v||'').toLowerCase()===nm.toLowerCase())) return;
+  const empty=ps.find(p=>!p.name.v);
+  if(empty) empty.name=stamp(nm);
+  else if(ps.length<MAXP) s.players.push(newPlayer(nm));
+  else return;
+  lastSig=''; touched();
+}
 
 document.getElementById('tabs').addEventListener('click', e=>{
   const b = e.target.closest('button'); if(!b) return;
   if (b.dataset.add){
-    const s = newSheet(livePlayers(sheet()).map(p=>p.name.v));
+    const s = newSheet(livePlayers(sheet()).map(p=>p.name.v), sheet().variant);
     state.sheets.push(s); state.activeId = s.id; lastSig='';
   } else if (b.dataset.del){
     const ls = liveSheets(); const i = ls.findIndex(s=>s.id===sheet().id);
-    if (!confirm(`Blatt ${i+1} löschen?`)) return;
-    sheet().del = stamp(1);
-    const rest = liveSheets(); state.activeId = rest.length?rest[0].id:null;
-    if (!rest.length){ const s=newSheet(); state.sheets.push(s); state.activeId=s.id; }
-    lastSig='';
+    askConfirm(`Blatt ${i+1} löschen?`, ()=>{
+      const v_=sheet().variant; sheet().del = stamp(1);
+      const rest = liveSheets(); state.activeId = rest.length?rest[0].id:null;
+      if (!rest.length){ const s=newSheet([],v_); state.sheets.push(s); state.activeId=s.id; }
+      lastSig=''; touched();
+    });
+    return;
   } else { state.activeId = b.dataset.i; lastSig=''; }
   touched();
 });
@@ -2135,16 +2351,17 @@ sbBody.addEventListener('click', e=>{
   const b = e.target.closest('button, [data-die]'); if(!b) return;
   if (b.id==='doneBtn')  return closeBox();
   if (b.id==='finalNew'){ closeBox();
-    const s=newSheet(livePlayers(sheet()).map(p=>p.name.v));
+    const s=newSheet(livePlayers(sheet()).map(p=>p.name.v), sheet().variant);
     state.sheets.push(s); state.activeId=s.id; lastSig=''; touched();
     scEl.scrollTo({top:0,behavior:'smooth'}); return; }
   if (b.id==='rollBtn')  return doRoll();
-  if (b.id==='resetBtn'){ board=newBoard(board.pid); makeDice(true); pushDice(); return updateBoard(); }
-  if (b.dataset.pl)      { board=newBoard(b.dataset.pl); lastPid=board.pid;
+  if (b.id==='resetBtn'){ board=newBoard(board.pid, board.variant); makeDice(true); pushDice(); return updateBoard(); }
+  if (b.dataset.pl)      { board=newBoard(b.dataset.pl, board.variant); lastPid=board.pid;
                            makeDice(true); pushDice(); return updateBoard(); }
   if (b.dataset.enter)   return enterFromBoard(b.dataset.enter, +b.dataset.raw);
   if (b.id==='startBtn') return enterRoom(makeCode(), false);
   if (b.id==='joinBtn')  { const v=document.getElementById('joinIn').value.trim(); if(v.length>=4) enterRoom(v, true); return; }
+  if (b.id==='confirmYes'){ const fn=pendingConfirm; pendingConfirm=null; closeBox(); if(fn) fn(); return; }
   if (b.id==='joinTake')  return joinTake();
   if (b.id==='joinBring') return joinBring();
   if (b.id==='restoreBtn') return restoreBackup();
@@ -2173,6 +2390,26 @@ document.getElementById('sbClose').onclick = ()=>{
 };
 veil.onclick = closeBox;
 document.getElementById('coopChip').onclick = openCoop;
+document.getElementById('variantBtn').onclick = showLobby;
+document.getElementById('lobby').addEventListener('click', e=>{
+  const skip=e.target.closest('#lobbySkip'); if(skip){ hideLobby(); return; }
+  const lv=e.target.closest('#lobbyLeave'); if(lv){ leave(); showLobby(); return; }
+  const b=e.target.closest('[data-lobby]'); if(!b || b.disabled) return;
+  const [variant, mode] = b.dataset.lobby.split('-');
+  appVariant = variant;
+  /* Passendes Blatt sicherstellen: ein noch leeres wird einfach umbenannt,
+     eines mit echten Einträgen bleibt unangetastet und es entsteht ein neues –
+     sonst landet man beim Umschalten weiter auf dem alten Blatt der falschen Variante. */
+  if(sheet() && sheet().variant!==variant){
+    if(blankSheet(sheet())){ sheet().variant=variant; lastSig=''; }
+    else { const s=newSheet([],variant); state.sheets.push(s); state.activeId=s.id; lastSig=''; }
+  }
+  myName = document.getElementById('lobbyName').value.trim();
+  try{ localStorage.setItem('kniffel-myname', myName); }catch(err){}
+  claimName();
+  hideLobby(); touched();
+  if(mode==='online') openCoop();
+});
 document.getElementById('diceBtn').onclick = openBoard;
 document.getElementById('standBtn').onclick = openFinal;
 document.querySelector('footer .fin > div').onclick = openFinal;
@@ -2185,11 +2422,15 @@ document.getElementById('newSheet').onclick = ()=>{
 };
 document.getElementById('clearSheet').onclick = ()=>{
   const ls = liveSheets(); const i = ls.findIndex(s=>s.id===sheet().id);
-  if (!confirm(`Alle Punkte auf Blatt ${i+1} löschen? Die Namen bleiben.`)) return;
-  const s = sheet();
-  livePlayers(s).forEach(p=>ROWS.forEach(r=>{ if(r.kind!=='calc'&&r.kind!=='gap') setCell(s,p.id,r.id,null); }));
-  remoteDice=null; clearTimeout(stripT); drawStrip();
-  touched();
+  askConfirm(`Alle Punkte auf Blatt ${i+1} löschen? Die Namen bleiben.`, ()=>{
+    const s = sheet();
+    livePlayers(s).forEach(p=>{
+      rowsOf(s.variant).forEach(r=>{ if(r.kind!=='calc'&&r.kind!=='gap') setCell(s,p.id,r.id,null); });
+      setCell(s,p.id,'joker',null);
+    });
+    remoteDice=null; clearTimeout(stripT); drawStrip();
+    touched();
+  });
 };
 
 /* ---- Kopfbereich beim Scrollen wegklappen ---- */
@@ -2363,9 +2604,12 @@ render(); chip();
 setTimeout(maybeFinal, 900);      // fertiges Blatt beim Öffnen der App ebenfalls zeigen
 
 const fromUrl = (location.hash||'').replace(/[^A-Za-z0-9]/g,'').toUpperCase().slice(0,4);
-const saved = localStorage.getItem(RKEY);
+let saved=null; try{ saved = localStorage.getItem(RKEY); }catch(e){}
+/* Über einen geteilten Link oder eine noch laufende Runde geht es direkt weiter –
+   die Lobby erscheint nur beim wirklich freien Start. */
 if (fromUrl.length===4) enterRoom(fromUrl, true);
 else if (saved) { room = saved; connect(); }
+else showLobby();
 </script>
 </body>
 </html>
