@@ -509,7 +509,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v67 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v68 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS_EXTREME = [
@@ -1765,15 +1765,17 @@ let lobbyDone = false;
 function showLobby(){
   document.getElementById('lobbyName').value = myName;
   const locked = !!room;
-  document.querySelectorAll('#lobby [data-lobby]').forEach(b=>{
-    b.disabled = locked;
-    b.style.opacity = locked ? .4 : 1;
-  });
   const cur = (sheet()&&sheet().variant)||appVariant;
+  document.querySelectorAll('#lobby [data-lobby]').forEach(b=>{
+    b.disabled = false;   // alle bleiben antippbar – online fragt vor dem Wechsel nur nach
+    const isHere = locked && b.dataset.lobby===cur+'-online';
+    b.classList.toggle('on', isHere);
+    b.style.opacity = (locked && !isHere) ? .55 : 1;
+  });
   const el=document.getElementById('lobbyBack');
   const hasProgress = room || (sheet() && !blankSheet(sheet()));
   el.innerHTML = locked
-    ? `In Runde ${esc(room)} · ${esc(VARIANTS[cur].label)} ·
+    ? `In Runde ${esc(room)} · ${esc(VARIANTS[cur].label)} · der blaue Knopf bringt dich zurück ·
        <span id="lobbyLeave" style="text-decoration:underline;cursor:pointer">Runde verlassen</span>`
     : hasProgress
     ? `<span id="lobbySkip" style="text-decoration:underline;cursor:pointer">Weiter mit deinem bestehenden Blatt</span>`
@@ -2400,12 +2402,9 @@ document.getElementById('sbClose').onclick = ()=>{
 veil.onclick = closeBox;
 document.getElementById('coopChip').onclick = openCoop;
 document.getElementById('variantBtn').onclick = showLobby;
-document.getElementById('lobby').addEventListener('click', e=>{
-  const back=e.target.closest('#lobbyBackBtn'); if(back){ hideLobby(); return; }
-  const skip=e.target.closest('#lobbySkip'); if(skip){ hideLobby(); return; }
-  const lv=e.target.closest('#lobbyLeave'); if(lv){ leave(); showLobby(); return; }
-  const b=e.target.closest('[data-lobby]'); if(!b || b.disabled) return;
-  const [variant, mode] = b.dataset.lobby.split('-');
+/* Eine Variante/Modus tatsächlich anwählen – getrennt von der Klick-Behandlung,
+   damit sie auch nach einer bestätigten Rückfrage (Runde verlassen) noch laufen kann. */
+function doLobbySelect(variant, mode){
   appVariant = variant;
   /* Passendes Blatt sicherstellen: ein noch leeres wird einfach umbenannt,
      eines mit echten Einträgen bleibt unangetastet und es entsteht ein neues –
@@ -2419,6 +2418,21 @@ document.getElementById('lobby').addEventListener('click', e=>{
   claimName();
   hideLobby(); touched();
   if(mode==='online') openCoop();
+}
+document.getElementById('lobby').addEventListener('click', e=>{
+  const back=e.target.closest('#lobbyBackBtn'); if(back){ hideLobby(); return; }
+  const skip=e.target.closest('#lobbySkip'); if(skip){ hideLobby(); return; }
+  const lv=e.target.closest('#lobbyLeave'); if(lv){ leave(); showLobby(); return; }
+  const b=e.target.closest('[data-lobby]'); if(!b) return;
+  const [variant, mode] = b.dataset.lobby.split('-');
+  if(room){
+    const cur=(sheet()&&sheet().variant)||appVariant;
+    if(b.classList.contains('on')){ hideLobby(); return; }  // das ist die laufende Runde: einfach zurück
+    askConfirm(`Aktuelle Runde verlassen und zu „${VARIANTS[variant].label}“ wechseln?`,
+      ()=>{ leave(); doLobbySelect(variant, mode); });
+    return;
+  }
+  doLobbySelect(variant, mode);
 });
 document.getElementById('diceBtn').onclick = openBoard;
 document.getElementById('standBtn').onclick = openFinal;
