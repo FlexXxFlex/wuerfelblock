@@ -148,9 +148,9 @@ footer button{border:1.5px solid var(--rule);background:var(--card);color:var(--
   border-radius:9px;padding:9px 11px;font:700 13px inherit;cursor:pointer}
 footer button.primary{background:var(--ink);border-color:var(--ink);color:#fff}
 
-.veil{position:fixed;inset:0;background:rgba(30,32,58,.45);display:none;z-index:20}
+.veil{position:fixed;inset:0;background:rgba(30,32,58,.45);display:none;z-index:60}
 .veil.on{display:block}
-.sheetbox{position:fixed;left:0;right:0;bottom:0;z-index:21;background:var(--card);
+.sheetbox{position:fixed;left:0;right:0;bottom:0;z-index:61;background:var(--card);
   border-radius:18px 18px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom));
   transform:translateY(110%);transition:transform .22s ease;box-shadow:0 -8px 30px rgba(40,42,70,.25);
   max-width:760px;margin:0 auto}
@@ -509,7 +509,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v68 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v69 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS_EXTREME = [
@@ -1750,13 +1750,14 @@ const blankSheet = s => Object.values(s.cells||{}).every(c=>!c||c.v===null||c.v=
 const cellsBlank = s => Object.values(s.cells||{}).every(c=>!c||c.v===null||c.v===undefined);
 const nothingOwnYet = () => liveSheets().every(cellsBlank);
 
-let pendingConfirm = null;
-function askConfirm(msg, onYes){
+let pendingConfirm = null, pendingRoomVariant = null;
+function askConfirm(msg, onYes, label, danger){
   mode='confirm'; sbFoot.style.display='none';
   document.getElementById('sbTitle').textContent = 'Sicher?';
   document.getElementById('sbSub').textContent = msg;
+  const col = danger===false ? 'var(--ink)' : '#b3392f';   // Löschen bleibt rot, Wechseln wird neutral
   sbBody.innerHTML = `<div class="row2" style="margin-top:0">
-      <button id="confirmYes" style="background:#b3392f;border-color:#b3392f;color:#fff">Ja, löschen</button></div>
+      <button id="confirmYes" style="background:${col};border-color:${col};color:#fff">${label||'Ja, löschen'}</button></div>
     <div class="row2"><button id="doneBtn">Abbrechen</button></div>`;
   pendingConfirm = onYes;
   openBox();
@@ -1767,15 +1768,14 @@ function showLobby(){
   const locked = !!room;
   const cur = (sheet()&&sheet().variant)||appVariant;
   document.querySelectorAll('#lobby [data-lobby]').forEach(b=>{
-    b.disabled = false;   // alle bleiben antippbar – online fragt vor dem Wechsel nur nach
-    const isHere = locked && b.dataset.lobby===cur+'-online';
-    b.classList.toggle('on', isHere);
-    b.style.opacity = (locked && !isHere) ? .55 : 1;
+    b.disabled = false;
+    b.classList.toggle('on', locked && b.dataset.lobby===cur+'-online');
+    b.style.opacity = 1;
   });
   const el=document.getElementById('lobbyBack');
   const hasProgress = room || (sheet() && !blankSheet(sheet()));
   el.innerHTML = locked
-    ? `In Runde ${esc(room)} · ${esc(VARIANTS[cur].label)} · der blaue Knopf bringt dich zurück ·
+    ? `In Runde ${esc(room)} · ${esc(VARIANTS[cur].label)} ·
        <span id="lobbyLeave" style="text-decoration:underline;cursor:pointer">Runde verlassen</span>`
     : hasProgress
     ? `<span id="lobbySkip" style="text-decoration:underline;cursor:pointer">Weiter mit deinem bestehenden Blatt</span>`
@@ -2373,6 +2373,9 @@ sbBody.addEventListener('click', e=>{
   if (b.id==='startBtn') return enterRoom(makeCode(), false);
   if (b.id==='joinBtn')  { const v=document.getElementById('joinIn').value.trim(); if(v.length>=4) enterRoom(v, true); return; }
   if (b.id==='confirmYes'){ const fn=pendingConfirm; pendingConfirm=null; closeBox(); if(fn) fn(); return; }
+  if (b.id==='backToRoom'){ closeBox(); hideLobby(); return; }
+  if (b.id==='joinNewRoom'){ const v=pendingRoomVariant; pendingRoomVariant=null; closeBox();
+    leave(); doLobbySelect(v, 'online'); return; }
   if (b.id==='joinTake')  return joinTake();
   if (b.id==='joinBring') return joinBring();
   if (b.id==='restoreBtn') return restoreBackup();
@@ -2404,6 +2407,19 @@ document.getElementById('coopChip').onclick = openCoop;
 document.getElementById('variantBtn').onclick = showLobby;
 /* Eine Variante/Modus tatsächlich anwählen – getrennt von der Klick-Behandlung,
    damit sie auch nach einer bestätigten Rückfrage (Runde verlassen) noch laufen kann. */
+/* Online angetippt, während schon eine Runde läuft: zurück oder neu beitreten – direkt,
+   ohne erst die alte Runde verlassen und die Lobby neu öffnen zu müssen. */
+function askRoomChoice(variant){
+  mode='choice'; sbFoot.style.display='none';
+  const cur=(sheet()&&sheet().variant)||appVariant;
+  document.getElementById('sbTitle').textContent = 'Runde '+room;
+  document.getElementById('sbSub').textContent = VARIANTS[cur].label+' · gerade aktiv';
+  sbBody.innerHTML = `<div class="row2" style="margin-top:0">
+      <button class="primary" id="backToRoom">Zur aktuellen Runde zurückkehren</button></div>
+    <div class="row2"><button id="joinNewRoom">Neue Runde beitreten</button></div>`;
+  pendingRoomVariant = variant;
+  openBox();
+}
 function doLobbySelect(variant, mode){
   appVariant = variant;
   /* Passendes Blatt sicherstellen: ein noch leeres wird einfach umbenannt,
@@ -2424,15 +2440,15 @@ document.getElementById('lobby').addEventListener('click', e=>{
   const skip=e.target.closest('#lobbySkip'); if(skip){ hideLobby(); return; }
   const lv=e.target.closest('#lobbyLeave'); if(lv){ leave(); showLobby(); return; }
   const b=e.target.closest('[data-lobby]'); if(!b) return;
-  const [variant, mode] = b.dataset.lobby.split('-');
+  const [variant, wantMode] = b.dataset.lobby.split('-');
   if(room){
-    const cur=(sheet()&&sheet().variant)||appVariant;
-    if(b.classList.contains('on')){ hideLobby(); return; }  // das ist die laufende Runde: einfach zurück
-    askConfirm(`Aktuelle Runde verlassen und zu „${VARIANTS[variant].label}“ wechseln?`,
-      ()=>{ leave(); doLobbySelect(variant, mode); });
+    if(wantMode==='online'){ askRoomChoice(variant); return; }
+    askConfirm(`Ihr spielt gerade in Runde ${esc(room)}. Wechseln zu „${VARIANTS[variant].label}“
+       trennt euch von dieser Runde.`,
+      ()=>{ leave(); doLobbySelect(variant, wantMode); }, 'Ja, wechseln', false);
     return;
   }
-  doLobbySelect(variant, mode);
+  doLobbySelect(variant, wantMode);
 });
 document.getElementById('diceBtn').onclick = openBoard;
 document.getElementById('standBtn').onclick = openFinal;
