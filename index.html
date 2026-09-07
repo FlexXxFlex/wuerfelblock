@@ -517,7 +517,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v73 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v74 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS_EXTREME = [
@@ -572,7 +572,6 @@ const ROWS_CLASSIC = [
   {id:'c5', kind:'fixed', pts:40, name:'Große Straße',  hint:'40 Punkte'},
   {id:'c6', kind:'fixed', pts:50, name:'Kniffel',       hint:'50 Punkte'},
   {id:'c7', kind:'sum',   max:30, name:'Chance',        hint:'alle Augen zählen'},
-  {id:'jokerBonus', kind:'calc', name:'Bonus-Kniffel', hint:'→'},
   {id:'lowerTot', kind:'calc', name:'gesamt unterer Teil', hint:'→'},
   {id:'upperTot2',kind:'calc', name:'gesamt oberer Teil',  hint:'→'},
   {id:'endTotal', kind:'calc', name:'Endsumme', hint:'→', total:true}
@@ -626,10 +625,13 @@ function calc(pid){
   const bonus = upper>=B.t ? B.p : 0;
   let lower=0, lowerAny=false;
   lowerrOf(v_).forEach(r=>{ const v=cellV(s,pid,r.id); if(v!==null&&v!==undefined){lower += r.kind==='sum2'?v*2:v; lowerAny=true;} });
-  let jokerBonus = null;
-  if(v_==='classic'){ const j=cellV(s,pid,'joker'); if(j){ lower+=j; lowerAny=true; jokerBonus=j; } }
+  let jokerBonus = 0;
+  if(v_==='classic'){
+    entryRowsOf(v_).forEach(r=>{ const j=cellV(s,pid,'jokerOn_'+r.id); if(j){ jokerBonus+=j; } });
+    if(jokerBonus){ lower+=jokerBonus; lowerAny=true; }
+  }
   return {upperSum:upperAny?upper:null, bonus:upperAny?bonus:null, upperTot:upperAny?upper+bonus:null,
-          lowerTot:lowerAny?lower:null, jokerBonus,
+          lowerTot:lowerAny?lower:null,
           endTotal:(upperAny||lowerAny)?(upper+bonus+lower):null};
 }
 
@@ -778,8 +780,7 @@ function render(){
       } else if (r.kind==='calc'){
         const c = calc(p.id);
         const v = c[r.id==='upperTot2'?'upperTot':r.id];
-        html = r.id==='jokerBonus' ? (v?'+'+v:'')
-             : v===null?'':String(v);
+        html = v===null?'':String(v);
         if (r.total) td.classList.toggle('lead', !tie && p.id===best && bestVal!==null);
       } else {
         const v = cellV(s,p.id,r.id);
@@ -787,6 +788,10 @@ function render(){
         html = (n===null||!isFinite(n)) ? '' :
                n===0 ? '<span class="zero">—</span>' :
                r.kind==='sum2' ? `${n*2}<span class="dbl">${n}×2</span>` : String(n);
+        if (s.variant==='classic' && n!==null){
+          const jb = cellV(s,p.id,'jokerOn_'+r.id);
+          if (jb) html += ` <span style="color:var(--ok);font-weight:800">+ ${jb}</span>`;
+        }
       }
       if (td.innerHTML !== html){
         td.innerHTML = html;
@@ -935,7 +940,7 @@ function winChances(sims){
       if(UPPER.includes(r.id)){ gefuellt ? curUp+=v : offUp.push(r.id); }
       else { gefuellt ? curLow+=(r.kind==='sum2'?v*2:v) : offLow.push(r.id); }
     });
-    if(v_==='classic') curLow += cellV(s,p.id,'joker')||0;
+    if(v_==='classic') entryRowsOf(v_).forEach(r=>{ curLow += cellV(s,p.id,'jokerOn_'+r.id)||0; });
     return {id:p.id, nm:p.name.v||'Spieler', curUp, curLow, offUp, offLow};
   });
   const wins = spieler.map(()=>0);
@@ -972,7 +977,7 @@ function sheetWinners(s){
       const v=cellV(s,p.id,r.id)||0;
       if(UPPER.includes(r.id)) up+=v; else low+=(r.kind==='sum2'?v*2:v);
     });
-    if(v_==='classic') low += cellV(s,p.id,'joker')||0;
+    if(v_==='classic') entryRowsOf(v_).forEach(r=>{ low += cellV(s,p.id,'jokerOn_'+r.id)||0; });
     return {nm:p.name.v||'Spieler', pts:up+(up>=B.t?B.p:0)+low};
   });
   const best=Math.max(...tot.map(x=>x.pts));
@@ -1709,7 +1714,7 @@ function enterFromBoard(rowId, raw){
   const s=sheet(), pid=board.pid, v_=s.variant||'extreme';
   const joker = v_==='classic' && hasN5(dice.map(d=>d.v)) && cellV(s,pid,'c6')===50;
   setCell(s, pid, rowId, raw);
-  if(joker) setCell(s, pid, 'joker', (cellV(s,pid,'joker')||0)+50);
+  if(joker) setCell(s, pid, 'jokerOn_'+rowId, (cellV(s,pid,'jokerOn_'+rowId)||0)+50);
   board = newBoard(pid, board.variant); pushDice(); touched(); closeBox();
 }
 
@@ -2061,7 +2066,8 @@ const okT   = t => (typeof t==='number' && isFinite(t) && t>=0) ? t : 0;
 const okTxt = s => (typeof s==='string' ? s : '').replace(/[<>&"']/g,'').slice(0,24);
 const okDel = d => ({v: (d && d.v) ? 1 : 0, t: okT(d && d.t), d: okTxt(d && d.d)});
 const ROWIDS = new Set([...ROWS_EXTREME, ...ROWS_CLASSIC]
-  .filter(r=>r.kind!=='calc'&&r.kind!=='gap').map(r=>r.id).concat(['joker']));
+  .filter(r=>r.kind!=='calc'&&r.kind!=='gap').map(r=>r.id)
+  .concat([...ROWS_CLASSIC.filter(r=>['count','sum','sum2','fixed'].includes(r.kind)).map(r=>'jokerOn_'+r.id)]));
 /* Fremde Nachrichten koennen alles Moegliche enthalten – hier wird nur
    durchgelassen, was wirklich wie ein Kniffelblock aussieht. */
 function sane(list){
@@ -2541,7 +2547,7 @@ document.getElementById('clearSheet').onclick = ()=>{
     const s = sheet();
     livePlayers(s).forEach(p=>{
       rowsOf(s.variant).forEach(r=>{ if(r.kind!=='calc'&&r.kind!=='gap') setCell(s,p.id,r.id,null); });
-      setCell(s,p.id,'joker',null);
+      entryRowsOf(s.variant).forEach(r=>setCell(s,p.id,'jokerOn_'+r.id,null));
     });
     remoteDice=null; clearTimeout(stripT); drawStrip();
     touched();
