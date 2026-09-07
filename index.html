@@ -517,7 +517,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v72 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v73 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS_EXTREME = [
@@ -2462,17 +2462,17 @@ function openRules(variant){
       <div style="font-size:12px;font-weight:600;color:var(--ink-soft);margin-top:1px">${esc(txt)}</div>
     </div>`;
   };
-  const bonusNote = `<div class="note" style="margin-bottom:12px">Oberer Teil: Kommt ihr bei den Zahlenfeldern
-      zusammen auf mindestens ${B.t} Punkte, gibt es ${B.p} Punkte Bonus obendrauf.</div>`;
-  const joker = variant==='classic'
-    ? `<div class="note" style="margin-top:12px">Bonus-Kniffel: Ist „Kniffel“ schon mit 50 Punkten
-        eingetragen und ihr würfelt noch einmal fünf Gleiche, gibt es 50 Punkte extra – der Wurf
-        zählt dann als Joker in einem beliebigen offenen Feld.</div>`
+  const jokerNote = variant==='classic'
+    ? `<div class="note" style="margin-bottom:12px">Bonus-Kniffel: Ist „Kniffel“ schon mit 50 Punkten
+        eingetragen und ihr würfelt noch einmal fünf Gleiche, gibt es 50 Punkte extra obendrauf –
+        der Wurf zählt dann als Joker in einem beliebigen offenen Feld.</div>`
     : '';
+  const bonusNote = `<div class="note" style="margin-bottom:12px">Oberer Teil: Kommt ihr bei den Zahlenfeldern
+      zusammen auf mindestens ${B.t} Punkte, gibt es ${B.p} Punkte Bonus obendrauf.</div>${jokerNote}`;
   mode='rules'; sbFoot.style.display='none';
   document.getElementById('sbTitle').textContent = VARIANTS[variant].label;
   document.getElementById('sbSub').textContent = n+' Würfel · '+rows.length+' Kästchen';
-  sbBody.innerHTML = bonusNote+`<div class="franks">${rows.map(zeile).join('')}</div>${joker}
+  sbBody.innerHTML = bonusNote+`<div class="franks">${rows.map(zeile).join('')}</div>
     <div class="row2"><button class="primary" id="doneBtn">Fertig</button></div>`;
   openBox();
 }
