@@ -519,7 +519,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v77 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v78 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS_EXTREME = [
@@ -624,21 +624,29 @@ function calc(pid){
   const v_=s.variant||'extreme', B=bonusOf(v_);
   let upper=0, upperAny=false;
   UPPER.forEach(id=>{ const v=cellV(s,pid,id); if(v!==null&&v!==undefined){upper+=v;upperAny=true;} });
-  const bonus = upper>=B.t ? B.p : 0;
+  const bonus = upper>=B.t ? B.p : 0;   // die 63er-Schwelle zählt bewusst nur die reinen Augen, kein Bonus-Kniffel
   let lower=0, lowerAny=false;
   lowerrOf(v_).forEach(r=>{ const v=cellV(s,pid,r.id); if(v!==null&&v!==undefined){lower += r.kind==='sum2'?v*2:v; lowerAny=true;} });
-  /* Der Bonus-Kniffel zählt für sich, unabhängig davon, ob das Feld, in dem er
-     steht, zum oberen oder unteren Teil gehört – sonst verfälscht er die Teilsummen. */
-  let jokerBonus = 0;
+  /* Der Bonus-Kniffel zählt dort, wo das Feld steht, in dem er verzeichnet ist –
+     sonst passt die angezeigte Teilsumme nicht zu den einzelnen Zeilen darüber. */
+  let upperJoker=0, lowerJoker=0;
   if(v_==='classic'){
-    entryRowsOf(v_).forEach(r=>{
-      const base=cellV(s,pid,r.id); if(base===null||base===undefined) return;
-      const j=cellV(s,pid,'jokerOn_'+r.id); if(j){ jokerBonus+=j; }
+    UPPER.forEach(id=>{
+      if(cellV(s,pid,id)===null||cellV(s,pid,id)===undefined) return;
+      const j=cellV(s,pid,'jokerOn_'+id); if(j) upperJoker+=j;
     });
+    lowerrOf(v_).forEach(r=>{
+      if(cellV(s,pid,r.id)===null||cellV(s,pid,r.id)===undefined) return;
+      const j=cellV(s,pid,'jokerOn_'+r.id); if(j) lowerJoker+=j;
+    });
+    if(upperJoker) upperAny=true;
+    if(lowerJoker) lowerAny=true;
   }
-  return {upperSum:upperAny?upper:null, bonus:upperAny?bonus:null, upperTot:upperAny?upper+bonus:null,
-          lowerTot:lowerAny?lower:null, jokerBonus,
-          endTotal:(upperAny||lowerAny||jokerBonus)?(upper+bonus+lower+jokerBonus):null};
+  const jokerBonus = upperJoker+lowerJoker;
+  return {upperSum:upperAny?upper:null, bonus:upperAny?bonus:null,
+          upperTot:upperAny?(upper+bonus+upperJoker):null,
+          lowerTot:lowerAny?(lower+lowerJoker):null, jokerBonus,
+          endTotal:(upperAny||lowerAny)?(upper+bonus+upperJoker+lower+lowerJoker):null};
 }
 
 /* =============== Bonus bei 73: was fehlt, und wie man hinkommt =============== */
