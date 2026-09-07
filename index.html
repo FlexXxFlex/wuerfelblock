@@ -519,7 +519,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v78 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v79 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS_EXTREME = [
@@ -870,12 +870,23 @@ function openPicker(rowId, pid){
   /* Ohne Würfelbrett hat die App keine eigenen Würfelwerte – wer von Hand einträgt,
      sagt ihr also selbst, ob dieser Eintrag ein weiterer Kniffel war. */
   pickerJoker = false;
-  const jokerAllowed = s.variant==='classic' && rowId!=='c6' && nowV===null && cellV(s,pid,'c6')===50;
+  /* Ohne Würfeldaten kann die App nicht wissen, welche Zahl den zweiten
+     Kniffel ergeben hat – deshalb nur erlauben, wenn wirklich alle sechs
+     oberen Felder schon belegt sind. Dann ist die Pflichtreihenfolge
+     automatisch erfüllt, egal welche Zahl es war. */
+  const obenVoll = UPPER.every(id=>{ const v=cellV(s,pid,id); return v!==null&&v!==undefined; });
+  const jokerAllowed = s.variant==='classic' && rowId!=='c6' && nowV===null
+    && cellV(s,pid,'c6')===50 && obenVoll;
+  const nochOffen = s.variant==='classic' && rowId!=='c6' && nowV===null
+    && cellV(s,pid,'c6')===50 && !obenVoll;
   const jokerBox = jokerAllowed ? `<label style="display:flex;align-items:center;gap:8px;
       border:1.5px solid var(--ok);background:var(--card);border-radius:10px;padding:11px 12px;
       margin-bottom:12px;font:700 13px inherit;color:var(--pencil)">
       <input type="checkbox" id="jokerToggle" style="width:18px;height:18px;accent-color:var(--ok)">
-      Das war noch ein Kniffel · +50 extra</label>` : '';
+      Das war noch ein Kniffel · +50 extra</label>`
+    : nochOffen ? `<div class="note" style="margin-bottom:12px">War das ein weiterer Kniffel?
+        Dann muss die passende Zahl oben zuerst eingetragen werden, bevor ihr unten frei wählen dürft.</div>`
+    : '';
   if (r.kind==='count'){
     const nDice = DICE_N(s.variant);
     /* Wählt jemand die Höchstzahl, zeigen zwangsläufig ALLE Würfel diese Zahl –
@@ -1568,12 +1579,22 @@ function scoreFor(row, d, joker){
 function suggestions(pid, d){
   const s=sheet(), v_=s.variant||'extreme', B=bonusOf(v_);
   const joker = v_==='classic' && hasN5(d) && cellV(s,pid,'c6')===50;
-  return rowsOf(v_).filter(r=>['count','sum','sum2','fixed'].includes(r.kind))
-    .filter(r=>{ const v=cellV(s,pid,r.id); return v===null||v===undefined; })
-    .map(r=>{
+  let rows = rowsOf(v_).filter(r=>['count','sum','sum2','fixed'].includes(r.kind))
+    .filter(r=>{ const v=cellV(s,pid,r.id); return v===null||v===undefined; });
+  let pflicht=null;
+  if (joker){
+    /* Regel: die passende Zahl oben ist Pflicht, solange sie noch offen ist –
+       erst wenn sie belegt ist, darf man unten frei wählen. */
+    const cnt={}; d.forEach(v=>cnt[v]=(cnt[v]||0)+1);
+    const zahl = Object.keys(cnt).find(k=>cnt[k]>=5);
+    const matchId = 'e'+zahl;
+    if (rows.some(r=>r.id===matchId)){ rows = rows.filter(r=>r.id===matchId); pflicht=matchId; }
+  }
+  return rows.map(r=>{
       const raw=scoreFor(r,d,joker), pts=r.kind==='sum2'?raw*2:raw;
       let ex='';
-      if (UPPER.includes(r.id) && raw>0){
+      if (r.id===pflicht) ex='Pflichtfeld · Bonus-Kniffel plus 50';
+      else if (UPPER.includes(r.id) && raw>0){
         const b=bonusInfo(pid), rest=Math.max(0,b.need-raw);
         ex = rest>0 ? `dann noch ${rest} bis ${B.t}` : 'damit ist der Bonus sicher';
       } else if (r.kind==='sum2' && raw>0) ex=`${raw} Augen, doppelt`;
@@ -2517,8 +2538,9 @@ function openRules(variant){
   };
   const jokerNote = variant==='classic'
     ? `<div class="note" style="margin-bottom:12px">Bonus-Kniffel: Ist „Kniffel“ schon mit 50 Punkten
-        eingetragen und ihr würfelt noch einmal fünf Gleiche, gibt es 50 Punkte extra obendrauf –
-        der Wurf zählt dann als Joker in einem beliebigen offenen Feld.</div>`
+        eingetragen und ihr würfelt noch einmal fünf Gleiche, gibt es 50 Punkte extra obendrauf.
+        Ist das passende Zahlenfeld oben (z. B. „Sechser“ bei fünf Sechsen) noch offen, muss der Wurf
+        dort eingetragen werden. Erst wenn es schon belegt ist, dürft ihr unten frei wählen.</div>`
     : '';
   const bonusNote = `<div class="note" style="margin-bottom:12px">Oberer Teil: Kommt ihr bei den Zahlenfeldern
       zusammen auf mindestens ${B.t} Punkte, gibt es ${B.p} Punkte Bonus obendrauf.</div>${jokerNote}`;
