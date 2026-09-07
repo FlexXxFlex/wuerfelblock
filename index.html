@@ -517,7 +517,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v74 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v75 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS_EXTREME = [
@@ -853,19 +853,28 @@ function openPicker(rowId, pid){
   document.getElementById('sbTitle').textContent = r.name;
   document.getElementById('sbSub').textContent = (p.name.v || 'Spieler') + ' · ' + r.hint;
   const nowV = cellV(s,pid,r.id);
+  /* Ohne Würfelbrett hat die App keine eigenen Würfelwerte – wer von Hand einträgt,
+     sagt ihr also selbst, ob dieser Eintrag ein weiterer Kniffel war. */
+  pickerJoker = false;
+  const jokerAllowed = s.variant==='classic' && rowId!=='c6' && nowV===null && cellV(s,pid,'c6')===50;
+  const jokerBox = jokerAllowed ? `<label style="display:flex;align-items:center;gap:8px;
+      border:1.5px solid var(--ok);background:var(--card);border-radius:10px;padding:11px 12px;
+      margin-bottom:12px;font:700 13px inherit;color:var(--pencil)">
+      <input type="checkbox" id="jokerToggle" style="width:18px;height:18px;accent-color:var(--ok)">
+      Das war noch ein Kniffel · +50 extra</label>` : '';
   if (r.kind==='count'){
     const nDice = DICE_N(s.variant);
-    let h='<div class="opts">';
+    let h=jokerBox+'<div class="opts">';
     for(let n=1;n<=nDice;n++){ const pts=n*r.die;
       h += `<button data-v="${pts}" class="${nowV===pts?'on':''}">${pts}<div style="font-size:9px;font-weight:700;opacity:.6">${n}×</div></button>`; }
     sbBody.innerHTML = h + `<button class="big strike ${nowV===0?'on':''}" data-v="0">Streichen (0)</button></div>`;
   } else if (r.kind==='fixed'){
-    sbBody.innerHTML = `<div class="opts">
+    sbBody.innerHTML = jokerBox+`<div class="opts">
       <button class="big ${nowV===r.pts?'on':''}" data-v="${r.pts}">${r.pts} Punkte</button>
       <button class="big strike ${nowV===0?'on':''}" data-v="0">Streichen (0)</button></div>`;
   } else {
     const has = (nowV!==null && nowV!==undefined);
-    sbBody.innerHTML = `<div class="numrow"><input id="sbNum" type="number" inputmode="numeric" min="0" max="${r.max}"
+    sbBody.innerHTML = jokerBox+`<div class="numrow"><input id="sbNum" type="number" inputmode="numeric" min="0" max="${r.max}"
         placeholder="Augensumme" value=""></div>
       <div class="sub" style="text-align:center;margin:0 0 10px">${
         has ? (nowV===0 ? 'steht auf gestrichen' : 'steht auf '+nowV+(r.kind==='sum2'?' (= '+nowV*2+')':''))
@@ -876,7 +885,16 @@ function openPicker(rowId, pid){
   }
   openBox();
 }
-function setVal(v){ if(!cur) return; setCell(sheet(), cur.pid, cur.r.id, v); touched(); }
+function setVal(v){
+  if(!cur) return;
+  const s=sheet();
+  setCell(s, cur.pid, cur.r.id, v);
+  if(pickerJoker && v!==null){
+    setCell(s, cur.pid, 'jokerOn_'+cur.r.id, (cellV(s,cur.pid,'jokerOn_'+cur.r.id)||0)+50);
+  }
+  pickerJoker = false;
+  touched();
+}
 
 /* ======================= Endstand ======================= */
 /* Sobald jedes Feld jeder Spalte gefüllt ist, ist das Blatt fertig.
@@ -1768,7 +1786,7 @@ const blankSheet = s => Object.values(s.cells||{}).every(c=>!c||c.v===null||c.v=
 const cellsBlank = s => Object.values(s.cells||{}).every(c=>!c||c.v===null||c.v===undefined);
 const nothingOwnYet = () => liveSheets().every(cellsBlank);
 
-let pendingConfirm = null, pendingRoomVariant = null;
+let pendingConfirm = null, pendingRoomVariant = null, pickerJoker = false;
 function askConfirm(msg, onYes, label, danger){
   mode='confirm'; sbFoot.style.display='none';
   document.getElementById('sbTitle').textContent = 'Sicher?';
@@ -2415,6 +2433,7 @@ sbBody.addEventListener('click', e=>{
   if (b.dataset.v!==undefined){ setVal(+b.dataset.v); closeBox(); }
 });
 sbBody.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); sbBody.querySelector('[data-ok]')?.click(); } });
+sbBody.addEventListener('change', e=>{ if(e.target.id==='jokerToggle') pickerJoker = e.target.checked; });
 document.getElementById('sbClear').onclick = ()=>{ setVal(null); closeBox(); };
 document.getElementById('sbClose').onclick = ()=>{
   const i = document.getElementById('sbNum');
