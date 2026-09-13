@@ -2715,7 +2715,10 @@ function refresh(){
   pullBar.classList.add('snap'); setPull(PULL_TRIGGER,'Aktualisiere…');
   const seen=lastRx;
   if(room){
-    if(!connected){ clearTimeout(retryT); tries=0; connect(); }
+    /* War schon eine Abweichung bekannt, reicht ein leichtes Re-Subscribe auf
+       derselben Sitzung oft nicht – die Verbindung selbst kann angeschlagen
+       sein. Dann lieber gleich einen echten Neuaufbau erzwingen. */
+    if(!connected || divergedSince){ clearTimeout(retryT); tries=0; lastForced=0; forceReconnect(); }
     else {
       try{ client.subscribe(topic(),{qos:1}); }catch(e){}
       try{ client.subscribe(diceTopic(),{qos:0}); }catch(e){}
