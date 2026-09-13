@@ -519,7 +519,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v84 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v85 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS_EXTREME = [
@@ -1802,6 +1802,7 @@ let nRx=0, nTx=0, lastPing=null, lastErr='', connecting=false, pingAt=0;
 /* Jede Nachricht trägt einen Fingerabdruck des Blocks und die Zahl der Einträge.
    Weicht ein anderes Gerät ab, weiß die App: wir sind nicht gleichauf. */
 let peers={}, divergedSince=0, lastNudge=0, lastResub=0, freshSession=false;
+let lastSentFp=null;   // Stand, der zuletzt tatsächlich rausging
 let lastForced=0;
 function forceReconnect(){
   const t=Date.now();
@@ -2027,6 +2028,7 @@ function doPush(){
     lastPub=NOW(); nTx++; pingAt=lastPub; if(!echoWait) echoWait=lastPub;
     msg.destinationName = topic(); msg.qos = 1; msg.retained = true;
     client.send(msg);
+    lastSentFp = myFp();
   }catch(e){}
 }
 let pushT=null;
@@ -2084,7 +2086,13 @@ setInterval(()=>{
       divergedSince=0; forceReconnect();
     }
   }
-  if(t-lastPub > (divergedSince?4000:(busyNow()?ACTIVE_MS:IDLE_MS))) push();
+  /* Wichtig: Gehen die Nachrichten BEIDER Geräte verloren, weiß keiner von der
+     Abweichung – divergedSince bleibt 0, und ohne neue Eingabe sendet niemand je
+     wieder. Deshalb hier zusätzlich: hat sich der eigene Stand seit dem letzten
+     erfolgreichen Senden verändert, zügig erneut senden statt bis zu 60 s zu warten. */
+  const eigenSig = myFp();
+  if(eigenSig !== lastSentFp && t-lastPub > 6000){ push(); }
+  else if(t-lastPub > (divergedSince?4000:(busyNow()?ACTIVE_MS:IDLE_MS))) push();
   chip();                                  // Gerätezahl aktuell halten             // hält den gespeicherten Stand frisch und prüft die Leitung
 }, 5000);
 
