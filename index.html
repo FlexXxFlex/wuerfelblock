@@ -519,7 +519,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v79 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v80 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS_EXTREME = [
@@ -2750,8 +2750,10 @@ async function checkUpdate(force){
   try{
     const tag=await fileStamp();
     if(!tag){ return; }
-    if(fileTag===null){ fileTag=tag; return; }          // erster Abgleich merkt sich nur den Stand
-    if(tag===fileTag) return;                           // unverändert: keine weiteren Daten nötig
+    /* Auch beim allerersten Abgleich wirklich vergleichen statt nur den Stand zu merken –
+       sonst bemerkt eine bereits veraltete, zwischengespeicherte Seite ihre eigene
+       Veraltung nie, weil sie nur künftige Änderungen erkennt, nicht die eigene. */
+    if(tag===fileTag) return;                           // unverändert seit dem letzten Blick
     const r=await fetch(location.pathname+'?cb='+Date.now(), {cache:'no-store'});
     if(!r.ok) return;
     const m=(await r.text()).match(/const VERSION = '([^']+)'/);
