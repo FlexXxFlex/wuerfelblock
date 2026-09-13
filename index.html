@@ -519,7 +519,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v81 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v82 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS_EXTREME = [
@@ -2234,6 +2234,24 @@ function onRemote(raw){
   const merged = mergeAll(state.sheets, doc.sheets);
   state.sheets = merged;
   if (!sheet() && liveSheets()[0]) state.activeId = liveSheets()[0].id;
+  /* Zwei Geräte tippen fast gleichzeitig auf "+Blatt": jedes legt sein eigenes
+     leeres Blatt an, beide zufällig an derselben Stelle als "Blatt 2" angezeigt,
+     aber mit unterschiedlicher Kennung – Einträge tauchen dann beim anderen nie auf.
+     Nach dem Zusammenführen bleibt je Variante nur das älteste leere Blatt übrig,
+     der Rest wird gelöscht – beide Geräte kommen dabei auf dasselbe Ergebnis. */
+  const leerGruppen = {};
+  liveSheets().filter(blankSheet).forEach(s=>{
+    const v=s.variant||'extreme'; (leerGruppen[v]=leerGruppen[v]||[]).push(s);
+  });
+  Object.values(leerGruppen).forEach(list=>{
+    if(list.length<2) return;
+    list.sort((a,b)=>a.created-b.created);
+    const behalten=list[0];
+    list.slice(1).forEach(s=>{
+      s.del=stamp(1);
+      if(state.activeId===s.id) state.activeId=behalten.id;
+    });
+  });
   /* Waren wir leer und bekommen einen echten Block: eigenes Leerblatt
      zurückziehen. Als Löschvermerk, damit es auch bei den anderen verschwindet. */
   if (warLeer && bringtInhalt && room && Date.now()-joinedAt < 180000){
