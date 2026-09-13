@@ -519,7 +519,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v86 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v87 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS_EXTREME = [
@@ -1799,6 +1799,15 @@ let staleDoc = null, liveSeen = false, joinedAt = 0;
    jede eigene Nachricht kommt als Echo zurück – bleibt es aus, wird neu verbunden. */
 let lastRx=0, lastPub=0, echoWait=0, tries=0, stale=false;
 let nRx=0, nTx=0, lastPing=null, lastErr='', connecting=false, pingAt=0;
+/* Kurzes Ereignisprotokoll für die Fehlersuche: die letzten Vorgänge mit Uhrzeit,
+   damit sich auf einem Bildschirmfoto nachvollziehen lässt, was passiert ist. */
+const logbuch=[]; let nReconnect=0, nMerge=0, nJoinTimeout=0, lastMergeChange=0;
+function logg(txt){
+  const d=new Date();
+  const zeit=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+':'+('0'+d.getSeconds()).slice(-2);
+  logbuch.push(zeit+' '+txt);
+  if(logbuch.length>8) logbuch.shift();
+}
 /* Jede Nachricht trägt einen Fingerabdruck des Blocks und die Zahl der Einträge.
    Weicht ein anderes Gerät ab, weiß die App: wir sind nicht gleichauf. */
 let peers={}, divergedSince=0, lastNudge=0, lastResub=0, freshSession=false;
@@ -1807,7 +1816,7 @@ let lastForced=0;
 function forceReconnect(){
   const t=Date.now();
   if(t-lastForced<12000) return;   // nicht mehrfach kurz hintereinander stoßen
-  lastForced=t; stale=true; chip();
+  lastForced=t; stale=true; nReconnect++; logg('Verbindung neu aufgebaut (#'+nReconnect+')'); chip();
   try{ if(client){ client.onConnectionLost=null; client.onMessageArrived=null; client.disconnect(); } }catch(e){}
   client=null; connected=false; connecting=false; clearTimeout(retryT);
   retryT=setTimeout(connect, Math.min(20000, 1500*Math.pow(1.7, tries++)));
@@ -1962,7 +1971,8 @@ function connect(){
     if (client !== me) return;       // Meldung einer längst ersetzten Verbindung
     connecting=false;
     connected=false; echoWait=0;
-    lastErr=(e&&e.errorMessage||'Verbindung abgebrochen').slice(0,60); chip();
+    lastErr=(e&&e.errorMessage||'Verbindung abgebrochen').slice(0,60);
+    logg('Verbindung verloren: '+lastErr.slice(0,30)); chip();
     clearTimeout(retryT);
     retryT=setTimeout(connect, Math.min(20000, 1500*Math.pow(1.7, tries++)));  // wachsender Abstand
   };
@@ -1981,7 +1991,7 @@ function connect(){
     useSSL:true, timeout:10, keepAliveInterval:40, cleanSession:freshSession, reconnect:false,
     onSuccess: () => { if(client!==me) return;
       connecting=false; connected=true; tries=0; stale=false; freshSession=false;
-      lastRx=NOW(); chip();
+      lastRx=NOW(); logg('verbunden'); chip();
       client.subscribe(topic(),{qos:1}); client.subscribe(diceTopic(),{qos:0});
       /* Beim Beitreten nicht ungefragt senden – erst prüfen, ob wirklich
          niemand geantwortet hat (joinTimeout kümmert sich darum). */
@@ -1989,7 +1999,8 @@ function connect(){
       else setTimeout(push,600); },
     onFailure: (e) => { if(client!==me) return;
       connecting=false; connected=false;
-      lastErr=(e&&e.errorMessage||'Verbindung abgelehnt').slice(0,60); chip();
+      lastErr=(e&&e.errorMessage||'Verbindung abgelehnt').slice(0,60);
+      logg('Verbindung abgelehnt: '+lastErr.slice(0,30)); chip();
       clearTimeout(retryT);
       retryT=setTimeout(connect, Math.min(20000, 2000*Math.pow(1.6, tries++))); }
   });
@@ -2120,6 +2131,8 @@ function sayHello(){
 function joinTimeout(){
   if(!joining) return;
   joining=false;
+  nJoinTimeout++;
+  logg('Beitritt: niemand live geantwortet'+(staleDoc?', nehme Serverstand':''));
   if(liveSeen) return;
   /* Niemand hat live geantwortet – das heisst NICHT, dass die Runde leer ist.
      Meist schläft das andere Handy nur oder die Leitung ist kurz weg. Der vom
@@ -2305,6 +2318,7 @@ function onRemote(raw){
     }
   }
   const mergedStr = canon(merged);
+  if(mergedStr!==before){ nMerge++; lastMergeChange=NOW(); }
   if (mergedStr !== before){ lastAct=Date.now(); src='theirs'; render(); src='mine'; saveLocal(); flash(); maybeFinal(); }
   /* Nur antworten, wenn wir wirklich etwas haben, das dem anderen fehlt –
      und niemals auf das eigene Echo. */
@@ -2328,24 +2342,43 @@ function flash(){
 /* Zeigt, was die Verbindung gerade wirklich tut */
 function diagText(){
   const t=NOW(), s=x=>x? Math.round((t-x)/1000)+' s her':'noch nie';
+  const mine=VERSION.split(' ')[0];
+  const andere=Object.values(peers).filter(p=>Date.now()-p.t<120000);
+  const g=peerGap();
   return [
-    'Verbindung: '+(sleeping?'pausiert':connected?(stale?'wackelig':'steht'):'getrennt'),
+    '── Verbindung ──',
+    'Zustand: '+(sleeping?'pausiert':connected?(stale?'wackelig':'steht'):connecting?'verbindet…':'getrennt'),
+    'Raum: '+(room||'—')+' · Variante: '+((sheet()&&sheet().variant)||appVariant),
     'Takt: '+(busyNow()?'aktiv, alle 12 s':'ruhend, alle 60 s'),
     'zuletzt empfangen: '+s(lastRx),
     'zuletzt gesendet: '+s(lastPub),
-    'Geräte in der Runde: '+deviceCount(),
-    'Nachrichten: '+nTx+' raus / '+nRx+' rein',
-    (()=>{ const t=Date.now(), mine=VERSION.split(' ')[0];
-      const alt=Object.values(peers).filter(p=>t-p.t<120000 && p.ver && p.ver!==mine);
-      if(!alt.length) return nRx>40&&nRx>nTx*6 ? '⚠ Ein anderes Handy sendet zu viel' : '';
-      return '⚠ '+alt.map(p=>(p.who||'ein Gerät')+' läuft auf '+p.ver).join(', ')+' – dort neu laden';
-    })(),
     'Antwortzeit: '+(lastPing!==null?lastPing+' ms':'—'),
-    (()=>{ const g=peerGap();
-      return g ? '⚠ nicht gleichauf: du '+myCount()+' Einträge, anderes Gerät '+g.n
-               : 'Blöcke gleichauf: '+myCount()+' Einträge'; })(),
-    lastErr?('letzter Fehler: '+lastErr):''
-  ].filter(Boolean).join('<br>');
+    'Nachrichten: '+nTx+' raus / '+nRx+' rein',
+    'Neuaufbauten: '+nReconnect+' · Beitritts-Zeitlimit: '+nJoinTimeout,
+    '',
+    '── Daten ──',
+    'Blätter: '+liveSheets().length+' sichtbar, '+state.sheets.length+' gesamt',
+    'aktives Blatt: '+(sheet()? (liveSheets().findIndex(x=>x.id===sheet().id)+1)+' von '+liveSheets().length+' · '+sheet().id : '—'),
+    'Spalten: '+livePlayers(sheet()||{players:[]}).map(p=>p.name.v||'(leer)').join(', '),
+    'eigene Kennung: '+DEV.slice(0,8),
+    'Zusammenführungen mit Änderung: '+nMerge+(lastMergeChange?' · zuletzt '+s(lastMergeChange):''),
+    (lastSentFp===myFp() ? 'eigener Stand ist raus' :
+      (lastPub ? '⏳ eigener Stand noch nicht bestätigt raus' : 'eigener Stand: noch nichts gesendet')),
+    '',
+    '── Abgleich ──',
+    g ? '⚠ NICHT GLEICHAUF: du '+myCount()+' Einträge, anderes Gerät '+g.n
+      : 'gleichauf: '+myCount()+' Einträge',
+    'eigener Fingerabdruck: '+myFp(),
+    andere.length ? andere.map(p=>'  '+(p.who||'Gerät '+String(p.id||'').slice(0,6))+': '
+        +(p.fp||'(alt)')+' · '+(p.n===null?'?':p.n)+' Einträge · '+p.ver).join('<br>')
+      : '  kein anderes Gerät gehört',
+    (()=>{ const alt=andere.filter(p=>p.ver && p.ver!==mine);
+      return alt.length ? '⚠ andere Version: '+alt.map(p=>(p.who||'Gerät')+' auf '+p.ver).join(', ')+' – dort neu laden' : ''; })(),
+    divergedSince ? '⚠ gleicht ab seit '+Math.round((t-divergedSince)/1000)+' s' : '',
+    lastErr?('letzter Fehler: '+lastErr):'',
+    '── Verlauf ──',
+    logbuch.length ? logbuch.slice().reverse().join('<br>') : '  noch nichts passiert'
+  ].filter(x=>x!==undefined && x!==null).join('<br>');
 }
 let diagT=null;
 function startDiag(){
@@ -2410,6 +2443,7 @@ function openCoop(){
       <div class="row2" style="margin-top:0"><button id="shareBtn">Code teilen</button>
       <button id="syncBtn">Jetzt abgleichen</button></div>
       <div class="row2"><button id="leaveBtn">Runde verlassen</button></div>
+      <div class="row2"><button id="copyDiag">Diagnose kopieren</button></div>
       <div class="row2"><button class="primary" id="doneBtn">Fertig</button></div>
       ${hasBackup()?'<div class="row2"><button id="restoreBtn">Gesicherte Blätter zurückholen</button></div>':''}
       <div class="diag" id="diag"></div>
@@ -2532,6 +2566,16 @@ sbBody.addEventListener('click', e=>{
   if (b.id==='joinBring') return joinBring();
   if (b.id==='restoreBtn') return restoreBackup();
   if (b.id==='syncBtn') { closeBox(); refresh(); return; }
+  if (b.id==='copyDiag'){
+    const txt = 'Würfelblock '+VERSION+'\n'+diagText().replace(/<br>/g,'\n').replace(/<[^>]+>/g,'');
+    const fertig = ()=>{ b.textContent='Kopiert ✓'; setTimeout(()=>{ b.textContent='Diagnose kopieren'; },1800); };
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(fertig,()=>fertig()); }
+      else { const ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+             document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); fertig(); }
+    }catch(e){ fertig(); }
+    return;
+  }
   if (b.id==='leaveBtn') { leave(); closeBox(); return; }
   if (b.id==='shareBtn'){
     const url = location.origin+location.pathname+'#'+room;
