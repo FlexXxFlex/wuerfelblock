@@ -519,7 +519,7 @@ footer button{padding:9px 9px;font-size:12.5px}
     [e.destinationName,"Message.destinationName"]));}else e=new w(b),e.destinationName=a,3<=arguments.length&&(e.qos=c),4<=arguments.length&&(e.retained=d);l.send(e)};this.disconnect=function(){l.disconnect()};this.getTraceLog=function(){return l.getTraceLog()};this.startTrace=function(){l.startTrace()};this.stopTrace=function(){l.stopTrace()};this.isConnected=function(){return l.connected}},Message:w}}("undefined"!==typeof global?global:"undefined"!==typeof self?self:"undefined"!==typeof window?window:
     {})});</script>
 <script>
-const VERSION = 'v80 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
+const VERSION = 'v81 · 27.08.2026';   /* zum Vergleichen zwischen den Handys */
 /* ======================= Zeilen des Blocks ======================= */
 const MAXP = 6;
 const ROWS_EXTREME = [
@@ -2062,7 +2062,15 @@ setInterval(()=>{
       if(t-lastResub>30000){ lastResub=t;
         try{ client.subscribe(topic(),{qos:1}); }catch(e){} }
     }
-    if(t-divergedSince>45000) divergedSince=0;   // aufgegeben, Anzeige nicht ewig blockieren
+    if(t-divergedSince>20000){
+      /* Sanftes Nachfassen (erneut anmelden) hat nach 45 Sekunden nicht gereicht –
+         statt die Anzeige einfach auszublenden, wird die Verbindung einmal komplett
+         neu aufgebaut. Das holt den zuletzt gespeicherten Stand zuverlässiger nach
+         als ein Re-Subscribe auf derselben Sitzung. */
+      divergedSince=0; stale=true; chip();
+      try{ if(client){ client.onConnectionLost=null; client.onMessageArrived=null; client.disconnect(); } }catch(e){}
+      client=null; connected=false; connecting=false; clearTimeout(retryT); retryT=setTimeout(connect,400);
+    }
   }
   if(t-lastPub > (divergedSince?4000:(busyNow()?ACTIVE_MS:IDLE_MS))) push();
   chip();                                  // Gerätezahl aktuell halten             // hält den gespeicherten Stand frisch und prüft die Leitung
